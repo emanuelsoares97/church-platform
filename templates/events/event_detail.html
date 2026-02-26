@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }} • SNT Almada{% endblock %}
+
+{% block content %}
+  <h1>{{ event.title }}</h1>
+  <p><strong>Data:</strong> {{ event.date }} • <strong>Local:</strong> {{ event.location }}</p>
+  <p><strong>Preço:</strong> {{ event.price }}€ por pessoa</p>
+  <p>{{ event.description }}</p>
+
+  <hr>
+
+  <h2>Inscrição</h2>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <h3>Participantes</h3>
+    <p>Preenche o nome de cada participante (1 por bilhete).</p>
+
+    <div id="participants"></div>
+
+    <button type="submit">Confirmar inscrição</button>
+  </form>
+
+  <script>
+    // Gera campos de participantes baseado na quantidade de bilhetes
+    const qtyInput = document.getElementById("id_ticket_qty");
+    const container = document.getElementById("participants");
+
+    function renderParticipants() {
+      const qty = parseInt(qtyInput.value || "1", 10);
+      container.innerHTML = "";
+
+      for (let i = 1; i <= qty; i++) {
+        const wrap = document.createElement("div");
+        wrap.style.marginBottom = "10px";
+
+        const label = document.createElement("label");
+        label.textContent = `Participante ${i}`;
+        label.style.display = "block";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.name = "participant_name";
+        input.required = true;
+        input.placeholder = `Nome do participante ${i}`;
+        input.style.padding = "8px";
+        input.style.width = "100%";
+
+        wrap.appendChild(label);
+        wrap.appendChild(input);
+        container.appendChild(wrap);
+      }
+    }
+
+    qtyInput.addEventListener("input", renderParticipants);
+    renderParticipants();
+  </script>
+{% endblock %}

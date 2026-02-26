@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Eventos • SNT Almada{% endblock %}
+
+{% block content %}
+  <h1>Eventos</h1>
+
+  {% if events %}
+    <ul>
+      {% for event in events %}
+        <li style="margin-bottom:10px;">
+          <a href="{% url 'events:event_detail' event.slug %}">
+            <strong>{{ event.title }}</strong>
+          </a>
+          <div>{{ event.date }} • {{ event.location }} • {{ event.price }}€</div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>Sem eventos ativos no momento.</p>
+  {% endif %}
+{% endblock %}
