@@ -9,6 +9,7 @@ class Event(models.Model):
     location = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=5.00)
     description = models.TextField(blank=True)
+    banner_image = models.ImageField(upload_to="events/", blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -32,7 +33,11 @@ class Registration(models.Model):
     email = models.EmailField()
     phone = models.CharField(max_length=20)
     ticket_qty = models.PositiveIntegerField(default=1)
-    payment_method = models.CharField(max_length=10, choices=PaymentMethod.choices)
+    payment_method = models.CharField(
+    max_length=10,
+    choices=PaymentMethod.choices,
+    default=PaymentMethod.MBWAY
+)
     is_paid = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 

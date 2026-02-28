@@ -1,59 +1,174 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}{{ event.title }} • SNT Almada{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/event_detail.css' %}">
+{% endblock %}
+
 {% block content %}
-  <h1>{{ event.title }}</h1>
-  <p><strong>Data:</strong> {{ event.date }} • <strong>Local:</strong> {{ event.location }}</p>
-  <p><strong>Preço:</strong> {{ event.price }}€ por pessoa</p>
-  <p>{{ event.description }}</p>
+<div class="wrap"
+     data-price="{{ event.price }}"
+     data-banner-url="{% if event.banner_image %}{{ event.banner_image.url }}{% endif %}">
 
-  <hr>
+  <header class="topbar">
+    <div class="brand">
+      <img class="logoImg" src="{% static 'img/logo-snt.png' %}" alt="Logo SNT Almada">
+      <div>
+        <div class="brandName">SNT Almada</div>
+        <div class="brandSub">Sistema de inscrições</div>
+      </div>
+    </div>
 
-  <h2>Inscrição</h2>
-  <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
+    <nav class="nav" aria-label="Navegação">
+      <a href="#sobre">Sobre</a>
+      <a href="#inscricao">Inscrição</a>
+      <a href="#contactos">Contactos</a>
+    </nav>
 
-    <h3>Participantes</h3>
-    <p>Preenche o nome de cada participante (1 por bilhete).</p>
+    <div class="pill">Evento • {{ event.title }}</div>
+  </header>
 
-    <div id="participants"></div>
+  <div class="grid">
+    <section class="card">
+      <div class="hero">
+        <div class="watermark" aria-hidden="true"></div>
 
-    <button type="submit">Confirmar inscrição</button>
-  </form>
+        <div class="heroInner">
+          <div class="badge"><span class="dot" aria-hidden="true"></span> Inscrições abertas</div>
 
-  <script>
-    // Gera campos de participantes baseado na quantidade de bilhetes
-    const qtyInput = document.getElementById("id_ticket_qty");
-    const container = document.getElementById("participants");
+          <h1>{{ event.title|upper }}</h1>
 
-    function renderParticipants() {
-      const qty = parseInt(qtyInput.value || "1", 10);
-      container.innerHTML = "";
+          <div class="subtitle">
+            Evento da igreja <strong>SNT Almada</strong> para toda a comunidade.
+          </div>
 
-      for (let i = 1; i <= qty; i++) {
-        const wrap = document.createElement("div");
-        wrap.style.marginBottom = "10px";
+          <div class="meta">
+            <div class="chip">📅 Data: <strong class="chipStrong">{{ event.date }}</strong></div>
+            <div class="chip">📍 Local: <strong class="chipStrong">{{ event.location }}</strong></div>
+            <div class="chip">🎟️ Preço: <strong class="chipStrong">{{ event.price }}€</strong> / pessoa</div>
+          </div>
 
-        const label = document.createElement("label");
-        label.textContent = `Participante ${i}`;
-        label.style.display = "block";
+          <div class="ctaRow">
+            <a class="btn" href="#inscricao">Inscrever-me</a>
+            <a class="btn secondary" href="#sobre">Ver detalhes</a>
+          </div>
+        </div>
 
-        const input = document.createElement("input");
-        input.type = "text";
-        input.name = "participant_name";
-        input.required = true;
-        input.placeholder = `Nome do participante ${i}`;
-        input.style.padding = "8px";
-        input.style.width = "100%";
+        <div class="section" id="sobre">
+          <h2>Sobre o evento</h2>
+          <p>
+            {{ event.description|default:"(Adicionar descrição do evento no admin.)" }}
+          </p>
+        </div>
+      </div>
+    </section>
 
-        wrap.appendChild(label);
-        wrap.appendChild(input);
-        container.appendChild(wrap);
-      }
-    }
+    <section class="card" id="inscricao">
+      <div class="formCard">
+        <h2>Inscrição</h2>
+        <p class="help">Preenche os dados e os nomes de todos os participantes (1 por bilhete).</p>
 
-    qtyInput.addEventListener("input", renderParticipants);
-    renderParticipants();
-  </script>
+        <form method="POST" id="regForm" novalidate>
+          {% csrf_token %}
+
+          <div class="field">
+            <label for="{{ form.buyer_name.id_for_label }}">Nome do comprador</label>
+            {{ form.buyer_name }}
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label for="{{ form.email.id_for_label }}">Email</label>
+              {{ form.email }}
+            </div>
+            <div class="field">
+              <label for="{{ form.phone.id_for_label }}">Telemóvel</label>
+              {{ form.phone }}
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Número de bilhetes</label>
+
+            <div class="qty" role="group" aria-label="Selecionar quantidade de bilhetes">
+              <button type="button" id="minus" aria-label="Diminuir">−</button>
+
+              <!-- IMPORTANT: este input vem do Django -->
+              {{ form.ticket_qty }}
+
+              <button type="button" id="plus" aria-label="Aumentar">+</button>
+
+              <span class="small priceEach" style="margin-left:auto;">{{ event.price }}€ cada</span>
+            </div>
+
+            <div class="totals" aria-live="polite">
+              <span>Total a pagar</span>
+              <strong id="total"></strong>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Método de pagamento</label>
+
+            <div class="radioGroup">
+              {% for radio in form.payment_method %}
+                <label class="radio">
+                  {{ radio.tag }}
+                  {{ radio.choice_label }}
+                </label>
+              {% endfor %}
+            </div>
+
+            <div class="payBox" id="mbwayBox">
+              <div><strong>MB Way:</strong> enviar pagamento para <strong>912 345 678</strong></div>
+              <div class="small" style="margin-top:6px;">
+                Depois a confirmação do pagamento será feita manualmente no sistema.
+              </div>
+            </div>
+
+            <div class="payBox" id="localBox" data-visible="false">
+              <div><strong>Pagamento no local:</strong> o valor será pago na entrada/receção do evento.</div>
+              <div class="small" style="margin-top:6px;">Chega com antecedência para facilitar o check-in.</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Participantes</label>
+            <div class="small" style="margin-bottom:8px;opacity:.9;">
+              Preenche o nome de cada participante (1 por bilhete).
+            </div>
+
+            <div id="participants"></div>
+          </div>
+
+          <div class="actions">
+            <button class="btn" type="submit">Confirmar inscrição</button>
+            <button class="btn secondary" type="reset" id="resetBtn">Limpar</button>
+          </div>
+
+          <div class="note">
+            Nota: Se pagares por MB Way, a confirmação será marcada no Admin após validação.
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+
+  <footer class="footer" id="contactos">
+    <div>
+      <strong class="footerStrong">SNT Almada</strong><br>
+      <span>Contactos: (colocar email/telemóvel da igreja)</span>
+    </div>
+    <div>
+      <span>Redes sociais: (Instagram/Facebook/YouTube)</span><br>
+      <span>Morada: (colocar morada)</span>
+    </div>
+  </footer>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/event_detail.js' %}"></script>
 {% endblock %}

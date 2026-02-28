@@ -9,7 +9,7 @@ class ParticipantInline(admin.TabularInline):
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = ("title", "date", "location", "price", "is_active")
+    list_display = ("title", "date", "location", "price", "is_active", "banner_image")
     list_filter = ("is_active", "date")
     search_fields = ("title", "location")
     prepopulated_fields = {"slug": ("title",)}

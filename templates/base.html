@@ -1,9 +1,12 @@
+<!-- templates/base.html -->
 <!doctype html>
 <html lang="pt-PT">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}SNT Almada{% endblock %}</title>
+
+  {% block extra_head %}{% endblock %}
 </head>
 <body>
   <header style="padding:16px;border-bottom:1px solid #ddd;">
@@ -13,7 +16,7 @@
     </nav>
   </header>
 
-  <main style="max-width:900px;margin:0 auto;padding:16px;">
+  <main style="max-width:1100px;margin:0 auto;padding:16px;">
     {% if messages %}
       <div style="margin-bottom:12px;">
         {% for message in messages %}
@@ -30,5 +33,7 @@
   <footer style="padding:16px;border-top:1px solid #ddd;">
     SNT Almada
   </footer>
+
+  {% block extra_js %}{% endblock %}
 </body>
 </html>
