@@ -1,0 +1,124 @@
+{% extends "management/base_management.html" %}
+
+{% block mgmt_title %}Inscrições — {{ event.title }}{% endblock %}
+
+{% block mgmt_content %}
+  <form class="filters" method="get">
+    <input name="q" placeholder="Pesquisar nome/email" value="{{ filters.q }}">
+    <select name="paid">
+      <option value="">Pago: todos</option>
+      <option value="1" {% if filters.paid == "1" %}selected{% endif %}>Pago</option>
+      <option value="0" {% if filters.paid == "0" %}selected{% endif %}>Não pago</option>
+    </select>
+    <select name="checkin">
+      <option value="">Check-in: todos</option>
+      <option value="0" {% if filters.checkin == "0" %}selected{% endif %}>Pendentes (sem check-in)</option>
+      <option value="1" {% if filters.checkin == "1" %}selected{% endif %}>Check-in completo</option>
+    </select>
+
+    <button class="btn secondary" type="submit">Filtrar</button>
+    <a class="btn secondary" href="{% url 'events_mgmt:event_regs' event.id %}">Limpar</a>
+  </form>
+
+  <div class="table">
+    <div class="table__head">
+      <div>Comprador</div>
+      <div>Bilhetes</div>
+      <div>Participantes</div>
+      <div>Pagamento</div>
+    </div>
+
+    {% for reg in page_obj %}
+      <div class="table__row">
+
+        <div>
+          <strong>{{ reg.buyer_name }}</strong><br>
+          <span class="small">{{ reg.buyer_email }}</span>
+
+          <div class="badgesRow">
+            {% if reg.is_paid %}
+              <span class="badge"><span class="dot"></span>Pago</span>
+            {% else %}
+              <span class="badge"><span class="dot bad"></span>Não pago</span>
+            {% endif %}
+
+            {# resumo check-in (precisa vir anotado no queryset - digo abaixo) #}
+            {% if reg.p_total %}
+              {% if reg.p_checked == reg.p_total %}
+                <span class="badge"><span class="dot"></span>{{ reg.p_checked }}/{{ reg.p_total }} check-ins</span>
+              {% elif reg.p_checked == 0 %}
+                <span class="badge"><span class="dot bad"></span>{{ reg.p_checked }}/{{ reg.p_total }} check-ins</span>
+              {% else %}
+                <span class="badge"><span class="dot warn"></span>{{ reg.p_checked }}/{{ reg.p_total }} check-ins</span>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+
+        <div>
+          <span class="badge"><span class="dot"></span>{{ reg.ticket_qty }}</span>
+        </div>
+
+        <div class="participantsList">
+            {% for p in reg.participants.all %}
+              {% if filters.checkin != "0" or not p.checked_in %}
+                <div class="participantRow">
+                  <form method="post" action="{% url 'events_mgmt:toggle_participant_checkin' p.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <input type="hidden" name="value" value="{% if p.checked_in %}0{% else %}1{% endif %}">
+
+                    <button class="btn sm secondary"
+                            type="submit"
+                            {% if not reg.is_paid %}disabled title="Pagamento pendente"{% endif %}>
+                      {% if p.checked_in %}✅{% else %}⬜{% endif %}
+                    </button>
+                  </form>
+
+                  <div class="participantName">
+                    {{ p.full_name|default:"(vazio)" }}
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="actionsCol">
+          <form method="post" action="{% url 'events_mgmt:toggle_paid' reg.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <input type="hidden" name="value" value="{% if reg.is_paid %}0{% else %}1{% endif %}">
+            <button class="btn sm secondary" type="submit">
+              {% if reg.is_paid %}Marcar não pago{% else %}Marcar pago{% endif %}
+            </button>
+          </form>
+        </div>
+
+      </div>
+    {% empty %}
+      <p class="muted" style="padding:14px">Sem inscrições.</p>
+    {% endfor %}
+  </div>
+
+  <div class="pagination">
+    {% if page_obj.has_previous %}
+      <a class="btn sm secondary"
+         href="?page={{ page_obj.previous_page_number }}&q={{ filters.q }}&paid={{ filters.paid }}&checkin={{ filters.checkin }}">
+        Anterior
+      </a>
+    {% else %}
+      <span></span>
+    {% endif %}
+
+    <span>Página <strong>{{ page_obj.number }}</strong> de <strong>{{ page_obj.paginator.num_pages }}</strong></span>
+
+    {% if page_obj.has_next %}
+      <a class="btn sm secondary"
+         href="?page={{ page_obj.next_page_number }}&q={{ filters.q }}&paid={{ filters.paid }}&checkin={{ filters.checkin }}">
+        Seguinte
+      </a>
+    {% else %}
+      <span></span>
+    {% endif %}
+  </div>
+{% endblock %}

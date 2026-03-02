@@ -1,0 +1,28 @@
+{% extends "management/base_management.html" %}
+
+{% block mgmt_title %}Gestão — Eventos{% endblock %}
+
+{% block mgmt_content %}
+  <div class="cards">
+    {% for e in events %}
+      <div class="card">
+        <div class="card__inner">
+          <div class="card__title">{{ e.title }}</div>
+
+          <div class="card__meta">
+            <span class="kpi">Inscrições: <strong>{{ e.reg_count }}</strong></span>
+            {% if e.is_active %}
+              <span class="kpi"><strong>Ativo</strong></span>
+            {% else %}
+              <span class="kpi">Inativo</span>
+            {% endif %}
+          </div>
+
+          <a class="btn secondary" href="{% url 'events_mgmt:event_regs' e.id %}">Ver inscrições</a>
+        </div>
+      </div>
+    {% empty %}
+      <p class="muted">Sem eventos.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

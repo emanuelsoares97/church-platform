@@ -1,4 +1,4 @@
-<!-- templates/base.html -->
+{% load static %}
 <!doctype html>
 <html lang="pt-PT">
 <head>
@@ -6,23 +6,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}SNT Almada{% endblock %}</title>
 
+  <link rel="stylesheet" href="{% static 'css/global.css' %}">
   {% block extra_head %}{% endblock %}
 </head>
+
 <body>
-  <header style="padding:16px;border-bottom:1px solid #ddd;">
-    <strong>SNT Almada</strong> • Sistema de Inscrições
-    <nav style="margin-top:8px;">
-      <a href="{% url 'events:event_list' %}">Eventos</a>
-    </nav>
+  <header class="topbarWrap">
+    <div class="topbarInner">
+      <div class="brand">
+        <strong>SNT Almada</strong>
+        <span class="muted">• Sistema de Inscrições</span>
+      </div>
+      <nav class="nav">
+        <a class="btn secondary sm" href="{% url 'events:event_list' %}">Eventos</a>
+      </nav>
+    </div>
   </header>
 
-  <main style="max-width:1100px;margin:0 auto;padding:16px;">
+  <main class="pageWrap">
     {% if messages %}
-      <div style="margin-bottom:12px;">
+      <div class="msgs">
         {% for message in messages %}
-          <div style="padding:10px;border:1px solid #ccc;margin-bottom:6px;">
-            {{ message }}
-          </div>
+          <div class="msg">{{ message }}</div>
         {% endfor %}
       </div>
     {% endif %}
@@ -30,8 +35,8 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer style="padding:16px;border-top:1px solid #ddd;">
-    SNT Almada
+  <footer class="footerWrap">
+    <div class="footerInner">SNT Almada</div>
   </footer>
 
   {% block extra_js %}{% endblock %}

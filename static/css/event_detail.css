@@ -218,3 +218,15 @@ input:focus{border-color: rgba(249,115,22,.7); box-shadow: 0 0 0 4px rgba(249,11
   display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
 }
 .footerStrong{color:var(--text)}
+
+.formError{
+  display:none;
+  margin: 8px 0 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(239,68,68,.55);
+  background: rgba(239,68,68,.12);
+  color: rgba(255,255,255,.92);
+  font-size: 13px;
+}
+.formError.show{ display:block; }

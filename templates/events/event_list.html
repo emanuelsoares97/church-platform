@@ -1,21 +1,53 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Eventos • SNT Almada{% endblock %}
 
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/event_list.css' %}">
+{% endblock %}
+
 {% block content %}
-  <h1>Eventos</h1>
+<div class="eventsWrap">
+
+  <div class="eventsHeader">
+    <h1>Eventos</h1>
+    <p class="subtitle">Descobre os próximos eventos da comunidade SNT Almada.</p>
+  </div>
 
   {% if events %}
-    <ul>
+    <div class="eventsGrid">
       {% for event in events %}
-        <li style="margin-bottom:10px;">
-          <a href="{% url 'events:event_detail' event.slug %}">
-            <strong>{{ event.title }}</strong>
-          </a>
-          <div>{{ event.date }} • {{ event.location }} • {{ event.price }}€</div>
-        </li>
+        <a href="{% url 'events:event_detail' event.slug %}" class="eventCard">
+
+          {% if event.banner_image %}
+            <div class="eventImage"
+                 style="background-image:url('{{ event.banner_image.url }}')">
+            </div>
+          {% else %}
+            <div class="eventImage fallback"></div>
+          {% endif %}
+
+          <div class="eventContent">
+            <h2>{{ event.title }}</h2>
+
+            <div class="eventMeta">
+              <span>{{ event.date }}</span>
+              <span>•</span>
+              <span>{{ event.location }}</span>
+            </div>
+
+            <div class="eventFooter">
+              <span class="price">{{ event.price }}€</span>
+              <span class="cta">Ver detalhes →</span>
+            </div>
+          </div>
+
+        </a>
       {% endfor %}
-    </ul>
+    </div>
   {% else %}
-    <p>Sem eventos ativos no momento.</p>
+    <p class="empty">Sem eventos ativos no momento.</p>
   {% endif %}
+
+</div>
 {% endblock %}

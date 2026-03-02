@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login • Gestão{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="loginWrap">
+  <div class="loginCard">
+
+    <div class="loginHeader">
+      <h1>Gestão de Eventos</h1>
+      <p>Acesso reservado para liderança / equipa SNT Almada</p>
+    </div>
+
+    {% if form.errors %}
+      <div class="formError show">
+        Utilizador ou palavra-passe inválidos.
+      </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="field">
+        <label>Utilizador</label>
+        {{ form.username }}
+      </div>
+
+      <div class="field">
+        <label>Palavra-passe</label>
+        {{ form.password }}
+      </div>
+
+      {% if next %}
+        <input type="hidden" name="next" value="{{ next }}">
+      {% endif %}
+
+      <button class="btn" type="submit">Entrar</button>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

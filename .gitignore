@@ -6,3 +6,5 @@ db.sqlite3
 staticfiles/
 .DS_Store
 snt-almada-on-fire-prototipo-flames-red (1).html
+media/
+img/

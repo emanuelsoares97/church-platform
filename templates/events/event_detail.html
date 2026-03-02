@@ -80,8 +80,8 @@
 
           <div class="row">
             <div class="field">
-              <label for="{{ form.email.id_for_label }}">Email</label>
-              {{ form.email }}
+              <label for="{{ form.buyer_email.id_for_label }}">Email</label>
+              {{ form.buyer_email }}
             </div>
             <div class="field">
               <label for="{{ form.phone.id_for_label }}">Telemóvel</label>
@@ -95,7 +95,6 @@
             <div class="qty" role="group" aria-label="Selecionar quantidade de bilhetes">
               <button type="button" id="minus" aria-label="Diminuir">−</button>
 
-              <!-- IMPORTANT: este input vem do Django -->
               {{ form.ticket_qty }}
 
               <button type="button" id="plus" aria-label="Aumentar">+</button>
@@ -116,7 +115,7 @@
               {% for radio in form.payment_method %}
                 <label class="radio">
                   {{ radio.tag }}
-                  {{ radio.choice_label }}
+                  <span>{{ radio.choice_label }}</span>
                 </label>
               {% endfor %}
             </div>
@@ -128,7 +127,7 @@
               </div>
             </div>
 
-            <div class="payBox" id="localBox" data-visible="false">
+            <div class="payBox" id="localBox">
               <div><strong>Pagamento no local:</strong> o valor será pago na entrada/receção do evento.</div>
               <div class="small" style="margin-top:6px;">Chega com antecedência para facilitar o check-in.</div>
             </div>
@@ -140,11 +139,14 @@
               Preenche o nome de cada participante (1 por bilhete).
             </div>
 
+            <!-- ERRO INLINE (JS) -->
+            <div class="formError" id="formError" role="alert" aria-live="polite"></div>
+
             <div id="participants"></div>
           </div>
 
           <div class="actions">
-            <button class="btn" type="submit">Confirmar inscrição</button>
+            <button class="btn" type="submit" id="submitBtn">Confirmar inscrição</button>
             <button class="btn secondary" type="reset" id="resetBtn">Limpar</button>
           </div>
 
@@ -167,6 +169,8 @@
     </div>
   </footer>
 </div>
+
+{{ participant_values|json_script:"participant-values" }}
 {% endblock %}
 
 {% block extra_js %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/management_v2.css' %}">
+{% endblock %}
+
+{% block content %}
+<header class="mgmt__header">
+  <div class="mgmt__title">
+    <h1>{% block mgmt_title %}Gestão{% endblock %}</h1>
+    <small>Painel interno • SNT Almada</small>
+  </div>
+
+  <div class="mgmt__actions">
+    <span class="pill">Acesso: staff/gestão</span>
+    <a class="btn secondary" href="{% url 'events:event_list' %}">Ver site</a>
+  </div>
+</header>
+  <div class="mgmt">
+    {% block mgmt_content %}{% endblock %}
+  </div>
+{% endblock %}
