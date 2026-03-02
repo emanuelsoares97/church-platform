@@ -51,9 +51,26 @@ def event_registrations(request, event_id):
         qs = qs.filter(is_paid=(paid == "1"))
 
     if checkin == "1":
+        #  todos os participantes com check-in
         qs = qs.filter(p_total__gt=0, p_checked=F("p_total"))
     elif checkin == "0":
-        qs = qs.filter(p_checked=0)
+        # pendente: ainda falta alguém fazer check-in
+        qs = qs.filter(p_total__gt=0).exclude(p_checked=F("p_total"))
+
+    # KPIs (sempre o estado real do evento, independente de filtros)
+    regs_base = Registration.objects.filter(event=event)
+    parts_base = Participant.objects.filter(registration__event=event)
+
+    kpi_total_regs = regs_base.count()
+    kpi_total_paid_regs = regs_base.filter(is_paid=True).count()
+
+    kpi_total_participants = parts_base.count()
+    kpi_total_checkins = parts_base.filter(checked_in=True).count()
+    kpi_pending_checkins = kpi_total_participants - kpi_total_checkins
+
+    kpi_checkin_rate = 0
+    if kpi_total_participants > 0:
+        kpi_checkin_rate = round((kpi_total_checkins / kpi_total_participants) * 100)
 
     paginator = Paginator(qs, 20)
     page_obj = paginator.get_page(request.GET.get("page"))
@@ -62,6 +79,14 @@ def event_registrations(request, event_id):
         "event": event,
         "page_obj": page_obj,
         "filters": {"q": q, "paid": paid, "checkin": checkin},
+        "kpis": {
+            "total_regs": kpi_total_regs,
+            "total_paid_regs": kpi_total_paid_regs,
+            "total_participants": kpi_total_participants,
+            "total_checkins": kpi_total_checkins,
+            "pending_checkins": kpi_pending_checkins,
+            "checkin_rate": kpi_checkin_rate,
+        },
     }
     return render(request, "management/event_registrations.html", context)
 

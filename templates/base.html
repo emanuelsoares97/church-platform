@@ -13,13 +13,33 @@
 <body>
   <header class="topbarWrap">
     <div class="topbarInner">
+
       <div class="brand">
-        <strong>SNT Almada</strong>
-        <span class="muted">• Sistema de Inscrições</span>
+        <img src="{% static 'img/logo-snt.png' %}" alt="Igreja SNT Almada" class="brandLogo">
+        
+        <div class="brandText">
+          <strong>SNT Almada</strong>
+          <span class="muted">• Sistema de Inscrições</span>
+        </div>
       </div>
-      <nav class="nav">
+
+      <!-- BOTÃO HAMBURGER -->
+      <button class="nav-toggle"
+              type="button"
+              aria-label="Abrir menu"
+              aria-controls="nav-menu"
+              aria-expanded="false">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+
+      <!-- MENU -->
+      <nav class="nav nav-menu" id="nav-menu">
         <a class="btn secondary sm" href="{% url 'events:event_list' %}">Eventos</a>
+        <a class="btn secondary sm" href="{% url 'events_mgmt:home' %}">Gestão</a>
       </nav>
+
     </div>
   </header>
 
@@ -35,10 +55,43 @@
     {% block content %}{% endblock %}
   </main>
 
-  <footer class="footerWrap">
-    <div class="footerInner">SNT Almada</div>
+    <footer class="footer" id="contactos">
+    <div>
+      <strong class="footerStrong">SNT Almada</strong><br>
+      <span>Contactos: email@igreja.pt | 91 000 0000</span>
+    </div>
+
+    <div class="footerSocial">
+      <span class="footerLabel">Redes sociais:</span>
+
+      <div class="socialIcons">
+        
+        <a href="https://www.instagram.com/snt_almada/" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" class="socialIcon" aria-hidden="true">
+            <path d="M7 2C4.2 2 2 4.2 2 7v10c0 2.8 2.2 5 5 5h10c2.8 0 5-2.2 5-5V7c0-2.8-2.2-5-5-5H7zm10 2c1.7 0 3 1.3 3 3v10c0 1.7-1.3 3-3 3H7c-1.7 0-3-1.3-3-3V7c0-1.7 1.3-3 3-3h10zm-5 3.5A4.5 4.5 0 1 0 16.5 12 4.5 4.5 0 0 0 12 7.5zm0 7A2.5 2.5 0 1 1 14.5 12 2.5 2.5 0 0 1 12 14.5zm4.8-8.9a1.1 1.1 0 1 0 1.1 1.1 1.1 1.1 0 0 0-1.1-1.1z"/>
+          </svg>
+        </a>
+
+        
+        <a href="https://www.facebook.com/SntAlmada/?ref=PRODASH_UPSELL_xav_ig_profile_page_web#" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" class="socialIcon" aria-hidden="true">
+            <path d="M22 12a10 10 0 1 0-11.5 9.9v-7H8v-3h2.5V9.5c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6V12H17l-.4 3h-2.7v7A10 10 0 0 0 22 12z"/>
+          </svg>
+        </a>
+
+        
+        <a href="https://www.youtube.com/@sara_almada" target="_blank" rel="noopener" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" class="socialIcon" aria-hidden="true">
+            <path d="M23 12s0-3.5-.4-5.1a3 3 0 0 0-2.1-2.1C18.9 4.4 12 4.4 12 4.4s-6.9 0-8.5.4a3 3 0 0 0-2.1 2.1C1 8.5 1 12 1 12s0 3.5.4 5.1a3 3 0 0 0 2.1 2.1c1.6.4 8.5.4 8.5.4s6.9 0 8.5-.4a3 3 0 0 0 2.1-2.1C23 15.5 23 12 23 12zM10 15.5v-7l6 3.5-6 3.5z"/>
+          </svg>
+        </a>
+      </div>
+
+      <span>Morada: Rua Luís de Queiroz, n° 26, Almada, Portugal</span>
+    </div>
   </footer>
 
+  <script src="{% static 'js/navbar.js' %}"></script>
   {% block extra_js %}{% endblock %}
 </body>
 </html>

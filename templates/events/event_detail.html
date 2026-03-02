@@ -12,25 +12,15 @@
      data-price="{{ event.price }}"
      data-banner-url="{% if event.banner_image %}{{ event.banner_image.url }}{% endif %}">
 
-  <header class="topbar">
-    <div class="brand">
-      <img class="logoImg" src="{% static 'img/logo-snt.png' %}" alt="Logo SNT Almada">
-      <div>
-        <div class="brandName">SNT Almada</div>
-        <div class="brandSub">Sistema de inscrições</div>
-      </div>
-    </div>
-
-    <nav class="nav" aria-label="Navegação">
-      <a href="#sobre">Sobre</a>
-      <a href="#inscricao">Inscrição</a>
-      <a href="#contactos">Contactos</a>
-    </nav>
-
-    <div class="pill">Evento • {{ event.title }}</div>
-  </header>
+  <!-- SUB-NAV só desta página (opcional e útil no mobile) -->
+  <div class="eventSubnav">
+    <a class="btn secondary sm" href="#sobre">Sobre</a>
+    <a class="btn secondary sm" href="#inscricao">Inscrição</a>
+    <a class="btn secondary sm" href="#contactos">Contactos</a>
+  </div>
 
   <div class="grid">
+    <!-- COLUNA ESQUERDA -->
     <section class="card">
       <div class="hero">
         <div class="watermark" aria-hidden="true"></div>
@@ -47,7 +37,12 @@
           <div class="meta">
             <div class="chip">📅 Data: <strong class="chipStrong">{{ event.date }}</strong></div>
             <div class="chip">📍 Local: <strong class="chipStrong">{{ event.location }}</strong></div>
-            <div class="chip">🎟️ Preço: <strong class="chipStrong">{{ event.price }}€</strong> / pessoa</div>
+
+            {% if event.price > 0 %}
+              <div class="chip">🎟️ Preço: <strong class="chipStrong">{{ event.price }}€</strong> / pessoa</div>
+            {% else %}
+              <div class="chip">🎟️ Preço: <strong class="chipStrong">Gratuito</strong></div>
+            {% endif %}
           </div>
 
           <div class="ctaRow">
@@ -58,13 +53,12 @@
 
         <div class="section" id="sobre">
           <h2>Sobre o evento</h2>
-          <p>
-            {{ event.description|default:"(Adicionar descrição do evento no admin.)" }}
-          </p>
+          <p>{{ event.description|default:"(Adicionar descrição do evento no admin.)" }}</p>
         </div>
       </div>
     </section>
 
+    <!-- COLUNA DIREITA -->
     <section class="card" id="inscricao">
       <div class="formCard">
         <h2>Inscrição</h2>
@@ -99,39 +93,55 @@
 
               <button type="button" id="plus" aria-label="Aumentar">+</button>
 
-              <span class="small priceEach" style="margin-left:auto;">{{ event.price }}€ cada</span>
+              {% if event.price > 0 %}
+                <span class="small priceEach" style="margin-left:auto;">{{ event.price }}€ cada</span>
+              {% else %}
+                <span class="small priceEach" style="margin-left:auto;">Gratuito</span>
+              {% endif %}
             </div>
 
-            <div class="totals" aria-live="polite">
-              <span>Total a pagar</span>
-              <strong id="total"></strong>
-            </div>
+            {% if event.price > 0 %}
+              <div class="totals" aria-live="polite">
+                <span>Total a pagar</span>
+                <strong id="total"></strong>
+              </div>
+            {% endif %}
           </div>
 
-          <div class="field">
-            <label>Método de pagamento</label>
+          {% if event.price > 0 %}
+            <div class="field">
+              <label>Método de pagamento</label>
 
-            <div class="radioGroup">
-              {% for radio in form.payment_method %}
-                <label class="radio">
-                  {{ radio.tag }}
-                  <span>{{ radio.choice_label }}</span>
-                </label>
-              {% endfor %}
-            </div>
+              <div class="radioGroup">
+                {% for radio in form.payment_method %}
+                  <label class="radio">
+                    {{ radio.tag }}
+                    <span>{{ radio.choice_label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
 
-            <div class="payBox" id="mbwayBox">
-              <div><strong>MB Way:</strong> enviar pagamento para <strong>912 345 678</strong></div>
-              <div class="small" style="margin-top:6px;">
-                Depois a confirmação do pagamento será feita manualmente no sistema.
+              <div class="payBox" id="mbwayBox">
+                <div><strong>MB Way:</strong> enviar pagamento para <strong>912 345 678</strong></div>
+                <div class="small" style="margin-top:6px;">
+                  Depois a confirmação do pagamento será feita manualmente no sistema.
+                </div>
+              </div>
+
+              <div class="payBox" id="localBox">
+                <div><strong>Pagamento no local:</strong> o valor será pago na entrada/receção do evento.</div>
+                <div class="small" style="margin-top:6px;">Chega com antecedência para facilitar o check-in.</div>
               </div>
             </div>
-
-            <div class="payBox" id="localBox">
-              <div><strong>Pagamento no local:</strong> o valor será pago na entrada/receção do evento.</div>
-              <div class="small" style="margin-top:6px;">Chega com antecedência para facilitar o check-in.</div>
+          {% else %}
+            <div class="field">
+              <label>Tipo de evento</label>
+              <div class="badge">
+                <span class="dot"></span>
+                Evento gratuito (inscrição confirmada automaticamente)
+              </div>
             </div>
-          </div>
+          {% endif %}
 
           <div class="field">
             <label>Participantes</label>
@@ -150,24 +160,15 @@
             <button class="btn secondary" type="reset" id="resetBtn">Limpar</button>
           </div>
 
-          <div class="note">
-            Nota: Se pagares por MB Way, a confirmação será marcada no Admin após validação.
-          </div>
+          {% if event.price > 0 %}
+            <div class="note">
+              Nota: Se pagares por MB Way, a confirmação será marcada no Admin após validação.
+            </div>
+          {% endif %}
         </form>
       </div>
     </section>
   </div>
-
-  <footer class="footer" id="contactos">
-    <div>
-      <strong class="footerStrong">SNT Almada</strong><br>
-      <span>Contactos: (colocar email/telemóvel da igreja)</span>
-    </div>
-    <div>
-      <span>Redes sociais: (Instagram/Facebook/YouTube)</span><br>
-      <span>Morada: (colocar morada)</span>
-    </div>
-  </footer>
 </div>
 
 {{ participant_values|json_script:"participant-values" }}

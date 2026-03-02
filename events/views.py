@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from .models import Event, Participant
 from .forms import RegistrationForm
+from django.utils import timezone
 
 
 def event_list(request):
@@ -19,6 +20,11 @@ def event_detail(request, slug):
         if form.is_valid():
             registration = form.save(commit=False)
             registration.event = event
+
+            if event.price == 0:
+                registration.is_paid= True
+                registration.paid_at = timezone.now()
+
             registration.save()
 
             qty = registration.ticket_qty

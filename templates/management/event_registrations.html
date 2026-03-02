@@ -1,8 +1,30 @@
 {% extends "management/base_management.html" %}
 
 {% block mgmt_title %}Inscrições — {{ event.title }}{% endblock %}
-
 {% block mgmt_content %}
+<div class="kpiGrid kpiGrid--compact">
+  <div class="kpiCard">
+    <div class="kpiValue">{{ kpis.total_regs }}</div>
+    <div class="kpiLabel">INS</div>
+  </div>
+
+  <div class="kpiCard">
+    <div class="kpiValue">{{ kpis.total_paid_regs }}</div>
+    <div class="kpiLabel">PAG</div>
+  </div>
+
+  <div class="kpiCard">
+    <div class="kpiValue">{{ kpis.total_participants }}</div>
+    <div class="kpiLabel">PART</div>
+  </div>
+
+  <div class="kpiCard">
+    <div class="kpiValue">{{ kpis.total_checkins }}</div>
+    <div class="kpiLabel">CHK</div>
+  </div>
+</div>
+
+
   <form class="filters" method="get">
     <input name="q" placeholder="Pesquisar nome/email" value="{{ filters.q }}">
     <select name="paid">

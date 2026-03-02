@@ -11,7 +11,29 @@
   --radius: 18px;
 }
 
-*{box-sizing:border-box}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.brandLogo{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  object-fit:cover;
+  border:1px solid var(--line);
+  background: rgba(255,255,255,.06);
+  box-shadow: 0 8px 20px rgba(0,0,0,.25);
+}
+
+.brandText{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+*{ box-sizing:border-box }
 
 body{
   margin:0;
@@ -38,8 +60,7 @@ body::before{
   pointer-events:none;
 }
 
-a{color:inherit}
-
+a{ color:inherit }
 
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:10px;
@@ -54,24 +75,6 @@ a{color:inherit}
   color: var(--text);
 }
 .btn.sm{ padding:8px 10px; border-radius:12px; font-size:13px; }
-
-.topbarWrap{
-  padding:18px;
-}
-.topbarInner{
-  max-width:1100px;
-  margin:0 auto;
-  padding:14px 18px;
-  border:1px solid var(--line);
-  border-radius:999px;
-  background: rgba(0,0,0,.18);
-  backdrop-filter: blur(10px);
-  box-shadow: var(--shadow);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
 
 .muted{ color: var(--muted); }
 
@@ -100,4 +103,175 @@ a{color:inherit}
   border-radius:14px;
   border:1px solid var(--line);
   background: rgba(255,255,255,.06);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+
+  padding: 24px;
+  margin-top: 40px;
+
+  border-top: 1px solid var(--line);
+}
+
+.footerStrong {
+  font-size: 18px;
+}
+
+.footerSocial {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footerLabel {
+  font-weight: 600;
+}
+
+.socialIcons {
+  display: flex;
+  gap: 14px;
+  margin: 6px 0 10px 0;
+}
+
+.socialIcon {
+  width: 22px;
+  height: 22px;
+  fill: var(--text);
+  transition: 0.2s ease;
+}
+
+.socialIcons a:hover .socialIcon {
+  fill: var(--accent);
+  transform: scale(1.1);
+}
+
+/* =========================
+   TOPBAR + MENU HAMBURGER
+   (compatível com topbarWrap/topbarInner)
+   ========================= */
+
+.topbarWrap{
+  padding:18px;
+}
+
+.topbarInner{
+  max-width:1100px;
+  margin:0 auto;
+
+  padding:14px 18px;
+  border:1px solid var(--line);
+  border-radius:999px;
+
+  background: rgba(0,0,0,.18);
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow);
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+
+  position: relative; /* IMPORTANTÍSSIMO: para o dropdown posicionar certo */
+}
+
+.brand strong{ font-weight: 800; }
+.brand .muted{ margin-left: 8px; }
+
+/* MENU desktop */
+.nav{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+/* HAMBURGER (desktop: escondido) */
+.nav-toggle{
+  display:none;
+  border:0;
+  background:transparent;
+  padding:10px;
+  cursor:pointer;
+  border-radius:12px;
+}
+.nav-toggle:hover{
+  background: rgba(255,255,255,.06);
+}
+
+.nav-toggle__bar{
+  display:block;
+  width:22px;
+  height:2px;
+  margin:5px 0;
+  background: var(--text);
+  border-radius: 4px;
+}
+
+
+
+/* MOBILE */
+@media (max-width: 768px){
+  .topbarInner{
+    border-radius: 18px;
+  }
+
+  .nav-toggle{
+    display:inline-flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+
+  /* menu vira dropdown e fica fechado por default */
+  .nav.nav-menu{
+    position:absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 10px);
+
+    display:grid;
+    gap:10px;
+    padding:12px;
+
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: rgba(5, 8, 15, .92);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow);
+
+    opacity:0;
+    transform: translateY(-6px);
+    pointer-events:none;
+  }
+
+  .nav.nav-menu.is-open{
+    opacity:1;
+    transform: translateY(0);
+    pointer-events:auto;
+  }
+
+  /* botões do menu ocupam largura toda */
+  .nav.nav-menu .btn{
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Faz a topbar ficar acima do resto */
+.topbarWrap{
+  position: sticky;
+  top: 0;
+  z-index: 9999;
+}
+
+/* garante que o dropdown não fica preso */
+.topbarInner{
+  overflow: visible;
+}
+
+/* menu dropdown sempre por cima */
+.nav.nav-menu{
+  z-index: 10000;
 }
