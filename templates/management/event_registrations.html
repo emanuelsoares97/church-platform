@@ -28,7 +28,7 @@
   <form class="filters" method="get">
     <input name="q" placeholder="Pesquisar nome/email" value="{{ filters.q }}">
     <select name="paid">
-      <option value="">Pago: todos</option>
+      <option value="">Todos</option>
       <option value="1" {% if filters.paid == "1" %}selected{% endif %}>Pago</option>
       <option value="0" {% if filters.paid == "0" %}selected{% endif %}>Não pago</option>
     </select>
