@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.utils import timezone
+import uuid
 
 
 class Event(models.Model):
@@ -35,6 +36,7 @@ class Registration(models.Model):
         MBWAY = "MBWAY", "MB Way"
         LOCAL = "LOCAL", "Pagamento no local"
 
+    public_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="registrations")
     buyer_name = models.CharField(max_length=200)
     buyer_email = models.EmailField()

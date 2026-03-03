@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Inscrição confirmada — {{ event.title }}{% endblock %}
+
+{% block content %}
+<section class="container">
+  <div class="card">
+
+    <h1>Inscrição confirmada ✅</h1>
+
+    <p>
+      A tua inscrição no evento <strong>{{ event.title }}</strong>
+      foi registada com sucesso.
+    </p>
+
+    <p>
+      Em breve receberás um e-mail com os detalhes da inscrição.
+    </p>
+
+    <hr>
+
+    <h3>Resumo da inscrição</h3>
+
+    <ul>
+      <li><strong>Quantidade:</strong> {{ registration.ticket_qty }}</li>
+
+      <li>
+        <strong>Estado:</strong>
+        {% if registration.is_paid %}
+          Confirmada
+        {% else %}
+          A aguardar pagamento
+        {% endif %}
+      </li>
+    </ul>
+
+    {% if participants %}
+      <h4>Participantes</h4>
+      <ul>
+        {% for p in participants %}
+          <li>{{ p.full_name }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <div style="margin-top:20px;">
+      <a class="btn primary" href="{% url 'events:event_list' %}">
+        Voltar aos eventos
+      </a>
+    </div>
+
+  </div>
+</section>
+{% endblock %}

@@ -129,3 +129,21 @@ MEDIA_ROOT = BASE_DIR / "media"
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "events_mgmt:home"
 LOGOUT_REDIRECT_URL = "login"
+
+
+
+import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_FILE_PATH = BASE_DIR / "tmp_emails"
+DEFAULT_FROM_EMAIL = "SNT Almada <no-reply@sntalmada.local>"
+SITE_URL = "http://127.0.0.1:8000"
+
+
+LANGUAGE_CODE = "pt-pt"
+TIME_ZONE = "Europe/Lisbon"
+USE_I18N = True
+USE_TZ = True

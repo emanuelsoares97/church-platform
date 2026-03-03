@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+  <body style="margin:0;padding:0;background:#f6f6f6;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f6f6f6;padding:24px 12px;">
+      <tr>
+        <td align="center">
+
+          <!-- Container -->
+          <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background:#ffffff;border:1px solid #e6e6e6;border-radius:16px;overflow:hidden;">
+            <tr>
+              <td style="padding:0;">
+
+                <!-- Ticket Row -->
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                  <tr>
+
+                    <!-- LEFT -->
+                    <td width="320" valign="top" style="padding:22px 22px 18px 22px; font-family: Arial, Helvetica, sans-serif; color:#111;">
+                      <!-- Badge -->
+                      <span style="display:inline-block;background:#ff5a1f;color:#ffffff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 12px;border-radius:999px;">
+                        Bilhete de Entrada
+                      </span>
+
+                      <!-- Event name -->
+                      <div style="margin-top:14px;">
+                        <div style="font-size:44px;line-height:1.0;font-weight:900;letter-spacing:-1px;">
+                          {{ event.title|upper }}
+                        </div>
+                        <div style="width:46px;height:4px;background:#ff5a1f;border-radius:999px;margin-top:10px;"></div>
+                      </div>
+
+                      <!-- Participant -->
+                      <div style="margin-top:18px;">
+                        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:6px;">
+                          Participante
+                        </div>
+                        <div style="font-size:22px;font-weight:800;">
+                          {% if participant_name %}
+                            {{ participant_name }}
+                          {% else %}
+                            {{ reg.buyer_name }}
+                          {% endif %}
+                        </div>
+                      </div>
+
+                      <!-- Details -->
+                      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:18px;">
+                        <tr>
+                          <td valign="top" style="padding-right:14px;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:6px;">
+                              Data
+                            </div>
+                            <div style="font-size:14px;font-weight:700;color:#111;">
+                              {{ event.date|date:"d F Y" }}
+                            </div>
+                          </td>
+
+                          <td valign="top" style="padding-right:14px;">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:6px;">
+                              Local
+                            </div>
+                            <div style="font-size:14px;font-weight:700;color:#111;">
+                              {{ event.location }}
+                            </div>
+                          </td>
+
+                          <td valign="top">
+                            <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:6px;">
+                              Bilhete Nº
+                            </div>
+                            <div style="font-size:14px;font-weight:800;color:#ff5a1f;font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                              {% if ticket_code %}
+                                {{ ticket_code }}
+                              {% else %}
+                                {{ reg.public_id }}
+                              {% endif %}
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <!-- Status line -->
+                      <div style="margin-top:14px;font-size:12px;color:#666;">
+                        {% if event.price == 0 %}
+                          Estado: <strong style="color:#111;">Confirmado (Grátis)</strong>
+                        {% else %}
+                          {% if reg.is_paid %}
+                            Estado: <strong style="color:#111;">Pago</strong>
+                          {% else %}
+                            Estado: <strong style="color:#111;">A aguardar pagamento</strong> ({{ reg.get_payment_method_display }})
+                          {% endif %}
+                        {% endif %}
+                      </div>
+
+                      <!-- CTA -->
+                      <div style="margin-top:16px;">
+                        <a href="{{ manage_url }}"
+                           style="display:inline-block;background:#111;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:700;">
+                          Ver confirmação
+                        </a>
+                      </div>
+                    </td>
+
+                    <!-- MIDDLE (event image) -->
+                    <td width="170" valign="top" style="padding:22px 10px 18px 0;">
+                      {% if has_banner %}
+                        <img
+                          src="cid:banner_img"
+                          width="160"
+                          height="240"
+                          alt="Banner do evento {{ event.title }}"
+                          style="display:block;width:160px;height:240px;border-radius:14px;object-fit:cover;"
+                        >
+                      {% else %}
+                        <div style="width:160px;height:240px;border-radius:14px;background:#f0f0f0;border:1px solid #e6e6e6;font-family:Arial,Helvetica,sans-serif;color:#888;font-size:12px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;">
+                          Sem imagem<br>do evento
+                        </div>
+                      {% endif %}
+                    </td>
+
+                    <!-- PERFORATION -->
+                    <td width="22" valign="top" style="padding:0;">
+                      <table role="presentation" width="22" height="100%" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td align="center" style="padding-top:10px;">
+                            <div style="width:18px;height:18px;border-radius:999px;background:#f6f6f6;border:1px solid #e6e6e6;"></div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center" style="padding:6px 0;">
+                            <div style="width:0;border-left:2px dashed #e6e6e6;height:248px;"></div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td align="center" style="padding-bottom:10px;">
+                            <div style="width:18px;height:18px;border-radius:999px;background:#f6f6f6;border:1px solid #e6e6e6;"></div>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+
+                    <!-- RIGHT (QR) -->
+                    <td width="96" valign="top" style="padding:22px 22px 18px 10px; font-family:Arial,Helvetica,sans-serif;">
+                      <div style="width:92px;height:92px;background:#111;border-radius:12px;padding:8px;margin:0 auto;">
+                        <div style="width:100%;height:100%;background:#fff;border-radius:8px;text-align:center;">
+                          <div style="font-size:10px;line-height:76px;color:#111;font-family: ui-monospace, Menlo, Consolas, monospace;">
+                            <img
+                              src="cid:qr_img"
+                              width="92"
+                              height="92"
+                              alt="QR Code"
+                              style="display:block;width:92px;height:92px;border-radius:8px;"
+                            >
+                          </div>
+                        </div>
+                      </div>
+
+                      <div style="margin-top:10px;text-align:center;font-size:10px;color:#888;font-family: ui-monospace, Menlo, Consolas, monospace;">
+                        {% if ticket_code %}
+                          {{ ticket_code }}
+                        {% else %}
+                          {{ reg.public_id }}
+                        {% endif %}
+                      </div>
+                    </td>
+
+                  </tr>
+                </table>
+
+              </td>
+            </tr>
+          </table>
+
+          <!-- Footer note -->
+          <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="margin-top:10px;">
+            <tr>
+              <td style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#999;text-align:center;">
+                {{ site_name }} — Se não fizeste esta inscrição, podes ignorar este e-mail.
+              </td>
+            </tr>
+          </table>
+
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

@@ -3,7 +3,9 @@ from django.contrib import messages
 from .models import Event, Participant
 from .forms import RegistrationForm
 from django.utils import timezone
-
+from .models import Event, Registration
+from django.db import transaction
+from events.services.emails import send_registration_tickets_email
 
 def event_list(request):
     events = Event.objects.filter(is_active=True).order_by("date")
@@ -26,6 +28,7 @@ def event_detail(request, slug):
                 registration.paid_at = timezone.now()
 
             registration.save()
+            transaction.on_commit(lambda: send_registration_tickets_email(registration.id))
 
             qty = registration.ticket_qty
             cleaned_names = [n.strip() for n in participant_names if n.strip()]
@@ -44,7 +47,11 @@ def event_detail(request, slug):
             )
 
             messages.success(request, "Inscrição registada com sucesso!")
-            return redirect("events:event_detail", slug=event.slug)
+            return redirect(
+                "events:registration_success",
+                slug=event.slug,
+                public_id=registration.public_id,
+            )
 
         # se o form for inválido, mantém participantes e mostra erros
         messages.error(request, "Há campos inválidos. Corrige e tenta novamente.")
@@ -61,3 +68,20 @@ def event_detail(request, slug):
         "events/event_detail.html",
         {"event": event, "form": form, "participant_values": []},
     )
+
+def registration_success(request, slug, public_id):
+    event = get_object_or_404(Event, slug=slug, is_active=True)
+
+    registration = get_object_or_404(
+        Registration.objects.select_related("event").prefetch_related("participants"),
+        event=event,
+        public_id=public_id,
+    )
+
+    context = {
+        "event": event,
+        "registration": registration,
+        "participants": registration.participants.all(),
+    }
+
+    return render(request, "events/registration_success.html", context)
