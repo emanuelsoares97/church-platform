@@ -12,12 +12,6 @@ from django.utils.html import strip_tags
 from events.models import Registration
 
 
-def _make_ticket_code(reg: Registration, index: int) -> str:
-    base = str(reg.public_id).replace("-", "")[:8].upper()
-    year = reg.created_at.year
-    return f"EVT-{year}-{base}-P{index:02d}"
-
-
 def _attach_inline_png(msg: EmailMultiAlternatives, png_bytes: bytes, cid: str, filename: str) -> None:
     image = MIMEImage(png_bytes, _subtype="png")
     image.add_header("Content-ID", f"<{cid}>")
@@ -28,7 +22,6 @@ def _attach_inline_png(msg: EmailMultiAlternatives, png_bytes: bytes, cid: str, 
 def _attach_inline_file_image(msg: EmailMultiAlternatives, file_path: str, cid: str, filename: str) -> None:
     with open(file_path, "rb") as f:
         data = f.read()
-    # tenta inferir png/jpg automaticamente pelo MIMEImage (basic), usar subtype genérico quando necessário
     image = MIMEImage(data)
     image.add_header("Content-ID", f"<{cid}>")
     image.add_header("Content-Disposition", "inline", filename=filename)
@@ -59,33 +52,29 @@ def send_registration_tickets_email(registration_id: int) -> None:
         .get(id=registration_id)
     )
 
-    # Link base, usar para "validar" o bilhete / ver confirmação
     manage_url = f"{settings.SITE_URL}/evento/{reg.event.slug}/sucesso/{reg.public_id}/"
 
     participants = list(reg.participants.all())
     if not participants:
-        # fallback (quase nunca)
-        participants = [type("P", (), {"name": reg.buyer_name})()]
+        return
 
     has_banner = bool(getattr(reg.event, "banner_image", None))
     banner_path = None
     if has_banner and reg.event.banner_image:
-        # funciona em dev/local (storage em disco)
-        # se no futuro usares storage remoto, isto muda (usas reg.event.banner_image.open())
         try:
             banner_path = reg.event.banner_image.path
         except Exception:
             banner_path = None
             has_banner = False
 
-    for idx, p in enumerate(participants, start=1):
-        participant_name = p.name
-        ticket_code = _make_ticket_code(reg, idx)
+    for p in participants:
+        participant_name = p.full_name
+        ticket_code = p.ticket_code
 
         subject = f"Bilhete — {reg.event.title} — {participant_name}"
-        to_email = reg.buyer_email  # por agora envia tudo ao comprador
+        to_email = reg.buyer_email
 
-        # QR data: por enquanto aponta para a confirmação ( trocar depois para uma rota de check-in)
+        # por agora vai para a confirmação, depois posso apontar para /t/<ticket_code>/
         qr_target = f"{manage_url}?t={ticket_code}"
 
         context = {
@@ -109,13 +98,10 @@ def send_registration_tickets_email(registration_id: int) -> None:
         )
         msg.attach_alternative(html, "text/html")
 
-        # Anexar QR inline
         qr_png = _make_qr_png(qr_target)
         _attach_inline_png(msg, qr_png, cid="qr_img", filename=f"qr-{ticket_code}.png")
 
-        # Anexar banner inline 
         if banner_path:
-       
             _attach_inline_file_image(msg, banner_path, cid="banner_img", filename="banner.png")
 
         msg.send()
