@@ -1,0 +1,116 @@
+{% extends "management/base_management.html" %}
+{% block mgmt_title %}Grupo — {{ reg.buyer_name }}{% endblock %}
+
+{% block mgmt_content %}
+<section class="groupPage">
+  <div class="groupCard">
+    <div class="groupHeader">
+      <div>
+        <p class="sectionEyebrow">Grupo de participantes</p>
+        <h2 class="groupTitle">{{ reg.buyer_name }}</h2>
+
+        <div class="small muted groupMeta">
+          {{ reg.event.title }} • {{ reg.event.date }} • {{ reg.event.location }}<br>
+          {{ reg.buyer_email }}
+        </div>
+      </div>
+
+      <div class="groupHeaderBadge">
+        <span class="badge">
+          <span class="dot"></span>{{ total_participants }} participante{{ total_participants|pluralize }}
+        </span>
+      </div>
+    </div>
+
+    <!-- acoes rapidas do grupo -->
+    <div class="actionsCol groupTopActions" style="margin-top:18px;">
+      {% if reg.event.price > 0 and paid_participants != total_participants %}
+        <form method="post" action="{% url 'events_mgmt:mark_registration_paid_full' reg.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <button class="btn secondary actionBtnWide" type="submit">
+            💳 Pagar todos
+          </button>
+        </form>
+      {% endif %}
+
+      {% if checked_participants != total_participants %}
+        <form method="post" action="{% url 'events_mgmt:checkin_all' reg.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <button class="btn actionBtnWide" type="submit"
+                  {% if reg.event.price > 0 and paid_participants != total_participants %}disabled title="Ainda existem participantes por pagar"{% endif %}>
+            ✅ Check-in todos
+          </button>
+        </form>
+      {% endif %}
+    </div>
+
+    <div class="table table--group">
+      <div class="table__head">
+        <div>Participante</div>
+        <div>Código</div>
+        <div>Pagamento</div>
+        <div>Check-in</div>
+      </div>
+
+      {% for p in reg.participants.all %}
+        <div class="table__row table__row--group">
+          <div class="groupCell">
+            <span class="groupCellLabel">Participante</span>
+            <strong>{{ p.full_name|default:"(vazio)" }}</strong>
+          </div>
+
+          <div class="groupCell">
+            <span class="groupCellLabel">Código</span>
+            <span class="small">{{ p.ticket_code }}</span>
+          </div>
+
+          <div class="groupCell">
+            <span class="groupCellLabel">Pagamento</span>
+
+            {% if reg.event.price > 0 %}
+              <form method="post" action="{% url 'events_mgmt:toggle_participant_paid' p.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <input type="hidden" name="value" value="{% if p.is_paid %}0{% else %}1{% endif %}">
+
+                <button class="btn sm secondary groupActionBtn" type="submit">
+                  {% if p.is_paid %}✅ Confirmado{% else %}⬜ Confirmar{% endif %}
+                </button>
+              </form>
+            {% else %}
+              <span class="badge"><span class="dot"></span>Grátis</span>
+            {% endif %}
+          </div>
+
+          <div class="groupCell">
+            <span class="groupCellLabel">Check-in</span>
+
+            <form method="post" action="{% url 'events_mgmt:toggle_participant_checkin' p.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{{ request.get_full_path }}">
+              <input type="hidden" name="value" value="{% if p.checked_in %}0{% else %}1{% endif %}">
+
+              <button class="btn sm secondary groupActionBtn" type="submit"
+                      {% if not p.is_paid and reg.event.price > 0 %}disabled title="Pagamento pendente"{% endif %}>
+                {% if p.checked_in %}✅ Feito{% else %}⬜ Confirmar{% endif %}
+              </button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="actionsCol groupBottomActions">
+      <a class="btn secondary actionBtnWide" href="{% url 'events_mgmt:event_regs' reg.event.id %}?q={{ reg.buyer_email }}">
+        Ver na lista de inscrições
+      </a>
+
+      <a class="btn actionBtnWide" href="{% url 'events_mgmt:scan' %}">
+        Voltar ao scan
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

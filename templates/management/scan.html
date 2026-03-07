@@ -1,0 +1,70 @@
+{% extends "management/base_management.html" %}
+{% load static %}
+{% block mgmt_title %}Scan QR{% endblock %}
+
+{% block mgmt_content %}
+<section class="scanPage">
+  <div class="scanHero">
+    <div>
+      <p class="sectionEyebrow">Receção</p>
+      <h2 class="sectionTitle">Leitura de bilhetes</h2>
+      <p class="sectionText">
+        Aponta a câmara ao QR Code do bilhete para validar e fazer o check-in automático.
+        Se necessário, podes inserir o código manualmente.
+      </p>
+    </div>
+
+    <div class="scanHintCard">
+      <div class="scanHintIcon">📷</div>
+      <div>
+        <strong>Check-in automático</strong>
+        <p class="muted">Depois da leitura, o sistema valida o bilhete e dá feedback imediato no ecrã.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="scannerShell">
+    <div class="scannerTopbar">
+      <span class="scannerBadge">Leitor QR</span>
+      <span class="scannerLiveDot"></span>
+    </div>
+
+    <div class="scannerBox">
+      <div id="qr-reader"></div>
+
+      <!-- feedback grande para usar na rececao -->
+      <div id="scanFeedback" class="scanFeedback scanFeedback--idle">
+        <div class="scanFeedback__icon">🎟️</div>
+        <div class="scanFeedback__content">
+          <strong id="scanFeedbackTitle">Pronto para ler</strong>
+          <p id="scanFeedbackText">Aguardando leitura do próximo bilhete.</p>
+        </div>
+      </div>
+
+      <div class="manualBox">
+        <!-- input manual caso o qr nao seja lido -->
+        <label class="manualLabel" for="manualTicketInput">Inserir código do bilhete manualmente</label>
+
+        <div class="manualRow">
+          <input id="manualTicketInput" placeholder="EVT-2026-XXXX-P01">
+          <button id="openManualTicket" class="btn" type="button">
+            Validar bilhete
+          </button>
+        </div>
+
+        <p class="manualHint muted">
+          Podes colar o código completo do bilhete se o QR não for reconhecido.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  window.scanCheckinUrl = "{% url 'events_mgmt:scan_checkin_api' %}";
+</script>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="{% static 'js/qr_scanner.js' %}"></script>
+{% endblock %}

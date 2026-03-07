@@ -5,7 +5,6 @@
       <tr>
         <td align="center">
 
-          
           <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:100%;max-width:600px;">
             <tr>
               <td style="padding:0 0 10px 0;font-family:Arial,Helvetica,sans-serif;color:#999;text-align:center;font-size:12px;">
@@ -16,14 +15,13 @@
             <tr>
               <td style="padding:0;">
 
-                <!-- Card -->
+                <!-- card principal do bilhete -->
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0"
                        style="background:#111111;border-radius:16px;overflow:hidden;border:1px solid #2a2a2a;">
-                  <!-- Header -->
                   <tr>
                     <td style="padding:18px 18px 12px 18px;font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
                       <span style="display:inline-block;background:#ff5a1f;color:#111111;font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:6px 12px;border-radius:999px;">
-                        Bilhete de Entrada
+                        Bilhete do Evento
                       </span>
 
                       <div style="margin-top:14px;font-size:36px;line-height:1.05;font-weight:900;letter-spacing:-1px;">
@@ -32,7 +30,6 @@
 
                       <div style="width:46px;height:4px;background:#ff5a1f;border-radius:999px;margin-top:10px;"></div>
 
-                      <!-- Optional banner (no distortion) -->
                       {% if has_banner %}
                         <div style="margin-top:14px;background:#000;border-radius:14px;overflow:hidden;border:1px solid #2a2a2a;">
                           <img
@@ -46,7 +43,6 @@
                     </td>
                   </tr>
 
-                  <!-- Participant -->
                   <tr>
                     <td style="padding:0 18px 14px 18px;font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
                       <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#bdbdbd;margin-bottom:6px;">
@@ -58,7 +54,6 @@
                     </td>
                   </tr>
 
-                  <!-- Details -->
                   <tr>
                     <td style="padding:0 18px 16px 18px;">
                       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="font-family:Arial,Helvetica,sans-serif;">
@@ -87,7 +82,6 @@
                     </td>
                   </tr>
 
-                  <!-- Ticket Code + Status -->
                   <tr>
                     <td style="padding:0 18px 14px 18px;font-family:Arial,Helvetica,sans-serif;color:#ffffff;">
                       <div style="padding:12px;background:#151515;border:1px solid #2a2a2a;border-radius:12px;">
@@ -100,12 +94,12 @@
 
                         <div style="margin-top:10px;font-size:12px;color:#cfcfcf;">
                           {% if event.price == 0 %}
-                            Estado: <strong style="color:#ffffff;">Confirmada (Grátis)</strong>
+                            Estado: <strong style="color:#ffffff;">Confirmado (Grátis)</strong>
                           {% else %}
                             {% if reg.is_paid %}
                               Estado: <strong style="color:#ffffff;">Pago</strong>
                             {% else %}
-                              Estado: <strong style="color:#ffffff;">A aguardar pagamento</strong> ({{ reg.get_payment_method_display }})
+                              Estado: <strong style="color:#ffffff;">Pagamento pendente</strong> ({{ reg.get_payment_method_display }})
                             {% endif %}
                           {% endif %}
                         </div>
@@ -113,7 +107,6 @@
                     </td>
                   </tr>
 
-                  <!-- QR -->
                   <tr>
                     <td style="padding:0 18px 18px 18px;">
                       <table role="presentation" width="100%" cellspacing="0" cellpadding="0"
@@ -136,7 +129,6 @@
                     </td>
                   </tr>
 
-                  <!-- CTA -->
                   <tr>
                     <td style="padding:0 18px 18px 18px;">
                       <table role="presentation" cellspacing="0" cellpadding="0" style="margin:0 auto;">
@@ -159,7 +151,7 @@
 
             <tr>
               <td style="padding:10px 0 0 0;font-family:Arial,Helvetica,sans-serif;color:#999;text-align:center;font-size:12px;">
-                Se não fizeste esta inscrição, podes ignorar este e-mail.
+                Se não realizaste esta inscrição, podes ignorar este e-mail com segurança.
               </td>
             </tr>
           </table>

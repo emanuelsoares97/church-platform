@@ -74,8 +74,8 @@ def send_registration_tickets_email(registration_id: int) -> None:
         subject = f"Bilhete — {reg.event.title} — {participant_name}"
         to_email = reg.buyer_email
 
-        # por agora vai para a confirmação, depois posso apontar para /t/<ticket_code>/
-        qr_target = f"{manage_url}?t={ticket_code}"
+        # direciona atraves do qr code para o participante
+        qr_target = f"{settings.SITE_URL}/gestao/t/{ticket_code}/"
 
         context = {
             "reg": reg,

@@ -1,7 +1,3 @@
-/* =========================
-   MANAGEMENT - SNT Almada
-   ========================= */
-
 :root{
   --bg:#0b1220;
   --card: rgba(255,255,255,.06);
@@ -98,6 +94,38 @@ body::after{
   color:var(--muted);
   font-size:13px;
   background: rgba(0,0,0,.12);
+}
+
+/* =========================
+   TEXT / SECTIONS
+   ========================= */
+
+.sectionEyebrow{
+  margin:0 0 6px;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+  color: var(--accent);
+}
+
+.sectionTitle{
+  margin:0 0 6px;
+  font-size:30px;
+  line-height:1.05;
+}
+
+.sectionText{
+  margin:0;
+  max-width:62ch;
+  color: var(--muted);
+}
+
+.lookupName,
+.groupTitle{
+  margin:0 0 6px;
+  font-size:30px;
+  line-height:1.05;
 }
 
 /* =========================
@@ -388,6 +416,140 @@ body::after{
   align-items:center;
 }
 
+.actionBtnWide{
+  min-height:46px;
+  min-width:170px;
+}
+
+/* =========================
+   STATUS BLOCKS
+   ========================= */
+
+.statusBig{
+  padding:16px 18px;
+  border-radius:18px;
+  font-weight:900;
+  margin:18px 0 14px;
+  text-align:center;
+  font-size:18px;
+  letter-spacing:.2px;
+}
+
+.statusBig--ok{
+  background: rgba(34,197,94,.15);
+  border:1px solid rgba(34,197,94,.38);
+}
+
+.statusBig--bad{
+  background: rgba(239,68,68,.15);
+  border:1px solid rgba(239,68,68,.40);
+}
+
+.statusBig--done{
+  background: rgba(249,115,22,.15);
+  border:1px solid rgba(249,115,22,.40);
+}
+
+.statusBig--neutral{
+  background: rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.14);
+}
+
+/* =========================
+   LOOKUP PAGE
+   ========================= */
+
+.lookupPage,
+.groupPage{
+  display:grid;
+}
+
+.lookupCard,
+.groupCard{
+  border:1px solid var(--line);
+  border-radius:24px;
+  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+  box-shadow: var(--shadow);
+  padding:22px;
+}
+
+.lookupHeader,
+.groupHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:16px;
+}
+
+.lookupMeta,
+.groupMeta{
+  margin-top:4px;
+}
+
+.lookupCodeBox{
+  min-width:220px;
+  padding:14px 16px;
+  border-radius:18px;
+  border:1px solid var(--line);
+  background: rgba(0,0,0,.16);
+  text-align:right;
+}
+
+.lookupCodeLabel{
+  display:block;
+  margin-bottom:6px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.8px;
+  text-transform:uppercase;
+  color: var(--muted);
+}
+
+.lookupCodeValue{
+  font-size:15px;
+  line-height:1.3;
+}
+
+.lookupActions{
+  margin-top:18px;
+}
+
+/* =========================
+   GROUP PAGE
+   ========================= */
+
+.groupHeaderBadge{
+  display:flex;
+  align-items:center;
+}
+
+.table--group{
+  margin-top:18px;
+}
+
+.groupCell{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.groupCellLabel{
+  display:none;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+  color: var(--muted);
+}
+
+.groupActionBtn{
+  min-width:120px;
+}
+
+.groupBottomActions{
+  margin-top:18px;
+}
+
 /* =========================
    PARTICIPANTS LIST
    ========================= */
@@ -459,6 +621,17 @@ body::after{
   .mgmt{ padding:16px; }
   .mgmt__header{ border-radius:20px; }
 
+  .lookupHeader,
+  .groupHeader{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .lookupCodeBox{
+    min-width:unset;
+    text-align:left;
+  }
+
   /* KPIs: 2 colunas no tablet */
   .kpiGrid{ grid-template-columns: 1fr 1fr; }
 
@@ -467,6 +640,7 @@ body::after{
   .table__row{
     grid-template-columns: 1fr;
     gap:10px;
+    padding:14px;
   }
 
   .table__row > div{
@@ -475,6 +649,49 @@ body::after{
   }
 
   .table__row > div:first-child{ border-top:none; }
+
+  .groupCellLabel{
+    display:block;
+  }
+}
+
+@media (max-width: 640px){
+  .lookupCard,
+  .groupCard{
+    padding:16px;
+    border-radius:20px;
+  }
+
+  .sectionTitle,
+  .lookupName,
+  .groupTitle{
+    font-size:24px;
+  }
+
+  .statusBig{
+    font-size:16px;
+    padding:14px;
+  }
+
+  .actionsCol{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .actionsCol form,
+  .actionsCol a{
+    width:100%;
+  }
+
+  .actionsCol .btn{
+    width:100%;
+  }
+
+  .actionBtnWide,
+  .groupActionBtn{
+    width:100%;
+    min-width:unset;
+  }
 }
 
 @media (max-width: 520px){

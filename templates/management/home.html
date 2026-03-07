@@ -1,6 +1,6 @@
 {% extends "management/base_management.html" %}
 
-{% block mgmt_title %}Gestão — Eventos{% endblock %}
+{% block mgmt_title %}Gestão de eventos{% endblock %}
 
 {% block mgmt_content %}
   <div class="cards">
@@ -18,11 +18,11 @@
             {% endif %}
           </div>
 
-          <a class="btn secondary" href="{% url 'events_mgmt:event_regs' e.id %}">Ver inscrições</a>
+          <a class="btn secondary" href="{% url 'events_mgmt:event_regs' e.id %}">Gerir inscrições</a>
         </div>
       </div>
     {% empty %}
-      <p class="muted">Sem eventos.</p>
+      <p class="muted">Ainda não existem eventos disponíveis.</p>
     {% endfor %}
   </div>
 {% endblock %}
