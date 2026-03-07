@@ -1,23 +1,39 @@
 {% extends "management/base_management.html" %}
-{% block mgmt_title %}Grupo — {{ reg.buyer_name }}{% endblock %}
+{% block mgmt_title %}
+  {% if total_participants == 1 %}
+    Participante — {{ reg.buyer_name }}
+  {% else %}
+    Grupo — {{ reg.buyer_name }}
+  {% endif %}
+{% endblock %}
 
 {% block mgmt_content %}
 <section class="groupPage">
   <div class="groupCard">
     <div class="groupHeader">
       <div>
-        <p class="sectionEyebrow">Grupo de participantes</p>
+        <p class="sectionEyebrow">
+          {% if total_participants == 1 %}
+            Inscrição individual
+          {% else %}
+            Grupo de participantes
+          {% endif %}
+        </p>
+
         <h2 class="groupTitle">{{ reg.buyer_name }}</h2>
 
         <div class="small muted groupMeta">
-          {{ reg.event.title }} • {{ reg.event.date }} • {{ reg.event.location }}<br>
           {{ reg.buyer_email }}
         </div>
       </div>
 
       <div class="groupHeaderBadge">
         <span class="badge">
-          <span class="dot"></span>{{ total_participants }} participante{{ total_participants|pluralize }}
+          {% if total_participants == 1 %}
+            👤 {{ total_participants }} participante
+          {% else %}
+            👥 Grupo • {{ total_participants }} participantes
+          {% endif %}
         </span>
       </div>
     </div>
@@ -29,7 +45,11 @@
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.get_full_path }}">
           <button class="btn secondary actionBtnWide" type="submit">
-            💳 Pagar todos
+            {% if total_participants == 1 %}
+              💳 Confirmar pagamento
+            {% else %}
+              💳 Pagar todos
+            {% endif %}
           </button>
         </form>
       {% endif %}
@@ -40,7 +60,11 @@
           <input type="hidden" name="next" value="{{ request.get_full_path }}">
           <button class="btn actionBtnWide" type="submit"
                   {% if reg.event.price > 0 and paid_participants != total_participants %}disabled title="Ainda existem participantes por pagar"{% endif %}>
-            ✅ Check-in todos
+            {% if total_participants == 1 %}
+              ✅ Confirmar entrada
+            {% else %}
+              ✅ Check-in todos
+            {% endif %}
           </button>
         </form>
       {% endif %}
@@ -80,7 +104,7 @@
                 </button>
               </form>
             {% else %}
-              <span class="badge"><span class="dot"></span>Grátis</span>
+              <span class="badge">🎟 Grátis</span>
             {% endif %}
           </div>
 

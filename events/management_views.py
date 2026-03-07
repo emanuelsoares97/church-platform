@@ -16,6 +16,7 @@ from .permissions import can_manage_events
 @login_required
 @user_passes_test(can_manage_events)
 def dashboard_home(request):
+    """dashboard principal com lista de eventos e contadores."""
     events = (
         Event.objects.all()
         .annotate(reg_count=Count("registrations"))
@@ -27,6 +28,7 @@ def dashboard_home(request):
 @login_required
 @user_passes_test(can_manage_events)
 def event_registrations(request, event_id):
+    """lista inscrições de um evento com filtros e paginação."""
     event = get_object_or_404(Event, pk=event_id)
 
     qs = (
@@ -99,6 +101,7 @@ def event_registrations(request, event_id):
 @user_passes_test(can_manage_events)
 @require_POST
 def mark_registration_paid_full(request, reg_id):
+    """marca toda a inscrição como paga (todos os participantes)."""
     reg = get_object_or_404(Registration.objects.select_related("event"), pk=reg_id)
     now = timezone.now()
 
@@ -109,7 +112,7 @@ def mark_registration_paid_full(request, reg_id):
 
     Participant.objects.filter(registration=reg).update(is_paid=True, paid_at=now)
 
-    messages.success(request, "Pagamento total confirmado.")
+    messages.success(request, "Pagamento total confirmado")
     return redirect(request.POST.get("next") or "events_mgmt:home")
 
 
@@ -117,6 +120,7 @@ def mark_registration_paid_full(request, reg_id):
 @user_passes_test(can_manage_events)
 @require_POST
 def toggle_participant_paid(request, participant_id):
+    """alterna status de pagamento de um participante específico."""
     p = get_object_or_404(Participant.objects.select_related("registration__event"), pk=participant_id)
     reg = p.registration
     event = reg.event
@@ -139,7 +143,7 @@ def toggle_participant_paid(request, participant_id):
     reg.paid_at = now if all_paid else None
     reg.save(update_fields=["paid_amount", "is_paid", "paid_at"])
 
-    messages.success(request, "Pagamento atualizado.")
+    messages.success(request, "Pagamento atualizado")
     return redirect(request.POST.get("next") or "events_mgmt:home")
 
 
@@ -147,17 +151,18 @@ def toggle_participant_paid(request, participant_id):
 @user_passes_test(can_manage_events)
 @require_POST
 def toggle_participant_checkin(request, participant_id):
+    """alterna status de check-in de um participante (bloqueado se não pago)."""
     p = get_object_or_404(Participant.objects.select_related("registration__event"), pk=participant_id)
 
     if not p.is_paid and p.registration.event.price > 0:
-        messages.error(request, "Não é possível fazer check-in sem pagamento confirmado.")
+        messages.error(request, "Não é possível fazer check-in sem pagamento confirmado")
         return redirect(request.POST.get("next") or "events_mgmt:home")
 
     new_value = request.POST.get("value") == "1"
     p.mark_checked_in(new_value)
     p.save(update_fields=["checked_in", "checked_in_at"])
 
-    messages.success(request, "Check-in atualizado.")
+    messages.success(request, "Check-in atualizado")
     return redirect(request.POST.get("next") or "events_mgmt:home")
 
 
@@ -165,13 +170,14 @@ def toggle_participant_checkin(request, participant_id):
 @user_passes_test(can_manage_events)
 @require_POST
 def checkin_all(request, reg_id):
+    """faz check-in de todos os participantes da inscrição (se pagos)."""
     reg = get_object_or_404(
         Registration.objects.prefetch_related("participants").select_related("event"),
         pk=reg_id
     )
 
     if reg.event.price > 0 and reg.participants.filter(is_paid=False).exists():
-        messages.error(request, "Ainda existem participantes por pagar.")
+        messages.error(request, "Ainda existem participantes por pagar")
         return redirect(request.POST.get("next") or "events_mgmt:home")
 
     now = timezone.now()
@@ -182,13 +188,14 @@ def checkin_all(request, reg_id):
             p.checked_in_at = now
             p.save(update_fields=["checked_in", "checked_in_at"])
 
-    messages.success(request, "Check-in de todos os participantes registado.")
+    messages.success(request, "Check-in de todos os participantes registado")
     return redirect(request.POST.get("next") or "events_mgmt:home")
 
 
 @login_required
 @user_passes_test(can_manage_events)
 def scan_page(request):
+    """página do scanner qr para check-in rápido."""
     return render(request, "management/scan.html")
 
 
@@ -196,6 +203,7 @@ def scan_page(request):
 @user_passes_test(can_manage_events)
 @require_POST
 def scan_checkin_api(request):
+    """api para check-in via scanner qr (valida código e faz check-in)."""
     ticket_code = (request.POST.get("ticket_code") or "").strip()
 
     if not ticket_code:
@@ -203,7 +211,7 @@ def scan_checkin_api(request):
             {
                 "ok": False,
                 "status": "invalid",
-                "message": "Código do bilhete em falta.",
+                "message": "Código do bilhete em falta",
             },
             status=400,
         )
@@ -217,7 +225,7 @@ def scan_checkin_api(request):
             {
                 "ok": False,
                 "status": "not_found",
-                "message": "Bilhete não encontrado.",
+                "message": "Bilhete não encontrado",
                 "ticket_code": ticket_code,
             },
             status=404,
@@ -226,13 +234,13 @@ def scan_checkin_api(request):
     event = participant.registration.event
     reg = participant.registration
 
-    # se o pagamento ainda nao estiver confirmado, vai para a pagina do grupo
+    # se o pagamento ainda não estiver confirmado vai para a página do grupo
     if event.price > 0 and not participant.is_paid:
         return JsonResponse(
             {
                 "ok": False,
                 "status": "payment_pending",
-                "message": "Pagamento ainda não confirmado.",
+                "message": "Pagamento ainda não confirmado",
                 "ticket_code": participant.ticket_code,
                 "participant_name": participant.full_name or "(sem nome)",
                 "event_title": event.title,
@@ -241,13 +249,13 @@ def scan_checkin_api(request):
             status=409,
         )
 
-    # se ja tiver feito check-in, fica no scanner e mostra aviso
+    # se já tiver feito check-in fica no scanner e mostra aviso
     if participant.checked_in:
         return JsonResponse(
             {
                 "ok": False,
                 "status": "already_checked_in",
-                "message": "Este participante já fez check-in.",
+                "message": "Este participante já fez check-in",
                 "ticket_code": participant.ticket_code,
                 "participant_name": participant.full_name or "(sem nome)",
                 "event_title": event.title,
@@ -262,7 +270,7 @@ def scan_checkin_api(request):
         {
             "ok": True,
             "status": "checked_in",
-            "message": "Check-in confirmado com sucesso.",
+            "message": "Check-in confirmado com sucesso",
             "ticket_code": participant.ticket_code,
             "participant_name": participant.full_name or "(sem nome)",
             "event_title": event.title,
@@ -273,6 +281,7 @@ def scan_checkin_api(request):
 @login_required
 @user_passes_test(can_manage_events)
 def ticket_lookup(request, ticket_code):
+    """busca participante por código do bilhete."""
     participant = get_object_or_404(
         Participant.objects.select_related("registration__event"),
         ticket_code=ticket_code,
@@ -288,6 +297,7 @@ def ticket_lookup(request, ticket_code):
 @login_required
 @user_passes_test(can_manage_events)
 def registration_group(request, reg_id):
+    """página detalhada de um grupo de participantes."""
     reg = get_object_or_404(
         Registration.objects.select_related("event").prefetch_related("participants"),
         pk=reg_id,

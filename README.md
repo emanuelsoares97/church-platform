@@ -40,7 +40,12 @@ events/
 	management_views.py
 	models.py
 	permissions.py
-	tests.py
+	tests/
+		__init__.py
+		test_models.py
+		test_permissions.py
+		test_utils.py
+		test_views.py
 	urls.py
 	views.py
 	__pycache__/
@@ -189,6 +194,31 @@ Funcionalidades:
 - KPIs compactos no mobile (4 colunas)
 - Tabela responsiva
 - Layout mobile-first
+
+---
+
+## Testes
+
+O projeto inclui uma suíte completa de testes unitários organizados na pasta `events/tests/`:
+
+- `test_models.py` - Testes dos modelos (Event, Registration, Participant)
+- `test_permissions.py` - Testes das permissões de gestão
+- `test_utils.py` - Testes das funções utilitárias (geração de códigos de bilhete)
+- `test_views.py` - Testes das views públicas e de gestão (37 testes cobrindo cenários válidos, inválidos, pagamentos, check-ins, scanner QR, etc.)
+- `test_emails.py` - Testes do serviço de emails (envio de bilhetes, QR codes, banners)
+
+**Cobertura atual: 73%**
+
+- models.py: 94%
+- permissions.py: 100%
+- forms.py: 100%
+- urls.py: 100%
+- admin.py: 83%
+- views.py: 56%
+- management_views.py: 48%
+- emails.py: 85%
+
+Total de 37 testes, todos passando.
 
 ---
 

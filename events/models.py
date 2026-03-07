@@ -52,17 +52,17 @@ class Registration(models.Model):
         default=PaymentMethod.MBWAY,
     )
 
-    # compat (inscrição toda paga)
+    # compat inscrição toda paga
     is_paid = models.BooleanField(default=False)
     paid_at = models.DateTimeField(blank=True, null=True)
 
-    # valor total pago nesta inscrição (pode ser parcial)
+    # valor total pago nesta inscrição pode ser parcial
     paid_amount = models.DecimalField(max_digits=8, decimal_places=2, default=Decimal("0.00"))
 
     created_at = models.DateTimeField(auto_now_add=True)
 
     def mark_paid(self, value: bool):
-        # marca a inscrição como paga (total)
+        # marca a inscrição como paga total
         self.is_paid = value
         self.paid_at = timezone.now() if value else None
 
@@ -87,7 +87,7 @@ class Participant(models.Model):
 
     full_name = models.CharField(max_length=200, blank=True)
 
-    # código do bilhete (único)
+    # código do bilhete único
     ticket_code = models.CharField(max_length=32, unique=True, db_index=True)
 
     # pagamento do participante
