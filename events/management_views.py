@@ -1,5 +1,4 @@
 from decimal import Decimal
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator
@@ -8,10 +7,11 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-
+from django.http import HttpResponse
 from .models import Event, Registration, Participant
 from .permissions import can_manage_events
-
+from openpyxl import Workbook
+from openpyxl.styles import Font
 
 @login_required
 @user_passes_test(can_manage_events)
@@ -318,3 +318,102 @@ def registration_group(request, reg_id):
             "checked_participants": checked_participants,
         },
     )
+
+@login_required
+def export_event_registrations_excel(request, event_id):
+    """
+    Exporta para Excel os participantes de um evento.
+
+    Gera um ficheiro .xlsx com os dados principais do evento,
+    comprador, participante, pagamento e check-in.
+    """
+    # obtém o evento pretendido
+    event = get_object_or_404(Event, id=event_id)
+
+    # obtém todos os participantes ligados ao evento
+    # usa select_related para evitar queries desnecessárias
+    participants = (
+        Participant.objects
+        .filter(registration__event=event)
+        .select_related("registration", "registration__event")
+        .order_by("registration__created_at", "id")
+    )
+
+    # cria o workbook e a folha principal
+    workbook = Workbook()
+    worksheet = workbook.active
+    worksheet.title = "Inscrições"
+
+    # cabeçalhos da folha
+    headers = [
+        "Evento",
+        "Data do evento",
+        "Comprador",
+        "Email do comprador",
+        "Participante",
+        "Código do bilhete",
+        "Pago",
+        "Pago em",
+        "Check-in",
+        "Check-in em",
+        "Data da inscrição",
+    ]
+
+    # escreve os cabeçalhos
+    worksheet.append(headers)
+
+    # aplica estilo simples ao cabeçalho
+    for cell in worksheet[1]:
+        cell.font = Font(bold=True)
+
+    # escreve uma linha por participante
+    for participant in participants:
+        registration = participant.registration
+
+        worksheet.append([
+            event.title,
+            event.date.strftime("%d/%m/%Y %H:%M") if event.date else "",
+            registration.buyer_name,
+            registration.buyer_email,
+            participant.full_name,
+            participant.ticket_code,
+            "Sim" if participant.is_paid else "Não",
+            participant.paid_at.strftime("%d/%m/%Y %H:%M") if participant.paid_at else "",
+            "Sim" if participant.checked_in else "Não",
+            participant.checked_in_at.strftime("%d/%m/%Y %H:%M") if participant.checked_in_at else "",
+            registration.created_at.strftime("%d/%m/%Y %H:%M") if registration.created_at else "",
+        ])
+
+    # ajusta larguras de coluna de forma simples
+    column_widths = {
+        "A": 30,
+        "B": 20,
+        "C": 28,
+        "D": 35,
+        "E": 28,
+        "F": 22,
+        "G": 10,
+        "H": 20,
+        "I": 10,
+        "J": 20,
+        "K": 20,
+    }
+
+    for column, width in column_widths.items():
+        worksheet.column_dimensions[column].width = width
+
+    # cria a resposta http com o ficheiro excel
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+    # cria nome seguro para o ficheiro
+    safe_title = event.slug if getattr(event, "slug", None) else f"evento-{event.id}"
+    response["Content-Disposition"] = (
+        f'attachment; filename="inscricoes-{safe_title}.xlsx"'
+    )
+
+    # grava o workbook na resposta
+    workbook.save(response)
+
+    return response

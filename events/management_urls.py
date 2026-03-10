@@ -21,4 +21,8 @@ urlpatterns = [
 
     path("t/<str:ticket_code>/", mv.ticket_lookup, name="ticket_lookup"),
     path("inscricao/<int:reg_id>/grupo/", mv.registration_group, name="registration_group"),
+
+    path("eventos/<int:event_id>/export/excel/",
+    mv.export_event_registrations_excel,
+    name="export_event_registrations_excel",)
 ]
