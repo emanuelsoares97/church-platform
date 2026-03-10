@@ -1,7 +1,7 @@
 
-# SNT Almada — Sistema de Inscrições
+# Church Platform — Sistema de Inscrições
 
-Sistema web de gestão de eventos e inscrições desenvolvido em Django para a igreja SNT Almada.
+Sistema web de gestão de eventos e inscrições desenvolvido em Django para a igreja Church Platform.
 
 O projeto permite:
 
@@ -64,7 +64,7 @@ events/
 		__pycache__/
 media/
 	events/
-snt_almada/
+church_platform/
 	__init__.py
 	asgi.py
 	settings.py

@@ -81,7 +81,7 @@ def send_registration_tickets_email(registration_id: int) -> None:
             "reg": reg,
             "event": reg.event,
             "manage_url": manage_url,
-            "site_name": "SNT Almada",
+            "site_name": "Church Platform",
             "participant_name": participant_name,
             "ticket_code": ticket_code,
             "has_banner": has_banner,

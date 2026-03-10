@@ -51,7 +51,7 @@ body::before{
   content:"";
   position:fixed;
   inset:0;
-  background-image: var(--event-bg, url("/static/img/sntbg.png"));
+  background-image: var(--event-bg, url("/static/img/uccbg.jpeg"));
   background-size:cover;
   background-position:center;
   opacity:.10;
