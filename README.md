@@ -8,205 +8,124 @@ O projeto permite:
 - Publicação de eventos
 - Inscrições públicas com múltiplos participantes
 - Gestão interna de pagamentos
-- Check-in individual por participante
-- Dashboard com KPIs
+- Check-in individual por participante (mobile + leitor QR)
+- Dashboard com KPIs e filtros avançados
 - Interface totalmente responsiva (mobile-first)
 
 ---
 
 ## Tecnologias
 
-- Python
-- Django
-- SQLite (atualmente)
-- HTML + CSS custom
-- JavaScript (vanilla)
-- Server-rendered architecture
+- Python (Django 5.2)
+- SQLite (local / dev)
+- HTML/CSS custom
+- JavaScript (vanilla) com AJAX para interações mais fluídas
+- Server-rendered architecture (templates)
 
-## Estrutura do Projeto
+---
 
-```
-db.sqlite3
-LICENSE
-manage.py
-README.md
-requirements.txt
-events/
-	__init__.py
-	admin.py
-	apps.py
-	forms.py
-	management_urls.py
-	management_views.py
-	models.py
-	permissions.py
-	tests/
-		__init__.py
-		test_models.py
-		test_permissions.py
-		test_utils.py
-		test_views.py
-	urls.py
-	views.py
-	__pycache__/
-	migrations/
-		__init__.py
-		0001_initial.py
-		0002_participant_checked_in_at.py
-		0003_registration_public_id.py
-		0004_alter_registration_public_id.py
-		0005_participant_is_paid_participant_paid_at_and_more.py
-		0006_alter_participant_ticket_code.py
-		__pycache__/
-	services/
-		__init__.py
-		emails.py
-		__pycache__/
-media/
-	events/
-church_platform/
-	__init__.py
-	asgi.py
-	settings.py
-	urls.py
-	wsgi.py
-	__pycache__/
-static/
-	css/
-		event_detail.css
-		event_list.css
-		global.css
-		login.css
-		management_v2.css
-		qr_scanner.css
-	img/
-	js/
-		event_detail.js
-		navbar.js
-		qr_scanner.js
-templates/
-	base.html
-	auth/
-		login.html
-	emails/
-		registration_ticket_pc.html
-		registration_ticket.html
-	events/
-		event_detail.html
-		event_list.html
-		registration_success.html
-	management/
-		base_management.html
-		event_registrations.html
-		home.html
-		registration_group.html
-		scan.html
-		ticket_lookup.html
-tmp_emails/
-	20260303-223539-1851096388496.eml
-	20260303-224824-2281735198544.eml
-	20260303-225603-2281733695824.eml
-	20260307-110000-1943018680240.eml
-	20260307-114115-2430184388064.eml
+## Setup & Execução
+
+### 1) Criar e ativar ambiente virtual
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
-## Modelos Principais
+### 2) Instalar dependências
 
-### Event
-- title
-- slug
-- description
-- date
-- location
-- price
-- is_active
-- banner_image
+```powershell
+pip install -r requirements.txt
+```
 
-### Registration
-- event (FK)
-- buyer_name
-- buyer_email
-- phone
-- ticket_qty
-- is_paid
-- payment_method
-- created_at
+### 3) Criar banco de dados e migrar
 
-### Participant
-- registration (FK)
-- full_name
-- checked_in
+```powershell
+python manage.py migrate
+```
+
+### 4) Coletar static (importante para testes + deploy)
+
+```powershell
+python manage.py collectstatic --noinput
+```
+
+### 5) Rodar servidor local
+
+```powershell
+python manage.py runserver
+```
 
 ---
 
-## Área Pública
+## Estrutura Principal (resumo)
 
-Rotas:
-
-- `/eventos/` → Lista de eventos ativos
-- `/evento/<slug>/` → Página do evento + formulário
-
-Funcionalidades:
-
-- Inscrição com múltiplos participantes
-- Validação dinâmica do número de nomes
-- Cálculo automático do total
-- Eventos gratuitos tratados automaticamente
-- Design moderno e responsivo
+- `events/` → app principal (models, views, forms, templates, gestão interna)
+- `templates/` → templates Django
+- `static/` → estilos e scripts (inclui `static/js/management_ajax.js` para AJAX no painel de gestão)
+- `events/services/emails.py` → envio de e-mails via Resend
+- `events/tests/` → cobertura completa de modelos, views e serviços
 
 ---
 
-## Painel de Gestão Interno
+## O que existe de novo / o que vale destacar
 
-Protegio por login + permissões personalizadas.
+### ✅ AJAX no painel de gestão
+- Toggles de pagamento (`toggle-participant-paid`) e check-in (`toggle-participant-checkin`) funcionam via AJAX;
+- Evita reloads e mantém a interface fluida;
+- Tem mensagens de sucesso/erro exibidas diretamente na página.
 
-Funcionalidades:
+### ✅ Testes automatizados
+- Cobertura completa para:
+  - validação das views públicas
+  - lógica de check-in / pagamento
+  - envio de e-mail via Resend (mockado nos testes)
+- Para rodar:
+  ```powershell
+  python manage.py test
+  ```
 
-- Dashboard com lista de eventos
-- KPIs compactos:
-  - INS (Inscrições)
-  - PAG (Pagas)
-  - PART (Participantes)
-  - CHK (Check-ins)
-- Filtros por:
-  - Nome/email
-  - Pago / Não pago
-  - Check-in completo / pendente
-- Paginação
-- Toggle de pagamento
-- Check-in por participante (bloqueado se não pago)
-
----
-
-## Regras de Negócio
-
-- Uma inscrição pode ter vários participantes
-- Pagamento é por inscrição
-- Check-in é individual por participante
-- Não é permitido check-in se pagamento não estiver confirmado
-- Eventos gratuitos são automaticamente marcados como pagos
+### ✅ Segurança e regras de negócio aplicadas
+- Check-in bloqueado se participante não estiver pago.
+- Registro de pagamento feito por inscrição (todos os participantes são pagos juntos).
+- Eventos grátis marcam automaticamente inscrição + participantes como pagos.
 
 ---
 
-## Responsividade
+## Como contribuir / rodar em produção
 
-- Navbar com menu hamburger
-- KPIs compactos no mobile (4 colunas)
-- Tabela responsiva
-- Layout mobile-first
+1. Atualizar `requirements.txt` se adicionar libs
+2. Executar `python manage.py migrate` no deploy
+3. Executar `python manage.py collectstatic --noinput`
+4. Garantir variáveis de ambiente (principalmente `RESEND_API_KEY` e `DEFAULT_FROM_EMAIL`)
+
+---
+
+## Observações
+
+- A aplicação usa o Resend para envio de e-mails (configurado em `settings.py`). Sem `RESEND_API_KEY` o envio falha intencionalmente.
+- Em dev, o `tmp_emails/` guarda alguns exemplos de `.eml` gerados em testes/execuções.
 
 ---
 
 ## Testes
 
-O projeto inclui uma suíte completa de testes unitários organizados na pasta `events/tests/`:
+Todos os testes são executados com:
 
-- `test_models.py` - Testes dos modelos (Event, Registration, Participant)
-- `test_permissions.py` - Testes das permissões de gestão
-- `test_utils.py` - Testes das funções utilitárias (geração de códigos de bilhete)
-- `test_views.py` - Testes das views públicas e de gestão (37 testes cobrindo cenários válidos, inválidos, pagamentos, check-ins, scanner QR, etc.)
-- `test_emails.py` - Testes do serviço de emails (envio de bilhetes, QR codes, banners)
+```powershell
+python manage.py test
+```
 
+Eles cobrem:
+
+- Modelos (`events.tests.test_models`)
+- Views públicas e internas (`events.tests.test_views`)
+- Serviço de e-mail (`events.tests.test_emails`)
+
+---
+
+Boa sorte no deploy! Se quiser posso também gerar um checklist de deploy com variáveis de ambiente e configurações específicas de infra.
 **Cobertura atual: 73%**
 
 - models.py: 94%

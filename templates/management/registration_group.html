@@ -1,4 +1,6 @@
 {% extends "management/base_management.html" %}
+{% load static %}
+
 {% block mgmt_title %}
   {% if total_participants == 1 %}
     Participante — {{ reg.buyer_name }}
@@ -137,4 +139,7 @@
     </div>
   </div>
 </section>
+
+<script src="{% static 'js/management_ajax.js' %}"></script>
+
 {% endblock %}

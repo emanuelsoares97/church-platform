@@ -113,6 +113,8 @@ def mark_registration_paid_full(request, reg_id):
     Participant.objects.filter(registration=reg).update(is_paid=True, paid_at=now)
 
     messages.success(request, "Pagamento total confirmado")
+    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        return JsonResponse({'success': True})
     return redirect(request.POST.get("next") or "events_mgmt:home")
 
 
@@ -144,6 +146,8 @@ def toggle_participant_paid(request, participant_id):
     reg.save(update_fields=["paid_amount", "is_paid", "paid_at"])
 
     messages.success(request, "Pagamento atualizado")
+    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        return JsonResponse({'success': True})
     return redirect(request.POST.get("next") or "events_mgmt:home")
 
 
@@ -156,6 +160,8 @@ def toggle_participant_checkin(request, participant_id):
 
     if not p.is_paid and p.registration.event.price > 0:
         messages.error(request, "Não é possível fazer check-in sem pagamento confirmado")
+        if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'error': "Não é possível fazer check-in sem pagamento confirmado"})
         return redirect(request.POST.get("next") or "events_mgmt:home")
 
     new_value = request.POST.get("value") == "1"
@@ -163,6 +169,8 @@ def toggle_participant_checkin(request, participant_id):
     p.save(update_fields=["checked_in", "checked_in_at"])
 
     messages.success(request, "Check-in atualizado")
+    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        return JsonResponse({'success': True})
     return redirect(request.POST.get("next") or "events_mgmt:home")
 
 
@@ -178,6 +186,8 @@ def checkin_all(request, reg_id):
 
     if reg.event.price > 0 and reg.participants.filter(is_paid=False).exists():
         messages.error(request, "Ainda existem participantes por pagar")
+        if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+            return JsonResponse({'success': False, 'error': "Ainda existem participantes por pagar"})
         return redirect(request.POST.get("next") or "events_mgmt:home")
 
     now = timezone.now()
@@ -189,6 +199,8 @@ def checkin_all(request, reg_id):
             p.save(update_fields=["checked_in", "checked_in_at"])
 
     messages.success(request, "Check-in de todos os participantes registado")
+    if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
+        return JsonResponse({'success': True})
     return redirect(request.POST.get("next") or "events_mgmt:home")
 
 
@@ -263,7 +275,7 @@ def scan_checkin_api(request):
             status=409,
         )
 
-    participant.mark_checked_in()
+    participant.mark_checked_in(True)
     participant.save(update_fields=["checked_in", "checked_in_at"])
 
     return JsonResponse(

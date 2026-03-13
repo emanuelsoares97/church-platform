@@ -1,4 +1,6 @@
 {% extends "management/base_management.html" %}
+{% load static %}
+
 {% block mgmt_title %}Participante — {{ participant.full_name }}{% endblock %}
 
 {% block mgmt_content %}
@@ -143,4 +145,7 @@
   </div>
 
 </section>
+
+<script src="{% static 'js/management_ajax.js' %}"></script>
+
 {% endblock %}

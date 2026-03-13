@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group, User
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from events.models import Event, Registration
+from events.models import Event, Registration, Participant
 
 
 class PublicViewsTest(TestCase):
@@ -37,6 +37,7 @@ class PublicViewsTest(TestCase):
             "buyer_email": "joao@example.com",
             "phone": "912345678",
             "ticket_qty": 2,
+            "payment_method": "LOCAL",
             "participant_name": ["João Silva", "Maria Silva"],
         }
         response = self.client.post(reverse("events:event_detail", kwargs={"slug": self.event.slug}), data)
@@ -53,6 +54,7 @@ class PublicViewsTest(TestCase):
             "buyer_email": "invalid-email",
             "phone": "912345678",
             "ticket_qty": 1,
+            "payment_method": "LOCAL",
             "participant_name": ["João"],
         }
         response = self.client.post(reverse("events:event_detail", kwargs={"slug": self.event.slug}), data)
@@ -66,6 +68,7 @@ class PublicViewsTest(TestCase):
             "buyer_email": "joao@example.com",
             "phone": "912345678",
             "ticket_qty": 3,
+            "payment_method": "LOCAL",
             "participant_name": ["João", "Maria"],  # só 2 em vez de 3
         }
         response = self.client.post(reverse("events:event_detail", kwargs={"slug": self.event.slug}), data)
@@ -87,6 +90,7 @@ class PublicViewsTest(TestCase):
             "buyer_email": "joao@example.com",
             "phone": "912345678",
             "ticket_qty": 1,
+            "payment_method": "LOCAL",
             "participant_name": ["João Silva"],
         }
         response = self.client.post(reverse("events:event_detail", kwargs={"slug": free_event.slug}), data)
@@ -145,7 +149,7 @@ class ManagementViewsTest(TestCase):
         Participant.objects.create(registration=reg, full_name="João", ticket_code="T1")
         Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2")
         
-        response = self.client.post(reverse("events_mgmt:mark_paid_full", kwargs={"reg_id": reg.id}))
+        response = self.client.post(reverse("events_mgmt:mark_registration_paid_full", kwargs={"reg_id": reg.id}))
         self.assertEqual(response.status_code, 302)
         reg.refresh_from_db()
         self.assertTrue(reg.is_paid)
@@ -163,13 +167,13 @@ class ManagementViewsTest(TestCase):
         part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1")
         
         # marcar como pago
-        response = self.client.post(reverse("events_mgmt:toggle_paid", kwargs={"participant_id": part.id}), {"value": "1"})
+        response = self.client.post(reverse("events_mgmt:toggle_participant_paid", kwargs={"participant_id": part.id}), {"value": "1"})
         self.assertEqual(response.status_code, 302)
         part.refresh_from_db()
         self.assertTrue(part.is_paid)
         
         # desmarcar
-        response = self.client.post(reverse("events_mgmt:toggle_paid", kwargs={"participant_id": part.id}), {"value": "0"})
+        response = self.client.post(reverse("events_mgmt:toggle_participant_paid", kwargs={"participant_id": part.id}), {"value": "0"})
         self.assertEqual(response.status_code, 302)
         part.refresh_from_db()
         self.assertFalse(part.is_paid)
@@ -185,7 +189,7 @@ class ManagementViewsTest(TestCase):
         )
         part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
         
-        response = self.client.post(reverse("events_mgmt:toggle_checkin", kwargs={"participant_id": part.id}), {"value": "1"})
+        response = self.client.post(reverse("events_mgmt:toggle_participant_checkin", kwargs={"participant_id": part.id}), {"value": "1"})
         self.assertEqual(response.status_code, 302)
         part.refresh_from_db()
         self.assertTrue(part.checked_in)
@@ -201,7 +205,7 @@ class ManagementViewsTest(TestCase):
         )
         part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=False)
         
-        response = self.client.post(reverse("events_mgmt:toggle_checkin", kwargs={"participant_id": part.id}), {"value": "1"})
+        response = self.client.post(reverse("events_mgmt:toggle_participant_checkin", kwargs={"participant_id": part.id}), {"value": "1"})
         self.assertEqual(response.status_code, 302)
         part.refresh_from_db()
         self.assertFalse(part.checked_in)
@@ -255,7 +259,7 @@ class ManagementViewsTest(TestCase):
         )
         part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
         
-        response = self.client.post(reverse("events_mgmt:scan_checkin"), {"ticket_code": "T1"})
+        response = self.client.post(reverse("events_mgmt:scan_checkin_api"), {"ticket_code": "T1"})
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertTrue(data["ok"])
@@ -265,7 +269,7 @@ class ManagementViewsTest(TestCase):
 
     def test_scan_checkin_api_not_found(self):
         """código inválido retorna erro."""
-        response = self.client.post(reverse("events_mgmt:scan_checkin"), {"ticket_code": "INVALID"})
+        response = self.client.post(reverse("events_mgmt:scan_checkin_api"), {"ticket_code": "INVALID"})
         self.assertEqual(response.status_code, 404)
         data = response.json()
         self.assertFalse(data["ok"])
@@ -282,7 +286,7 @@ class ManagementViewsTest(TestCase):
         )
         part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=False)
         
-        response = self.client.post(reverse("events_mgmt:scan_checkin"), {"ticket_code": "T1"})
+        response = self.client.post(reverse("events_mgmt:scan_checkin_api"), {"ticket_code": "T1"})
         self.assertEqual(response.status_code, 409)
         data = response.json()
         self.assertFalse(data["ok"])
@@ -315,9 +319,126 @@ class ManagementViewsTest(TestCase):
         p1 = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True, checked_in=True)
         p2 = Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2", is_paid=False, checked_in=False)
         
-        response = self.client.get(reverse("events_mgmt:reg_group", kwargs={"reg_id": reg.id}))
+        response = self.client.get(reverse("events_mgmt:registration_group", kwargs={"reg_id": reg.id}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "João Silva")
+
+    def test_toggle_participant_paid_ajax(self):
+        """alterna pagamento de participante via AJAX."""
+        reg = Registration.objects.create(
+            event=self.event,
+            buyer_name="João Silva",
+            buyer_email="joao@example.com",
+            phone="912345678",
+            ticket_qty=1
+        )
+        part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1")
+        
+        # marcar como pago via AJAX
+        response = self.client.post(
+            reverse("events_mgmt:toggle_participant_paid", kwargs={"participant_id": part.id}),
+            {"value": "1"},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        part.refresh_from_db()
+        self.assertTrue(part.is_paid)
+
+    def test_toggle_participant_checkin_ajax_paid(self):
+        """check-in via AJAX só funciona se pago."""
+        reg = Registration.objects.create(
+            event=self.event,
+            buyer_name="João Silva",
+            buyer_email="joao@example.com",
+            phone="912345678",
+            ticket_qty=1
+        )
+        part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
+        
+        response = self.client.post(
+            reverse("events_mgmt:toggle_participant_checkin", kwargs={"participant_id": part.id}),
+            {"value": "1"},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        part.refresh_from_db()
+        self.assertTrue(part.checked_in)
+
+    def test_toggle_participant_checkin_ajax_unpaid(self):
+        """check-in via AJAX bloqueado se não pago."""
+        reg = Registration.objects.create(
+            event=self.event,
+            buyer_name="João Silva",
+            buyer_email="joao@example.com",
+            phone="912345678",
+            ticket_qty=1
+        )
+        part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=False)
+        
+        response = self.client.post(
+            reverse("events_mgmt:toggle_participant_checkin", kwargs={"participant_id": part.id}),
+            {"value": "1"},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data['success'])
+        self.assertIn('error', data)
+        part.refresh_from_db()
+        self.assertFalse(part.checked_in)
+
+    def test_checkin_all_ajax_paid(self):
+        """check-in de todos via AJAX se todos pagos."""
+        reg = Registration.objects.create(
+            event=self.event,
+            buyer_name="João Silva",
+            buyer_email="joao@example.com",
+            phone="912345678",
+            ticket_qty=2
+        )
+        p1 = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
+        p2 = Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2", is_paid=True)
+        
+        response = self.client.post(
+            reverse("events_mgmt:checkin_all", kwargs={"reg_id": reg.id}),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+        p1.refresh_from_db()
+        p2.refresh_from_db()
+        self.assertTrue(p1.checked_in)
+        self.assertTrue(p2.checked_in)
+
+    def test_checkin_all_ajax_unpaid(self):
+        """check-in de todos via AJAX bloqueado se algum não pago."""
+        reg = Registration.objects.create(
+            event=self.event,
+            buyer_name="João Silva",
+            buyer_email="joao@example.com",
+            phone="912345678",
+            ticket_qty=2
+        )
+        p1 = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
+        p2 = Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2", is_paid=False)
+        
+        response = self.client.post(
+            reverse("events_mgmt:checkin_all", kwargs={"reg_id": reg.id}),
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data['success'])
+        self.assertIn('error', data)
+        p1.refresh_from_db()
+        p2.refresh_from_db()
+        self.assertFalse(p1.checked_in)
+        self.assertFalse(p2.checked_in)
 
 
 class RegistrationViewsTest(TestCase):

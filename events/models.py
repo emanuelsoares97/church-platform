@@ -93,11 +93,16 @@ class Participant(models.Model):
     checked_in = models.BooleanField(default=False)
     checked_in_at = models.DateTimeField(blank=True, null=True)
 
-    def mark_checked_in(self):
-        if not self.checked_in:
-            self.checked_in = True
+    def mark_checked_in(self, value: bool):
+        self.checked_in = value
+        if value:
             self.checked_in_at = timezone.now()
-            self.save(update_fields=["checked_in", "checked_in_at"])
+        else:
+            self.checked_in_at = None
+
+    def mark_paid(self, value: bool):
+        self.is_paid = value
+        self.paid_at = timezone.now() if value else None
 
     def __str__(self):
         return self.full_name or f"Participante #{self.pk or 'novo'}"

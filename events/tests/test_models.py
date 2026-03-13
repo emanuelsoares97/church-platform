@@ -109,3 +109,7 @@ class ParticipantModelTest(TestCase):
         part.mark_checked_in(True)
         self.assertTrue(part.checked_in)
         self.assertIsNotNone(part.checked_in_at)
+
+        part.mark_checked_in(False)
+        self.assertFalse(part.checked_in)
+        self.assertIsNone(part.checked_in_at)
