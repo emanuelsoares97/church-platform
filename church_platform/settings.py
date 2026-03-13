@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 # middlewares globais da aplicação
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -92,13 +93,14 @@ WSGI_APPLICATION = "church_platform.wsgi.application"
 
 
 # base de dados principal
-# por agora usa sqlite
-# mais tarde pode ser trocado para postgresql
+import dj_database_url
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default=config("DATABASE_URL", default="sqlite:///db.sqlite3"),
+        conn_max_age=600,
+        ssl_require=True,
+    )
 }
 
 
@@ -127,8 +129,13 @@ USE_TZ = True
 
 
 # ficheiros estáticos
-STATIC_URL = "static/"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_URL = "/static/"
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 
 # ficheiros media

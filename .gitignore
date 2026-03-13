@@ -5,7 +5,8 @@ __pycache__/
 db.sqlite3
 staticfiles/
 .DS_Store
-church_platform-on-fire-prototipo-flames-red (1).html
+
 media/
 img/
 tmp_emails/
+staticfiles/
