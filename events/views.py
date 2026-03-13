@@ -6,7 +6,7 @@ from django.utils import timezone
 from .forms import RegistrationForm
 from .models import Event, Registration, Participant
 from events.services.emails import send_registration_tickets_email
-
+import threading
 
 def make_ticket_code(registration: Registration, idx: int) -> str:
     """gera código único para participante baseado na inscrição."""
@@ -71,7 +71,13 @@ def event_detail(request, slug):
                 registration.save(update_fields=["paid_amount", "is_paid", "paid_at"])
 
             # envia os bilhetes por email
-            transaction.on_commit(lambda: send_registration_tickets_email(registration.id))
+            transaction.on_commit(
+                lambda: threading.Thread(
+                    target=send_registration_tickets_email,
+                    args=(registration.id,),
+                    daemon=True,
+                ).start()
+)
 
             messages.success(request, "Inscrição registada com sucesso")
             return redirect(
