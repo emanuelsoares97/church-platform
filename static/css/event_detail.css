@@ -52,7 +52,6 @@
 .watermark{
   position:absolute;
   inset:0;
-  background-image: url("/static/img/watermark.png");
   background-size: 420px;
   background-repeat:no-repeat;
   background-position:center;
