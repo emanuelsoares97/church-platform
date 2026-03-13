@@ -1,33 +1,17 @@
 from __future__ import annotations
 
-from email.mime.image import MIMEImage
+import base64
 from io import BytesIO
 
 import qrcode
+import requests
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
-from django.utils.html import strip_tags
 
 from events.models import Registration
 
 
-def _attach_inline_png(msg: EmailMultiAlternatives, png_bytes: bytes, cid: str, filename: str) -> None:
-    image = MIMEImage(png_bytes, _subtype="png")
-    image.add_header("Content-ID", f"<{cid}>")
-    image.add_header("Content-Disposition", "inline", filename=filename)
-    msg.attach(image)
-
-
-def _attach_inline_file_image(msg: EmailMultiAlternatives, file_path: str, cid: str, filename: str) -> None:
-    with open(file_path, "rb") as f:
-        data = f.read()
-    image = MIMEImage(data)
-    image.add_header("Content-ID", f"<{cid}>")
-    image.add_header("Content-Disposition", "inline", filename=filename)
-    msg.attach(image)
-
-
+# gera o qr code em png
 def _make_qr_png(data: str, box_size: int = 6, border: int = 2) -> bytes:
     qr = qrcode.QRCode(
         version=None,
@@ -35,15 +19,64 @@ def _make_qr_png(data: str, box_size: int = 6, border: int = 2) -> bytes:
         box_size=box_size,
         border=border,
     )
+
     qr.add_data(data)
     qr.make(fit=True)
+
     img = qr.make_image(fill_color="black", back_color="white")
 
-    buf = BytesIO()
-    img.save(buf, format="PNG")
-    return buf.getvalue()
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+
+    return buffer.getvalue()
 
 
+# converte bytes para base64 para usar diretamente no html
+def _to_base64(data: bytes) -> str:
+    return base64.b64encode(data).decode("utf-8")
+
+
+# envia o email através da api do resend
+def _send_email_resend(subject: str, html: str, to_email: str) -> None:
+    if not settings.RESEND_API_KEY:
+        raise ValueError("RESEND_API_KEY não está configurada.")
+
+    url = "https://api.resend.com/emails"
+
+    headers = {
+        "Authorization": f"Bearer {settings.RESEND_API_KEY}",
+        "Content-Type": "application/json",
+        "User-Agent": "church-platform/1.0",
+    }
+
+    payload = {
+        "from": settings.DEFAULT_FROM_EMAIL,
+        "to": [to_email],
+        "subject": subject,
+        "html": html,
+    }
+
+    response = requests.post(
+        url,
+        headers=headers,
+        json=payload,
+        timeout=20,
+    )
+
+    if not response.ok:
+        try:
+            error_data = response.json()
+        except ValueError:
+            error_data = response.text
+
+        raise RuntimeError(
+            f"Erro ao enviar email com Resend. "
+            f"Status: {response.status_code}. "
+            f"Resposta: {error_data}"
+        )
+
+
+# envia os bilhetes da inscrição
 def send_registration_tickets_email(registration_id: int) -> None:
     reg = (
         Registration.objects
@@ -58,24 +91,15 @@ def send_registration_tickets_email(registration_id: int) -> None:
     if not participants:
         return
 
-    has_banner = bool(getattr(reg.event, "banner_image", None))
-    banner_path = None
-    if has_banner and reg.event.banner_image:
-        try:
-            banner_path = reg.event.banner_image.path
-        except Exception:
-            banner_path = None
-            has_banner = False
-
-    for p in participants:
-        participant_name = p.full_name
-        ticket_code = p.ticket_code
-
-        subject = f"Bilhete — {reg.event.title} — {participant_name}"
+    for participant in participants:
+        participant_name = participant.full_name
+        ticket_code = participant.ticket_code
         to_email = reg.buyer_email
 
-        # direciona atraves do qr code para o participante
+        subject = f"Bilhete — {reg.event.title} — {participant_name}"
+
         qr_target = f"{settings.SITE_URL}/gestao/t/{ticket_code}/"
+        qr_base64 = _to_base64(_make_qr_png(qr_target))
 
         context = {
             "reg": reg,
@@ -84,24 +108,13 @@ def send_registration_tickets_email(registration_id: int) -> None:
             "site_name": "Church Platform",
             "participant_name": participant_name,
             "ticket_code": ticket_code,
-            "has_banner": has_banner,
+            "qr_base64": qr_base64,
         }
 
         html = render_to_string("emails/registration_ticket.html", context)
-        text = strip_tags(html)
 
-        msg = EmailMultiAlternatives(
+        _send_email_resend(
             subject=subject,
-            body=text,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[to_email],
+            html=html,
+            to_email=to_email,
         )
-        msg.attach_alternative(html, "text/html")
-
-        qr_png = _make_qr_png(qr_target)
-        _attach_inline_png(msg, qr_png, cid="qr_img", filename=f"qr-{ticket_code}.png")
-
-        if banner_path:
-            _attach_inline_file_image(msg, banner_path, cid="banner_img", filename="banner.png")
-
-        msg.send()

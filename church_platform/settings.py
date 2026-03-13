@@ -3,10 +3,12 @@ Django settings for church_platform project.
 """
 
 from pathlib import Path
+import os
 
 import cloudinary
 import dj_database_url
 from decouple import Csv, config
+
 
 # diretório base do projeto
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -141,7 +143,8 @@ STORAGES = {
 }
 
 
-# ficheiros media
+# ficheiros media locais
+# nota: os ficheiros media dinâmicos principais estão no cloudinary
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -157,30 +160,31 @@ LOGOUT_REDIRECT_URL = "login"
 
 
 # url base do sistema
-# usada para construir links absolutos em emails
+# usada para construir links absolutos em emails e qr codes
 SITE_URL = config("SITE_URL", default="http://127.0.0.1:8000")
 
 
-# define se o sistema envia emails reais por smtp
-# quando false, os emails ficam guardados em ficheiro
-USE_SMTP_EMAIL = config("USE_SMTP_EMAIL", default=False, cast=bool)
+# configuração do resend
+# esta chave é usada no serviço de envio de emails via api
+RESEND_API_KEY = config("RESEND_API_KEY", default="")
 
-if USE_SMTP_EMAIL:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp.gmail.com"
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = config("EMAIL_HOST_USER")
-    EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
-    DEFAULT_FROM_EMAIL = config(
-        "DEFAULT_FROM_EMAIL",
-        default=f"Church Platform <{EMAIL_HOST_USER}>",
-    )
-    EMAIL_TIMEOUT = 10
-else:
+
+# email de envio usado no resend
+# em modo de teste sem domínio verificado usar onboarding@resend.dev
+DEFAULT_FROM_EMAIL = config(
+    "DEFAULT_FROM_EMAIL",
+    default="UCC Eventos <onboarding@resend.dev>",
+)
+
+
+# backend de email do django
+# este backend não é usado no envio via resend
+# fica apenas para testes locais ou outros usos futuros
+if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
     EMAIL_FILE_PATH = BASE_DIR / "tmp_emails"
-    DEFAULT_FROM_EMAIL = "Church Platform <no-reply@sntalmada.local>"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 
 # segurança mínima para produção

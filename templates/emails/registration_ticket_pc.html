@@ -5,23 +5,18 @@
       <tr>
         <td align="center">
 
-          <!-- Container -->
           <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="background:#ffffff;border:1px solid #e6e6e6;border-radius:16px;overflow:hidden;">
             <tr>
               <td style="padding:0;">
 
-                <!-- Ticket Row -->
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                   <tr>
 
-                    <!-- LEFT -->
-                    <td width="320" valign="top" style="padding:22px 22px 18px 22px; font-family: Arial, Helvetica, sans-serif; color:#111;">
-                      <!-- Badge -->
+                    <td width="320" valign="top" style="padding:22px 22px 18px 22px;font-family:Arial,Helvetica,sans-serif;color:#111;">
                       <span style="display:inline-block;background:#ff5a1f;color:#ffffff;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 12px;border-radius:999px;">
                         Bilhete de Entrada
                       </span>
 
-                      <!-- Event name -->
                       <div style="margin-top:14px;">
                         <div style="font-size:44px;line-height:1.0;font-weight:900;letter-spacing:-1px;">
                           {{ event.title|upper }}
@@ -29,7 +24,6 @@
                         <div style="width:46px;height:4px;background:#ff5a1f;border-radius:999px;margin-top:10px;"></div>
                       </div>
 
-                      <!-- Participant -->
                       <div style="margin-top:18px;">
                         <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:6px;">
                           Participante
@@ -43,7 +37,6 @@
                         </div>
                       </div>
 
-                      <!-- Details -->
                       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:18px;">
                         <tr>
                           <td valign="top" style="padding-right:14px;">
@@ -51,7 +44,7 @@
                               Data
                             </div>
                             <div style="font-size:14px;font-weight:700;color:#111;">
-                              {{ event.date|date:"d F Y" }}
+                              {{ event.date|date:"d/m/Y" }}
                             </div>
                           </td>
 
@@ -68,7 +61,7 @@
                             <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;margin-bottom:6px;">
                               Bilhete Nº
                             </div>
-                            <div style="font-size:14px;font-weight:800;color:#ff5a1f;font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;">
+                            <div style="font-size:14px;font-weight:800;color:#ff5a1f;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,'Liberation Mono','Courier New',monospace;">
                               {% if ticket_code %}
                                 {{ ticket_code }}
                               {% else %}
@@ -79,7 +72,6 @@
                         </tr>
                       </table>
 
-                      <!-- Status line -->
                       <div style="margin-top:14px;font-size:12px;color:#666;">
                         {% if event.price == 0 %}
                           Estado: <strong style="color:#111;">Confirmado (Grátis)</strong>
@@ -92,7 +84,6 @@
                         {% endif %}
                       </div>
 
-                      <!-- CTA -->
                       <div style="margin-top:16px;">
                         <a href="{{ manage_url }}"
                            style="display:inline-block;background:#111;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:700;">
@@ -101,24 +92,22 @@
                       </div>
                     </td>
 
-                    <!-- MIDDLE (event image) -->
                     <td width="170" valign="top" style="padding:22px 10px 18px 0;">
-                      {% if has_banner %}
+                      {% if event.banner_image %}
                         <img
-                          src="cid:banner_img"
+                          src="{{ event.banner_image.url }}"
                           width="160"
                           height="240"
                           alt="Banner do evento {{ event.title }}"
                           style="display:block;width:160px;height:240px;border-radius:14px;object-fit:cover;"
                         >
                       {% else %}
-                        <div style="width:160px;height:240px;border-radius:14px;background:#f0f0f0;border:1px solid #e6e6e6;font-family:Arial,Helvetica,sans-serif;color:#888;font-size:12px;display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;">
-                          Sem imagem<br>do evento
+                        <div style="width:160px;height:240px;border-radius:14px;background:#f0f0f0;border:1px solid #e6e6e6;font-family:Arial,Helvetica,sans-serif;color:#888;font-size:12px;text-align:center;padding:10px;box-sizing:border-box;">
+                          Sem imagem do evento
                         </div>
                       {% endif %}
                     </td>
 
-                    <!-- PERFORATION -->
                     <td width="22" valign="top" style="padding:0;">
                       <table role="presentation" width="22" height="100%" cellspacing="0" cellpadding="0">
                         <tr>
@@ -139,23 +128,20 @@
                       </table>
                     </td>
 
-                    <!-- RIGHT (QR) -->
-                    <td width="96" valign="top" style="padding:22px 22px 18px 10px; font-family:Arial,Helvetica,sans-serif;">
-                      <div style="width:92px;height:92px;background:#111;border-radius:12px;padding:8px;margin:0 auto;">
-                        <div style="width:100%;height:100%;background:#fff;border-radius:8px;text-align:center;">
-                          <div style="font-size:10px;line-height:76px;color:#111;font-family: ui-monospace, Menlo, Consolas, monospace;">
-                            <img
-                              src="cid:qr_img"
-                              width="92"
-                              height="92"
-                              alt="QR Code"
-                              style="display:block;width:92px;height:92px;border-radius:8px;"
-                            >
-                          </div>
+                    <td width="96" valign="top" style="padding:22px 22px 18px 10px;font-family:Arial,Helvetica,sans-serif;">
+                      <div style="width:92px;height:92px;background:#111;border-radius:12px;padding:8px;margin:0 auto;box-sizing:border-box;">
+                        <div style="width:100%;height:100%;background:#fff;border-radius:8px;">
+                          <img
+                            src="data:image/png;base64,{{ qr_base64 }}"
+                            width="76"
+                            height="76"
+                            alt="QR Code"
+                            style="display:block;width:76px;height:76px;border-radius:8px;margin:8px auto;"
+                          >
                         </div>
                       </div>
 
-                      <div style="margin-top:10px;text-align:center;font-size:10px;color:#888;font-family: ui-monospace, Menlo, Consolas, monospace;">
+                      <div style="margin-top:10px;text-align:center;font-size:10px;color:#888;font-family:ui-monospace,Menlo,Consolas,monospace;">
                         {% if ticket_code %}
                           {{ ticket_code }}
                         {% else %}
@@ -171,7 +157,6 @@
             </tr>
           </table>
 
-          <!-- Footer note -->
           <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="margin-top:10px;">
             <tr>
               <td style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#999;text-align:center;">
