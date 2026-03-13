@@ -263,7 +263,7 @@ def scan_checkin_api(request):
             status=409,
         )
 
-    participant.mark_checked_in(True)
+    participant.mark_checked_in()
     participant.save(update_fields=["checked_in", "checked_in_at"])
 
     return JsonResponse(
