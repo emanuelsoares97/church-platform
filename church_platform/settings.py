@@ -164,7 +164,7 @@ SITE_URL = config("SITE_URL", default="http://127.0.0.1:8000")
 # define se o sistema envia emails reais por smtp
 # quando false, os emails ficam guardados em ficheiro
 USE_SMTP_EMAIL = config("USE_SMTP_EMAIL", default=False, cast=bool)
-EMAIL_TIMEOUT = 10
+
 if USE_SMTP_EMAIL:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = "smtp.gmail.com"
@@ -176,7 +176,7 @@ if USE_SMTP_EMAIL:
         "DEFAULT_FROM_EMAIL",
         default=f"Church Platform <{EMAIL_HOST_USER}>",
     )
-    EMAIL_TIMEOUT = 20
+    EMAIL_TIMEOUT = 10
 else:
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
     EMAIL_FILE_PATH = BASE_DIR / "tmp_emails"
