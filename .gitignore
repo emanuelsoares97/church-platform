@@ -7,6 +7,6 @@ staticfiles/
 .DS_Store
 
 media/
-img/
+
 tmp_emails/
 staticfiles/
