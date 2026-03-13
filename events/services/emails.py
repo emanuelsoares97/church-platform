@@ -1,39 +1,10 @@
 from __future__ import annotations
 
-import base64
-from io import BytesIO
-
-import qrcode
 import requests
 from django.conf import settings
 from django.template.loader import render_to_string
 
 from events.models import Registration
-
-
-# gera o qr code em png
-def _make_qr_png(data: str, box_size: int = 6, border: int = 2) -> bytes:
-    qr = qrcode.QRCode(
-        version=None,
-        error_correction=qrcode.constants.ERROR_CORRECT_M,
-        box_size=box_size,
-        border=border,
-    )
-
-    qr.add_data(data)
-    qr.make(fit=True)
-
-    img = qr.make_image(fill_color="black", back_color="white")
-
-    buffer = BytesIO()
-    img.save(buffer, format="PNG")
-
-    return buffer.getvalue()
-
-
-# converte bytes para base64 para usar diretamente no html
-def _to_base64(data: bytes) -> str:
-    return base64.b64encode(data).decode("utf-8")
 
 
 # envia o email através da api do resend
@@ -97,9 +68,7 @@ def send_registration_tickets_email(registration_id: int) -> None:
         to_email = reg.buyer_email
 
         subject = f"Bilhete — {reg.event.title} — {participant_name}"
-
-        qr_target = f"{settings.SITE_URL}/gestao/t/{ticket_code}/"
-        qr_base64 = _to_base64(_make_qr_png(qr_target))
+        qr_image_url = f"{settings.SITE_URL}/ticket/{ticket_code}/qr.png"
 
         context = {
             "reg": reg,
@@ -108,7 +77,7 @@ def send_registration_tickets_email(registration_id: int) -> None:
             "site_name": "Church Platform",
             "participant_name": participant_name,
             "ticket_code": ticket_code,
-            "qr_base64": qr_base64,
+            "qr_image_url": qr_image_url,
         }
 
         html = render_to_string("emails/registration_ticket.html", context)

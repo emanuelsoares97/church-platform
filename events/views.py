@@ -1,12 +1,18 @@
+from io import BytesIO
+import threading
+
+import qrcode
+from django.conf import settings
 from django.contrib import messages
 from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 from .forms import RegistrationForm
 from .models import Event, Registration, Participant
 from events.services.emails import send_registration_tickets_email
-import threading
+
 
 def make_ticket_code(registration: Registration, idx: int) -> str:
     """gera código único para participante baseado na inscrição."""
@@ -65,7 +71,7 @@ def event_detail(request, slug):
 
             # se for grátis fica tudo pago
             if is_free:
-                registration.paid_amount = registration.total_price  # 0.00
+                registration.paid_amount = registration.total_price
                 registration.is_paid = True
                 registration.paid_at = now
                 registration.save(update_fields=["paid_amount", "is_paid", "paid_at"])
@@ -77,7 +83,7 @@ def event_detail(request, slug):
                     args=(registration.id,),
                     daemon=True,
                 ).start()
-)
+            )
 
             messages.success(request, "Inscrição registada com sucesso")
             return redirect(
@@ -117,3 +123,26 @@ def registration_success(request, slug, public_id):
         "participants": registration.participants.all(),
     }
     return render(request, "events/registration_success.html", context)
+
+
+def ticket_qr_image(request, ticket_code):
+    """gera o qr code do participante e devolve como imagem png."""
+    participant = get_object_or_404(Participant, ticket_code=ticket_code)
+
+    qr_target = f"{settings.SITE_URL}/gestao/t/{participant.ticket_code}/"
+
+    qr = qrcode.QRCode(
+        version=None,
+        error_correction=qrcode.constants.ERROR_CORRECT_M,
+        box_size=6,
+        border=2,
+    )
+    qr.add_data(qr_target)
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    buffer = BytesIO()
+    img.save(buffer, format="PNG")
+
+    return HttpResponse(buffer.getvalue(), content_type="image/png")
