@@ -12,12 +12,6 @@
      data-price="{{ event.price }}"
      data-banner-url="{% if event.banner_image %}{{ event.banner_image.url }}{% endif %}">
 
-  <!-- SUB-NAV só desta página (opcional e útil no mobile) -->
-  <div class="eventSubnav">
-    <a class="btn secondary sm" href="#sobre">Sobre</a>
-    <a class="btn secondary sm" href="#inscricao">Inscrição</a>
-    <a class="btn secondary sm" href="#contactos">Contactos</a>
-  </div>
 
   <div class="grid">
     <!-- COLUNA ESQUERDA -->
@@ -45,10 +39,7 @@
             {% endif %}
           </div>
 
-          <div class="ctaRow">
-            <a class="btn" href="#inscricao">Inscrever-me</a>
-            <a class="btn secondary" href="#sobre">Ver detalhes</a>
-          </div>
+
         </div>
 
         <div class="section" id="sobre">

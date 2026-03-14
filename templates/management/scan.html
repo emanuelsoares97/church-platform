@@ -1,24 +1,27 @@
 {% extends "management/base_management.html" %}
 {% load static %}
 {% block mgmt_title %}Scan QR{% endblock %}
+{% block mgmt_extra_head %}
+<link rel="stylesheet" href="{% static 'css/qr_scanner.css' %}">
+{% endblock %}
 
 {% block mgmt_content %}
 <section class="scanPage">
   <div class="scanHero">
-    <div>
+    <!--<div>
       <p class="sectionEyebrow">Receção</p>
       <h2 class="sectionTitle">Leitura de bilhetes</h2>
       <p class="sectionText">
         Aponta a câmara ao QR Code do bilhete para validar e fazer o check-in automático.
         Se necessário, podes inserir o código manualmente.
       </p>
-    </div>
+    </div>-->
 
     <div class="scanHintCard">
       <div class="scanHintIcon">📷</div>
       <div>
         <strong>Check-in automático</strong>
-        <p class="muted">Depois da leitura, o sistema valida o bilhete e dá feedback imediato no ecrã.</p>
+        <p class="muted">Depois da leitura do QR Code, o sistema valida o bilhete e dá feedback imediato no ecrã.</p>
       </div>
     </div>
   </div>
