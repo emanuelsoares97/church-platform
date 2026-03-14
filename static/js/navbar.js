@@ -1,44 +1,81 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const btn = document.querySelector(".nav-toggle");
+
+  const btn = document.querySelector(".navToggle");
   const menu = document.querySelector("#nav-menu");
-  if (!btn || !menu) return;
+  const overlay = document.querySelector("#nav-overlay");
+
+  if (!btn || !menu || !overlay) return;
 
   const closeMenu = () => {
+
     menu.classList.remove("is-open");
+    overlay.classList.remove("is-open");
+    btn.classList.remove("is-open");
+
+    document.body.classList.remove("nav-open");
+
     btn.setAttribute("aria-expanded", "false");
     btn.setAttribute("aria-label", "Abrir menu");
   };
 
   const openMenu = () => {
+
     menu.classList.add("is-open");
+    overlay.classList.add("is-open");
+    btn.classList.add("is-open");
+
+    document.body.classList.add("nav-open");
+
     btn.setAttribute("aria-expanded", "true");
     btn.setAttribute("aria-label", "Fechar menu");
   };
 
   btn.addEventListener("click", (e) => {
+
     e.stopPropagation();
+
     const isOpen = menu.classList.contains("is-open");
+
     isOpen ? closeMenu() : openMenu();
+
   });
 
-  // Fecha ao clicar num link
   menu.addEventListener("click", (e) => {
-    if (e.target.closest("a")) closeMenu();
+
+    if (e.target.closest("a")) {
+      closeMenu();
+    }
+
   });
 
-  // Fecha ao clicar fora
-  document.addEventListener("click", (e) => {
-    if (e.target.closest(".topbarInner")) return;
-    closeMenu();
-  });
+  overlay.addEventListener("click", closeMenu);
 
-  // Fecha com ESC
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") closeMenu();
+
+    if (e.key === "Escape") {
+      closeMenu();
+    }
+
   });
 
-  // Se sair do mobile, fecha
   window.addEventListener("resize", () => {
-    if (window.innerWidth > 768) closeMenu();
+
+    if (window.innerWidth > 900) {
+      closeMenu();
+    }
+
   });
+
+});
+
+const header = document.querySelector(".siteHeader");
+
+window.addEventListener("scroll", () => {
+
+  if (window.scrollY > 40) {
+    header.classList.add("scrolled");
+  } else {
+    header.classList.remove("scrolled");
+  }
+
 });

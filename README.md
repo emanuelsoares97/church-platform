@@ -1,7 +1,7 @@
 
-# Church Platform — Sistema de Inscrições
+# Church Platform 
 
-Sistema web de gestão de eventos e inscrições desenvolvido em Django para a igreja Church Platform.
+Sistema web de gestão de eventos e inscrições desenvolvido em Django para a igreja .
 
 O projeto permite:
 
@@ -71,12 +71,12 @@ python manage.py runserver
 
 ## O que existe de novo / o que vale destacar
 
-### ✅ AJAX no painel de gestão
+###  AJAX no painel de gestão
 - Toggles de pagamento (`toggle-participant-paid`) e check-in (`toggle-participant-checkin`) funcionam via AJAX;
 - Evita reloads e mantém a interface fluida;
 - Tem mensagens de sucesso/erro exibidas diretamente na página.
 
-### ✅ Testes automatizados
+### Testes automatizados
 - Cobertura completa para:
   - validação das views públicas
   - lógica de check-in / pagamento
@@ -86,7 +86,7 @@ python manage.py runserver
   python manage.py test
   ```
 
-### ✅ Segurança e regras de negócio aplicadas
+### Segurança e regras de negócio aplicadas
 - Check-in bloqueado se participante não estiver pago.
 - Registro de pagamento feito por inscrição (todos os participantes são pagos juntos).
 - Eventos grátis marcam automaticamente inscrição + participantes como pagos.

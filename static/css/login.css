@@ -10,7 +10,7 @@
   width: min(520px, 100%);
   border:1px solid var(--line);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+  background: linear-gradient(180deg, var(--card-gradient-top), var(--card-gradient-bottom));
   box-shadow: var(--shadow);
   backdrop-filter: blur(10px);
   padding: 26px;
@@ -43,15 +43,15 @@ input{
   padding:12px 12px;
   border-radius:14px;
   border:1px solid var(--line);
-  background: rgba(0,0,0,.18);
+  background: var(--bg-dark);
   color: var(--text);
   outline:none;
   width:100%;
 }
 
 input:focus{
-  border-color: rgba(249,115,22,.7);
-  box-shadow: 0 0 0 4px rgba(249,115,22,.16);
+  border-color: var(--accent-focus);
+  box-shadow: 0 0 0 4px var(--accent-focus-shadow);
 }
 
 .btn{
@@ -63,8 +63,8 @@ input:focus{
   margin: 8px 0 12px;
   padding: 10px 12px;
   border-radius: 14px;
-  border: 1px solid rgba(239,68,68,.55);
-  background: rgba(239,68,68,.12);
-  color: rgba(255,255,255,.92);
+  border: 1px solid var(--error);
+  background: var(--error-bg);
+  color: var(--text);
   font-size: 13px;
 }

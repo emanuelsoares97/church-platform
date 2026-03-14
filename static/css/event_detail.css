@@ -26,7 +26,7 @@
 .card{
   border:1px solid var(--line);
   border-radius: var(--radius);
-  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+  background: linear-gradient(180deg, var(--card-gradient-top), var(--card-gradient-bottom));
   box-shadow: var(--shadow);
   overflow:hidden;
 }
@@ -34,7 +34,7 @@
 /* HERO */
 .hero{
   position:relative;
-  background: linear-gradient(180deg, rgba(11,18,32,.85), rgba(11,18,32,.95));
+  background: linear-gradient(180deg, var(--bg-alpha), var(--bg-alpha2));
 }
 
 /* overlay "flames" / vermelho sem mexer no body */
@@ -43,8 +43,8 @@
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at 50% 20%, rgba(239,68,68,.18), transparent 60%),
-    radial-gradient(circle at 50% 100%, rgba(220,38,38,.15), transparent 70%);
+    radial-gradient(circle at 50% 20%, var(--error-overlay), transparent 60%),
+    radial-gradient(circle at 50% 100%, var(--error-overlay-2), transparent 70%);
   pointer-events:none;
   z-index:0;
 }
@@ -73,7 +73,7 @@
   padding:8px 12px;
   border-radius:999px;
   border:1px solid var(--line);
-  background: rgba(0,0,0,.18);
+  background: var(--bg-dark);
   color: var(--muted);
   width:fit-content;
   font-size:13px;
@@ -81,7 +81,7 @@
 .badge .dot{
   width:10px;height:10px;border-radius:999px;
   background: var(--ok);
-  box-shadow: 0 0 0 6px rgba(34,197,94,.15);
+  box-shadow: 0 0 0 6px var(--success-shadow);
 }
 
 .hero h1{
@@ -108,7 +108,7 @@
   padding:8px 10px;
   border-radius:999px;
   border:1px solid var(--line);
-  background: rgba(0,0,0,.12);
+  background: var(--bg-dark-light);
   font-size:13px;
   color: var(--muted);
 }
@@ -170,14 +170,14 @@ input[type="number"]{
   padding:12px 12px;
   border-radius:14px;
   border:1px solid var(--line);
-  background: rgba(0,0,0,.18);
+  background: var(--bg-dark);
   color: var(--text);
   outline:none;
   width:100%;
 }
 input:focus{
-  border-color: rgba(249,115,22,.7);
-  box-shadow: 0 0 0 4px rgba(249,115,22,.16);
+  border-color: var(--accent-focus);
+  box-shadow: 0 0 0 4px var(--accent-focus-shadow);
 }
 
 .row{
@@ -196,19 +196,19 @@ input:focus{
   gap:10px;
   border:1px solid var(--line);
   border-radius:14px;
-  background: rgba(0,0,0,.18);
+  background: var(--bg-dark);
   padding:8px 10px;
 }
 .qty button{
   width:38px;height:38px;
   border-radius:12px;
   border:1px solid var(--line);
-  background: rgba(255,255,255,.06);
+  background: var(--card);
   color: var(--text);
   font-size:20px;
   cursor:pointer;
 }
-.qty button:hover{ background: rgba(255,255,255,.10); }
+.qty button:hover{ background: var(--card-hover); }
 
 .qty input[type="number"]{
   width:70px;
@@ -232,7 +232,7 @@ input:focus{
   padding:12px 12px;
   border-radius:14px;
   border:1px solid var(--line);
-  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  background: linear-gradient(180deg, var(--card-gradient-top), var(--card-gradient-bottom));
   color: var(--muted);
 }
 .totals strong{
@@ -254,7 +254,7 @@ input:focus{
   border:1px solid var(--line);
   border-radius:14px;
   padding:10px 12px;
-  background: rgba(0,0,0,.18);
+  background: var(--bg-dark);
   cursor:pointer;
   user-select:none;
 }
@@ -262,8 +262,8 @@ input:focus{
 
 .payBox{
   margin-top:10px;
-  border:1px dashed rgba(249,115,22,.6);
-  background: rgba(249,115,22,.10);
+  border:1px dashed var(--accent-border-hover);
+  background: var(--accent-bg);
   padding:12px;
   border-radius:14px;
   color: var(--muted);
@@ -282,7 +282,7 @@ input:focus{
 
 .note{
   margin-top:14px;
-  color: rgba(255,255,255,.58);
+  color: var(--muted-strong);
   font-size:12px;
 }
 
@@ -292,9 +292,9 @@ input:focus{
   margin: 8px 0 10px;
   padding: 10px 12px;
   border-radius: 14px;
-  border: 1px solid rgba(239,68,68,.55);
-  background: rgba(239,68,68,.12);
-  color: rgba(255,255,255,.92);
+  border: 1px solid var(--error);
+  background: var(--error-bg);
+  color: var(--text);
   font-size: 13px;
 }
 .formError.show{ display:block; }

@@ -1,13 +1,4 @@
-:root{
-  --bg:#0b1220;
-  --text: rgba(255,255,255,.92);
-  --muted: rgba(255,255,255,.72);
-  --line: rgba(255,255,255,.14);
-  --accent:#f97316;
-  --accent2:#ef4444;
-  --shadow: 0 12px 40px rgba(0,0,0,.35);
-  --radius: 18px;
-}
+/* Colors inherited from static/css/global.css */
 
 .eventsWrap{
   max-width:1100px;
@@ -44,7 +35,7 @@
   border:1px solid var(--line);
   border-radius: var(--radius);
   overflow:hidden;
-  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+  background: linear-gradient(180deg, var(--card-gradient-top), var(--card-gradient-bottom));
   box-shadow: var(--shadow);
   transition: transform .25s ease, box-shadow .25s ease, border .25s ease;
   display:flex;
@@ -53,8 +44,8 @@
 
 .eventCard:hover{
   transform: translateY(-4px);
-  border-color: rgba(249,115,22,.6);
-  box-shadow: 0 18px 50px rgba(0,0,0,.45);
+  border-color: var(--accent-border-hover);
+  box-shadow: var(--shadow-strong);
 }
 
 .eventImage{
@@ -65,8 +56,8 @@
 
 .eventImage.fallback{
   background:
-    radial-gradient(circle at 30% 30%, rgba(249,115,22,.35), transparent 60%),
-    radial-gradient(circle at 80% 20%, rgba(239,68,68,.35), transparent 60%),
+    radial-gradient(circle at 30% 30%, var(--accent-radial), transparent 60%),
+    radial-gradient(circle at 80% 20%, var(--error-radial), transparent 60%),
     var(--bg);
 }
 

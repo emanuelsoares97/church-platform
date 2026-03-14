@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Unidos com Cristo{% endblock %}
+
+{% block content %}
+<section class="heroSection">
+  <div class="container heroGrid">
+    <div class="heroContent">
+      <span class="sectionBadge">BEM-VINDO</span>
+
+      <h1>
+        Uma igreja para adorar, servir e crescer em Cristo
+      </h1>
+
+      <p>
+        Bem-vindo à Igreja Unidos com Cristo. Um lugar de comunhão, esperança e
+        transformação, onde famílias, jovens e crianças podem caminhar juntas na fé
+        e conhecer mais de Jesus.
+      </p>
+
+      <div class="heroActions">
+        <a href="#cultos" class="btn btnPrimary">Ver horários</a>
+        <a href="#contactos" class="btn btnSecondary">Entrar em contacto</a>
+      </div>
+    </div>
+
+    <aside class="heroSideCard">
+      <h3>Próximo encontro</h3>
+      <p class="heroSideCard__highlight">Domingo · 10:00</p>
+      <p>
+        Louvor, palavra e comunhão para toda a família.
+      </p>
+
+      <div class="heroSideCard__box">
+        <p>
+          <strong>Morada</strong><br>
+          Rua Luís de Queiroz, n° 26<br>
+          Almada, Portugal
+        </p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="sectionBlock" id="sobre">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">QUEM SOMOS</span>
+      <h2>Uma comunidade focada em Cristo</h2>
+      <p>
+        Somos uma comunidade cristã focada em viver o Evangelho com simplicidade,
+        amor e verdade, servindo Deus e cuidando de pessoas.
+      </p>
+    </div>
+
+    <div class="cardGrid">
+      <article class="infoCard">
+        <h3>Adoração</h3>
+        <p>
+          Valorizamos momentos de louvor e entrega, criando um ambiente onde cada
+          pessoa pode aproximar-se de Deus.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3>Palavra</h3>
+        <p>
+          Ensinamos a Bíblia de forma clara e prática, para que a fé seja vivida
+          no dia a dia com propósito.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3>Comunhão</h3>
+        <p>
+          Promovemos relacionamento, cuidado mútuo e crescimento espiritual em
+          todas as fases da vida.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock" id="cultos">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">CULTOS</span>
+      <h2>Horários dos cultos</h2>
+      <p>
+        Estes horários podem ser ajustados depois de acordo com a programação real da igreja.
+      </p>
+    </div>
+
+    <div class="timeGrid">
+      <div class="timeCard">
+        <strong>Domingo</strong>
+        <span>10:00 · Culto de Celebração</span>
+      </div>
+
+      <div class="timeCard">
+        <strong>Quarta-feira</strong>
+        <span>20:00 · Culto de Ensino e Oração</span>
+      </div>
+
+      <div class="timeCard">
+        <strong>Sexta-feira</strong>
+        <span>20:30 · Reunião de Jovens</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock" id="ministerios">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">MINISTÉRIOS</span>
+      <h2>Áreas da igreja</h2>
+      <p>
+        Espaços onde cada pessoa pode ser acolhida, discipulada e servir com os dons
+        que Deus lhe deu.
+      </p>
+    </div>
+
+    <div class="cardGrid">
+      <article class="infoCard">
+        <h3>Crianças</h3>
+        <p>
+          Ensino bíblico, actividades e acompanhamento adequado para os mais pequenos
+          crescerem na fé.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3>Jovens</h3>
+        <p>
+          Um espaço para comunhão, discipulado, amizade e fortalecimento espiritual
+          numa fase importante da vida.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3>Famílias</h3>
+        <p>
+          Apoio, oração e direccionamento para fortalecer lares e construir
+          relacionamentos saudáveis em Cristo.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock" id="eventos">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">EVENTOS</span>
+      <h2>Eventos em destaque</h2>
+      <p>
+        Acompanhe os próximos momentos especiais da igreja e participe connosco.
+      </p>
+    </div>
+
+    {% if featured_events %}
+      <div class="cardGrid">
+        {% for event in featured_events %}
+          <article class="infoCard eventCard">
+            <h3>{{ event.title }}</h3>
+
+            <p class="eventMeta">
+              {% if event.date %}{{ event.date }}{% endif %}
+              {% if event.location %} · {{ event.location }}{% endif %}
+            </p>
+
+            <p>
+              Consulte os detalhes do evento, informações importantes e inscrição,
+              quando disponível.
+            </p>
+
+            <div class="eventCardActions">
+              <a href="{% url 'events:event_detail' event.slug %}" class="btn btnSecondary">
+                Ver evento
+              </a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+
+      <div class="sectionActionCenter">
+        <a href="{% url 'events:event_list' %}" class="btn btnPrimary">Ver todos os eventos</a>
+      </div>
+    {% else %}
+      <div class="emptyCard">
+        <h3>Sem eventos em destaque neste momento</h3>
+        <p>
+          Em breve teremos novos momentos e actividades disponíveis para participação.
+        </p>
+        <a href="{% url 'events:event_list' %}" class="btn btnSecondary">Ir para eventos</a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="sectionBlock">
+  <div class="container">
+    <div class="ctaBox">
+      <h2>És bem-vindo à nossa comunidade</h2>
+      <p>
+        Quer estejas a visitar uma igreja pela primeira vez ou procures um lugar
+        para congregar, teremos alegria em receber-te.
+      </p>
+
+      <a href="#contactos" class="btn btnPrimary">Falar connosco</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

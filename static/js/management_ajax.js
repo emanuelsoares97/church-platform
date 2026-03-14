@@ -6,7 +6,7 @@
       const button = this.querySelector('button');
       const originalText = button.innerHTML;
       button.disabled = true;
-      button.innerHTML = '⏳ Processando...';
+      button.innerHTML = '⏳ A processar...';
 
       try {
         const response = await fetch(this.action, {

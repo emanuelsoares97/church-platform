@@ -16,6 +16,9 @@ urlpatterns = [
 
     # gestão
     path("gestao/", include(("events.management_urls", "events_mgmt"), namespace="events_mgmt")),
+    
+    #paginas principais
+    path("", include("core.urls")),
 ]
 
 if settings.DEBUG:
