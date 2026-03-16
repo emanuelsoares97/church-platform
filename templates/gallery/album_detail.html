@@ -1,39 +1,45 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}{{ album.title }} • Galeria{% endblock %}
+
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/gallery.css' %}">
 {% endblock %}
 
-{% block title %}{{ album.title }} • Galeria{% endblock %}
-
 {% block content %}
 <section class="sectionBlock">
   <div class="container">
-    <div class="sectionTitle">
-      <span class="sectionBadge">ÁLBUM</span>
-      <h2>{{ album.title }}</h2>
 
-      {% if album.album_date %}
-        <p>{{ album.album_date }}</p>
-      {% endif %}
+    <section class="galleryHero">
+      <div class="galleryHeroContent">
+        <span class="sectionBadge">ÁLBUM</span>
+        <h1>{{ album.title }}</h1>
 
-      {% if album.description %}
-        <p style="margin-top: 10px;">{{ album.description }}</p>
-      {% endif %}
-    </div>
+        {% if album.album_date %}
+          <p class="galleryHeroDate">{{ album.album_date }}</p>
+        {% endif %}
+
+        {% if album.description %}
+          <p class="galleryHeroDescription">{{ album.description }}</p>
+        {% endif %}
+      </div>
+    </section>
 
     {% if user.is_authenticated %}
       <section class="galleryUploadBox">
-        <h3>Adicionar fotos</h3>
-        <p>Pode selecionar várias fotos ao mesmo tempo.</p>
+        <div class="galleryUploadHeader">
+          <h3>Adicionar fotos</h3>
+          <p>Pode selecionar várias fotos ao mesmo tempo.</p>
+        </div>
 
-        <form method="POST" enctype="multipart/form-data">
+        <form method="POST" enctype="multipart/form-data" class="galleryUploadForm">
           {% csrf_token %}
 
-          <input type="file" name="images" multiple accept="image/*">
-
-          <br><br>
+          <label class="galleryFileLabel">
+            <span>Selecionar imagens</span>
+            <input type="file" name="images" multiple accept="image/*">
+          </label>
 
           <button type="submit" class="btn">
             Enviar fotos
@@ -46,19 +52,23 @@
       <div class="galleryGrid">
         {% for image in images %}
           <article class="galleryCard">
-
-            <img 
-              src="{{ image.image.url }}"
-              data-full="{{ image.image.url }}"
-              alt="{{ album.title }}"
-              class="galleryImage"
-            >
-
+            <div class="galleryImageWrap">
+              <img
+                src="{{ image.image.url }}"
+                data-full="{{ image.image.url }}"
+                alt="{{ album.title }}"
+                class="galleryImage"
+                loading="lazy"
+              >
+              <div class="galleryOverlay">
+                <span>Ver foto</span>
+              </div>
+            </div>
           </article>
         {% endfor %}
       </div>
     {% else %}
-      <div class="emptyCard">
+      <div class="emptyCard galleryEmptyCard">
         <h3>Este álbum ainda não tem fotos</h3>
         <p>Quando forem adicionadas imagens, vão aparecer aqui.</p>
       </div>
@@ -67,21 +77,33 @@
 </section>
 
 <div id="galleryModal" class="galleryModal">
-
   <span class="galleryClose">&times;</span>
 
-  <img class="galleryModalImage" id="galleryModalImage">
+  <button type="button" class="galleryNav galleryPrev" aria-label="Imagem anterior">
+    &#10094;
+  </button>
 
-  <a id="galleryDownloadBtn" class="galleryDownloadBtn">
-    Download
+  <div class="galleryModalContent">
+    <div class="galleryCounter" id="galleryCounter">1 / 1</div>
+
+    <img
+      class="galleryModalImage"
+      id="galleryModalImage"
+      alt="Imagem ampliada da galeria"
+    >
+  </div>
+
+  <button type="button" class="galleryNav galleryNext" aria-label="Próxima imagem">
+    &#10095;
+  </button>
+
+  <a id="galleryDownloadBtn" class="galleryDownloadBtn" aria-label="Descarregar imagem">
+    <span class="galleryDownloadIcon">⬇</span>
+    <span>Download</span>
   </a>
-
 </div>
+{% endblock %}
 
 {% block extra_js %}
-<script 
-src="{% static 'js/gallery.js' %}">
-
-</script>
-{% endblock %}
+<script src="{% static 'js/gallery.js' %}"></script>
 {% endblock %}

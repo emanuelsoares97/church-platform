@@ -38,11 +38,12 @@
       </button>
 
       <nav class="navMenu navMenu--desktop">
-        <a href="{% url 'core:home' %}">Início</a>
-        <a href="{% url 'events:event_list' %}">Eventos</a>
+        <a href="{% url 'core:home' %}">Início</a>       
         <a href="#sobre">Sobre</a>
         <a href="#cultos">Cultos</a>
         <a href="#contactos">Contactos</a>
+        <a href="{% url 'gallery:album_list' %}">Galeria</a>
+        <a href="{% url 'events:event_list' %}">Eventos</a>
         <a href="{% url 'events_mgmt:home' %}" class="navBtn">Gestão</a>
       </nav>
     </div>
@@ -52,11 +53,12 @@
   <div class="navOverlay" id="nav-overlay"></div>
 
   <nav class="navMenuMobile" id="nav-menu">
-    <a href="{% url 'core:home' %}">Início</a>
-    <a href="{% url 'events:event_list' %}">Eventos</a>
+    <a href="{% url 'core:home' %}">Início</a>       
     <a href="#sobre">Sobre</a>
     <a href="#cultos">Cultos</a>
     <a href="#contactos">Contactos</a>
+    <a href="{% url 'gallery:album_list' %}">Galeria</a>
+    <a href="{% url 'events:event_list' %}">Eventos</a>
     <a href="{% url 'events_mgmt:home' %}" class="navBtn">Gestão</a>
   </nav>
 

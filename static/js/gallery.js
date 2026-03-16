@@ -1,16 +1,21 @@
 document.addEventListener("DOMContentLoaded", () => {
-
   const modal = document.getElementById("galleryModal")
   const modalImg = document.getElementById("galleryModalImage")
+  const counter = document.getElementById("galleryCounter")
   const downloadBtn = document.getElementById("galleryDownloadBtn")
   const closeBtn = document.querySelector(".galleryClose")
+  const prevBtn = document.querySelector(".galleryPrev")
+  const nextBtn = document.querySelector(".galleryNext")
   const images = document.querySelectorAll(".galleryImage")
 
-  function buildDownloadUrl(url, filename){
+  let currentIndex = 0
+  let touchStartX = 0
+  let touchEndX = 0
 
+  function buildDownloadUrl(url, filename) {
     const marker = "/image/upload/"
 
-    if(!url.includes(marker)){
+    if (!url.includes(marker)) {
       return url
     }
 
@@ -18,39 +23,132 @@ document.addEventListener("DOMContentLoaded", () => {
       marker,
       `${marker}fl_attachment:${filename}/`
     )
-
   }
 
-  images.forEach((img) => {
-
-    img.addEventListener("click", () => {
-
-      const src = img.dataset.full
-
-      modal.style.display = "flex"
-      modalImg.src = src
-
-      // extrai nome real do ficheiro da imagem
-      const fileNameFromUrl = src.split("/").pop().split(".")[0]
-
-      const filename = `ucc-galeria-${fileNameFromUrl}`
-
-      downloadBtn.href = buildDownloadUrl(src, filename)
-
-    })
-
-  })
-
-  closeBtn.onclick = () => {
-    modal.style.display = "none"
+  function getFileNameFromUrl(url) {
+    const lastPart = url.split("/").pop() || "imagem"
+    return lastPart.split(".")[0]
   }
 
-  modal.onclick = (e) => {
-
-    if(e.target === modal){
-      modal.style.display = "none"
+  function updateCounter() {
+    if (!counter || !images.length) {
+      return
     }
 
+    counter.textContent = `${currentIndex + 1} / ${images.length}`
   }
 
+  function showImage(index) {
+    if (!images.length) {
+      return
+    }
+
+    if (index < 0) {
+      currentIndex = images.length - 1
+    } else if (index >= images.length) {
+      currentIndex = 0
+    } else {
+      currentIndex = index
+    }
+
+    const currentImg = images[currentIndex]
+    const src = currentImg.dataset.full || currentImg.src
+
+    modal.style.display = "flex"
+    modalImg.src = src
+
+    const fileNameFromUrl = getFileNameFromUrl(src)
+    const filename = `ucc-galeria-${fileNameFromUrl}`
+
+    downloadBtn.href = buildDownloadUrl(src, filename)
+
+    updateCounter()
+  }
+
+  function closeModal() {
+    modal.style.display = "none"
+    modalImg.src = ""
+  }
+
+  function showNextImage() {
+    showImage(currentIndex + 1)
+  }
+
+  function showPreviousImage() {
+    showImage(currentIndex - 1)
+  }
+
+  images.forEach((img, index) => {
+    img.addEventListener("click", () => {
+      showImage(index)
+    })
+  })
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", closeModal)
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener("click", (e) => {
+      e.stopPropagation()
+      showPreviousImage()
+    })
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener("click", (e) => {
+      e.stopPropagation()
+      showNextImage()
+    })
+  }
+
+  if (modal) {
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        closeModal()
+      }
+    })
+
+    modal.addEventListener("touchstart", (e) => {
+      touchStartX = e.changedTouches[0].screenX
+    }, { passive: true })
+
+    modal.addEventListener("touchend", (e) => {
+      touchEndX = e.changedTouches[0].screenX
+      handleSwipe()
+    }, { passive: true })
+  }
+
+  function handleSwipe() {
+    const swipeDistance = touchEndX - touchStartX
+    const minSwipeDistance = 50
+
+    if (Math.abs(swipeDistance) < minSwipeDistance) {
+      return
+    }
+
+    if (swipeDistance < 0) {
+      showNextImage()
+    } else {
+      showPreviousImage()
+    }
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (!modal || modal.style.display !== "flex") {
+      return
+    }
+
+    if (e.key === "Escape") {
+      closeModal()
+    }
+
+    if (e.key === "ArrowRight") {
+      showNextImage()
+    }
+
+    if (e.key === "ArrowLeft") {
+      showPreviousImage()
+    }
+  })
 })
