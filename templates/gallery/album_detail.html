@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/gallery.css' %}">
+{% endblock %}
+
+{% block title %}{{ album.title }} • Galeria{% endblock %}
+
+{% block content %}
+<section class="sectionBlock">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">ÁLBUM</span>
+      <h2>{{ album.title }}</h2>
+
+      {% if album.album_date %}
+        <p>{{ album.album_date }}</p>
+      {% endif %}
+
+      {% if album.description %}
+        <p style="margin-top: 10px;">{{ album.description }}</p>
+      {% endif %}
+    </div>
+
+    {% if user.is_authenticated %}
+      <section class="galleryUploadBox">
+        <h3>Adicionar fotos</h3>
+        <p>Pode selecionar várias fotos ao mesmo tempo.</p>
+
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <input type="file" name="images" multiple accept="image/*">
+
+          <br><br>
+
+          <button type="submit" class="btn">
+            Enviar fotos
+          </button>
+        </form>
+      </section>
+    {% endif %}
+
+    {% if images %}
+      <div class="galleryGrid">
+        {% for image in images %}
+          <article class="galleryCard">
+
+            <img 
+              src="{{ image.image.url }}"
+              data-full="{{ image.image.url }}"
+              alt="{{ album.title }}"
+              class="galleryImage"
+            >
+
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="emptyCard">
+        <h3>Este álbum ainda não tem fotos</h3>
+        <p>Quando forem adicionadas imagens, vão aparecer aqui.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<div id="galleryModal" class="galleryModal">
+
+  <span class="galleryClose">&times;</span>
+
+  <img class="galleryModalImage" id="galleryModalImage">
+
+  <a id="galleryDownloadBtn" class="galleryDownloadBtn">
+    Download
+  </a>
+
+</div>
+
+{% block extra_js %}
+<script 
+src="{% static 'js/gallery.js' %}">
+
+</script>
+{% endblock %}
+{% endblock %}

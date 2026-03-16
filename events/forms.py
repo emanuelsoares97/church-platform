@@ -1,5 +1,8 @@
 from django import forms
-from .models import Registration
+
+from core.utils.images import optimize_uploaded_image
+from .models import Event, Registration
+
 
 class RegistrationForm(forms.ModelForm):
     class Meta:
@@ -12,3 +15,17 @@ class RegistrationForm(forms.ModelForm):
             "ticket_qty": forms.NumberInput(attrs={"min": 1, "max": 20, "value": 1}),
             "payment_method": forms.RadioSelect(),
         }
+
+
+class EventAdminForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = "__all__"
+
+    def clean_banner_image(self):
+        image = self.cleaned_data.get("banner_image")
+
+        if not image:
+            return image
+
+        return optimize_uploaded_image(image)

@@ -19,6 +19,9 @@ urlpatterns = [
     
     #paginas principais
     path("", include("core.urls")),
+
+    #galeria
+    path("galeria/", include("gallery.urls")),
 ]
 
 if settings.DEBUG:

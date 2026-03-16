@@ -5,6 +5,7 @@ from cloudinary.models import CloudinaryField
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
+from core.utils.images import optimize_uploaded_image               
 
 
 class Event(models.Model):

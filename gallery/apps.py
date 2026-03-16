@@ -1,8 +1,6 @@
 from django.apps import AppConfig
-from django.contrib import admin
 
 
-class EventsConfig(AppConfig):
+class GalleryConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'events'
-
+    name = 'gallery'

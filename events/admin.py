@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+from .forms import EventAdminForm
 from .models import Event, Registration, Participant
 
 
@@ -9,6 +11,7 @@ class ParticipantInline(admin.TabularInline):
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
+    form = EventAdminForm
     list_display = ("title", "date", "location", "price", "is_active", "banner_status")
     list_filter = ("is_active", "date")
     search_fields = ("title", "location")
@@ -37,6 +40,7 @@ class RegistrationAdmin(admin.ModelAdmin):
             Participant.objects.bulk_create(
                 [Participant(registration=obj, full_name="") for _ in range(missing)]
             )
+
 
 @admin.register(Participant)
 class ParticipantAdmin(admin.ModelAdmin):
