@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Criar álbum • Galeria{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/gallery.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="sectionBlock">
+  <div class="container">
+    <section class="galleryHero">
+      <div class="galleryHeroContent">
+        <span class="sectionBadge">GALERIA</span>
+        <h1>Criar novo álbum</h1>
+        <p class="galleryHeroDescription">
+          Cria um novo álbum para guardar fotos de cultos, reuniões e momentos especiais da igreja.
+        </p>
+      </div>
+    </section>
+
+    <section class="galleryCreateBox">
+      <form method="POST" class="galleryCreateForm">
+        {% csrf_token %}
+
+        <div class="galleryFormGrid">
+          <div class="galleryField">
+            <label for="{{ form.title.id_for_label }}">Título</label>
+            {{ form.title }}
+            {% if form.title.errors %}
+              <div class="formError">{{ form.title.errors }}</div>
+            {% endif %}
+          </div>
+
+          <div class="galleryField">
+            <label for="{{ form.album_date.id_for_label }}">Data</label>
+            {{ form.album_date }}
+            {% if form.album_date.errors %}
+              <div class="formError">{{ form.album_date.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="galleryField">
+          <label for="{{ form.description.id_for_label }}">Descrição</label>
+          {{ form.description }}
+          {% if form.description.errors %}
+            <div class="formError">{{ form.description.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="galleryField">
+          <label for="{{ form.retention_days.id_for_label }}">Disponível durante</label>
+          {{ form.retention_days }}
+          {% if form.retention_days.errors %}
+            <div class="formError">{{ form.retention_days.errors }}</div>
+          {% endif %}
+        </div>
+
+        <div class="galleryCreateActions">
+          <a href="{% url 'gallery:album_list' %}" class="btn btnSecondary">
+            Cancelar
+          </a>
+
+          <button type="submit" class="btn">
+            Criar álbum
+          </button>
+        </div>
+      </form>
+    </section>
+  </div>
+</section>
+{% endblock %}

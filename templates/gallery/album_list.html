@@ -10,12 +10,23 @@
 {% block content %}
 <section class="sectionBlock">
   <div class="container">
-    <div class="sectionTitle">
-      <span class="sectionBadge">GALERIA</span>
-      <h2>Momentos da nossa comunidade</h2>
-      <p>
-        Explora os álbuns com fotos de cultos, reuniões e momentos especiais vividos na igreja.
-      </p>
+    <div class="sectionTitle galleryListHeader">
+      <div class="galleryListIntro">
+        <span class="sectionBadge">GALERIA</span>
+        <h2>Momentos da nossa comunidade</h2>
+        <p>
+          Explora os álbuns com fotos de cultos, reuniões e momentos especiais vividos na igreja.
+        </p>
+      </div>
+
+      {% if user.is_authenticated %}
+        <div class="galleryListHeaderActions">
+          <a class="galleryCreateAlbumBtn" href="{% url 'gallery:create_album' %}">
+            <span class="galleryCreateAlbumBtnIcon">＋</span>
+            <span>Criar álbum</span>
+          </a>
+        </div>
+      {% endif %}
     </div>
 
     {% if albums %}
@@ -60,6 +71,15 @@
       <div class="emptyCard">
         <h3>Ainda não existem álbuns disponíveis</h3>
         <p>Quando forem publicados novos momentos, vão aparecer aqui.</p>
+
+        {% if user.is_authenticated %}
+          <div class="galleryEmptyActions">
+            <a class="galleryCreateAlbumBtn" href="{% url 'gallery:create_album' %}">
+              <span class="galleryCreateAlbumBtnIcon">＋</span>
+              <span>Criar primeiro álbum</span>
+            </a>
+          </div>
+        {% endif %}
       </div>
     {% endif %}
   </div>

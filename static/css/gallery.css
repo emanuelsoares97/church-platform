@@ -699,3 +699,92 @@
     height: 16px;
   }
 }
+
+.galleryCreateBox{
+  border: 1px solid var(--line-soft);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+  border-radius: calc(var(--radius) + 8px);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+
+.galleryCreateForm{
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.galleryFormGrid{
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 18px;
+}
+
+.galleryField{
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.galleryField label{
+  font-weight: 600;
+}
+
+.galleryField input,
+.galleryField textarea,
+.galleryField select{
+  width: 100%;
+  border: 1px solid var(--line-soft);
+  background: rgba(255,255,255,0.03);
+  color: var(--text);
+  border-radius: 14px;
+  padding: 14px 16px;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.galleryField textarea{
+  resize: vertical;
+  min-height: 120px;
+}
+
+.galleryField input:focus,
+.galleryField textarea:focus,
+.galleryField select:focus{
+  border-color: var(--accent);
+  background: rgba(255,255,255,0.045);
+}
+
+.galleryCreateActions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.formError{
+  color: #ff8a8a;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px){
+  .galleryCreateBox{
+    padding: 18px;
+  }
+
+  .galleryFormGrid{
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .galleryCreateActions{
+    flex-direction: column;
+  }
+
+  .galleryCreateActions .btn,
+  .galleryCreateActions .btnSecondary{
+    width: 100%;
+    justify-content: center;
+  }
+}

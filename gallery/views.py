@@ -5,6 +5,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
+from .forms import GalleryAlbumForm
 from .models import GalleryAlbum, GalleryImage
 
 
@@ -24,6 +25,34 @@ def album_list(request):
         request,
         "gallery/album_list.html",
         {"albums": albums},
+    )
+
+
+@login_required
+def create_album(request):
+    """
+    Permite criar um novo álbum da galeria sem usar o admin.
+    """
+    if request.method == "POST":
+        form = GalleryAlbumForm(request.POST)
+
+        if form.is_valid():
+            album = form.save(commit=False)
+            album.created_by = request.user
+            album.is_active = True
+            album.save()
+
+            messages.success(request, "Álbum criado com sucesso.")
+            return redirect("gallery:album_detail", slug=album.slug)
+
+        messages.error(request, "Verifica os campos do formulário.")
+    else:
+        form = GalleryAlbumForm()
+
+    return render(
+        request,
+        "gallery/create_album.html",
+        {"form": form},
     )
 
 

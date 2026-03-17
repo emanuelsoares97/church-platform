@@ -19,7 +19,7 @@ class GalleryAlbumForm(forms.ModelForm):
             "is_active",
         ]
         widgets = {
-            "title": forms.TextInput(attrs={"placeholder": "Ex.: Culto Domingo 16 Março"}),
+            "title": forms.TextInput(attrs={"placeholder": "Ex.: Culto Domingo"}),
             "description": forms.Textarea(attrs={"rows": 4, "placeholder": "Descrição opcional do álbum"}),
             "album_date": forms.DateInput(attrs={"type": "date"}),
         }
