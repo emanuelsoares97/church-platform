@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-
 {% load static %}
 
 {% block extra_head %}
@@ -15,29 +14,41 @@
       <span class="sectionBadge">GALERIA</span>
       <h2>Momentos da nossa comunidade</h2>
       <p>
-        Explora os álbuns mais recentes com fotos de cultos, reuniões e momentos especiais da igreja.
+        Explora os álbuns com fotos de cultos, reuniões e momentos especiais vividos na igreja.
       </p>
     </div>
 
     {% if albums %}
-      <div class="cardGrid">
+      <div class="galleryAlbumsGrid">
         {% for album in albums %}
-          <article class="infoCard eventCard">
-            <h3>{{ album.title }}</h3>
+          <article class="galleryAlbumCard">
+            <div class="galleryAlbumTop">
+              <div>
+                <h3>{{ album.title }}</h3>
 
-            {% if album.album_date %}
-              <p class="eventMeta">{{ album.album_date }}</p>
-            {% endif %}
+                <div class="galleryAlbumMeta">
+                  {% if album.album_date %}
+                    <span class="galleryAlbumPill">📅 {{ album.album_date }}</span>
+                  {% endif %}
+
+                  <span class="galleryAlbumPill">
+                    📷 {{ album.image_count }} foto{{ album.image_count|pluralize }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="galleryAlbumIcon">✦</div>
+            </div>
 
             <p>
               {{ album.description|default:"Álbum de fotos da comunidade." }}
             </p>
 
-            <p class="muted" style="margin-top:10px;">
-              {{ album.image_count }} foto{{ album.image_count|pluralize }}
-            </p>
+            <div class="galleryAlbumFooter">
+              <span class="galleryAlbumCount">
+                Revive estes momentos especiais.
+              </span>
 
-            <div class="eventCardActions">
               <a class="btn btnSecondary" href="{% url 'gallery:album_detail' album.slug %}">
                 Ver álbum
               </a>

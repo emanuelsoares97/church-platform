@@ -22,6 +22,10 @@
 
         {% if album.description %}
           <p class="galleryHeroDescription">{{ album.description }}</p>
+        {% else %}
+          <p class="galleryHeroDescription">
+            Um registo especial de momentos vividos pela nossa comunidade.
+          </p>
         {% endif %}
       </div>
     </section>
@@ -40,6 +44,8 @@
             <span>Selecionar imagens</span>
             <input type="file" name="images" multiple accept="image/*">
           </label>
+
+          <p id="gallerySelectedCount" class="gallerySelectedCount"></p>
 
           <button type="submit" class="btn">
             Enviar fotos
@@ -77,7 +83,7 @@
 </section>
 
 <div id="galleryModal" class="galleryModal">
-  <span class="galleryClose">&times;</span>
+  <span class="galleryClose" aria-label="Fechar">&times;</span>
 
   <button type="button" class="galleryNav galleryPrev" aria-label="Imagem anterior">
     &#10094;

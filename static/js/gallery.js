@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const prevBtn = document.querySelector(".galleryPrev")
   const nextBtn = document.querySelector(".galleryNext")
   const images = document.querySelectorAll(".galleryImage")
+  const fileInput = document.querySelector('input[type="file"][name="images"]')
+  const selectedCount = document.getElementById("gallerySelectedCount")
 
   let currentIndex = 0
   let touchStartX = 0
@@ -39,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showImage(index) {
-    if (!images.length) {
+    if (!images.length || !modal || !modalImg) {
       return
     }
 
@@ -55,19 +57,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const src = currentImg.dataset.full || currentImg.src
 
     modal.style.display = "flex"
+    document.body.style.overflow = "hidden"
     modalImg.src = src
 
-    const fileNameFromUrl = getFileNameFromUrl(src)
-    const filename = `ucc-galeria-${fileNameFromUrl}`
-
-    downloadBtn.href = buildDownloadUrl(src, filename)
+    if (downloadBtn) {
+      const fileNameFromUrl = getFileNameFromUrl(src)
+      const filename = `ucc-galeria-${fileNameFromUrl}`
+      downloadBtn.href = buildDownloadUrl(src, filename)
+    }
 
     updateCounter()
   }
 
   function closeModal() {
+    if (!modal || !modalImg) {
+      return
+    }
+
     modal.style.display = "none"
     modalImg.src = ""
+    document.body.style.overflow = ""
   }
 
   function showNextImage() {
@@ -78,11 +87,50 @@ document.addEventListener("DOMContentLoaded", () => {
     showImage(currentIndex - 1)
   }
 
+  function handleSwipe() {
+    const swipeDistance = touchEndX - touchStartX
+    const minSwipeDistance = 50
+
+    if (Math.abs(swipeDistance) < minSwipeDistance) {
+      return
+    }
+
+    if (swipeDistance < 0) {
+      showNextImage()
+    } else {
+      showPreviousImage()
+    }
+  }
+
+  function updateSelectedCount() {
+    if (!fileInput || !selectedCount) {
+      return
+    }
+
+    const totalFiles = fileInput.files ? fileInput.files.length : 0
+
+    if (totalFiles === 0) {
+      selectedCount.textContent = ""
+      return
+    }
+
+    if (totalFiles === 1) {
+      selectedCount.textContent = "1 imagem selecionada"
+      return
+    }
+
+    selectedCount.textContent = `${totalFiles} imagens selecionadas`
+  }
+
   images.forEach((img, index) => {
     img.addEventListener("click", () => {
       showImage(index)
     })
   })
+
+  if (fileInput) {
+    fileInput.addEventListener("change", updateSelectedCount)
+  }
 
   if (closeBtn) {
     closeBtn.addEventListener("click", closeModal)
@@ -117,21 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
       touchEndX = e.changedTouches[0].screenX
       handleSwipe()
     }, { passive: true })
-  }
-
-  function handleSwipe() {
-    const swipeDistance = touchEndX - touchStartX
-    const minSwipeDistance = 50
-
-    if (Math.abs(swipeDistance) < minSwipeDistance) {
-      return
-    }
-
-    if (swipeDistance < 0) {
-      showNextImage()
-    } else {
-      showPreviousImage()
-    }
   }
 
   document.addEventListener("keydown", (e) => {
