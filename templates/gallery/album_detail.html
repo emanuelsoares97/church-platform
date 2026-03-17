@@ -59,6 +59,27 @@
         {% for image in images %}
           <article class="galleryCard">
             <div class="galleryImageWrap">
+
+              {% if user.is_authenticated %}
+                <form
+                  method="POST"
+                  action="{% url 'gallery:delete_image' image.id %}"
+                  class="galleryDeleteForm"
+                  onsubmit="return confirm('Tens a certeza que queres eliminar esta foto?');"
+                >
+                  {% csrf_token %}
+                  <button type="submit" class="galleryDeleteBtn" aria-label="Eliminar foto">
+                    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M3 6h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <path d="M8 6V4h8v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <path d="M19 6l-1 13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M10 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                      <path d="M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                  </button>
+                </form>
+              {% endif %}
+
               <img
                 src="{{ image.image.url }}"
                 data-full="{{ image.image.url }}"
@@ -66,6 +87,7 @@
                 class="galleryImage"
                 loading="lazy"
               >
+
               <div class="galleryOverlay">
                 <span>Ver foto</span>
               </div>

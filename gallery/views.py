@@ -1,64 +1,72 @@
+from cloudinary.uploader import destroy
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from .forms import GalleryImageForm
 from .models import GalleryAlbum, GalleryImage
 
 
 def album_list(request):
     """
-    Mostra a lista de álbuns ativos e não expirados.
+    Lista apenas os álbuns ativos e não expirados.
     """
-    albums = (
-        GalleryAlbum.objects.filter(is_active=True, expires_at__gt=timezone.now())
-        .prefetch_related("images")
-        .order_by("-created_at")
-    )
+    now = timezone.now()
+
+    albums = GalleryAlbum.objects.filter(
+        is_active=True,
+    ).filter(
+        Q(expires_at__isnull=True) | Q(expires_at__gt=now)
+    ).order_by("-album_date", "-created_at")
 
     return render(
         request,
         "gallery/album_list.html",
-        {
-            "albums": albums,
-        },
+        {"albums": albums},
     )
 
 
 def album_detail(request, slug):
     """
-    Mostra o detalhe de um álbum e permite upload de imagens
-    a utilizadores autenticados.
+    Mostra o detalhe de um álbum e permite upload de múltiplas imagens
+    para utilizadores autenticados.
     """
+    now = timezone.now()
+
     album = get_object_or_404(
-        GalleryAlbum.objects.prefetch_related("images"),
+        GalleryAlbum,
         slug=slug,
         is_active=True,
-        expires_at__gt=timezone.now(),
     )
 
-    form = GalleryImageForm()
+    if album.is_expired():
+        messages.error(request, "Este álbum já não está disponível.")
+        return redirect("gallery:album_list")
+
+    images = album.images.filter(
+        Q(expires_at__isnull=True) | Q(expires_at__gt=now)
+    ).order_by("-uploaded_at")
 
     if request.method == "POST":
         if not request.user.is_authenticated:
             messages.error(request, "Precisas de iniciar sessão para adicionar fotos.")
-            return redirect("login")
+            return redirect("gallery:album_detail", slug=album.slug)
 
-        images = request.FILES.getlist("images")
+        uploaded_files = request.FILES.getlist("images")
 
-        if not images:
+        if not uploaded_files:
             messages.error(request, "Seleciona pelo menos uma imagem.")
             return redirect("gallery:album_detail", slug=album.slug)
 
-        for image in images:
+        for file in uploaded_files:
             GalleryImage.objects.create(
                 album=album,
-                image=image,
+                image=file,
                 uploaded_by=request.user,
             )
 
-        messages.success(request, f"{len(images)} fotos adicionadas à galeria.")
+        messages.success(request, "Fotos adicionadas com sucesso.")
         return redirect("gallery:album_detail", slug=album.slug)
 
     return render(
@@ -66,7 +74,33 @@ def album_detail(request, slug):
         "gallery/album_detail.html",
         {
             "album": album,
-            "images": album.images.all(),
-            "form": form,
+            "images": images,
         },
     )
+
+
+@login_required
+def delete_image(request, image_id):
+    """
+    Elimina uma imagem da base de dados e do Cloudinary.
+    """
+    image = get_object_or_404(GalleryImage, id=image_id)
+    album_slug = image.album.slug
+
+    if request.method != "POST":
+        messages.error(request, "Pedido inválido.")
+        return redirect("gallery:album_detail", slug=album_slug)
+
+    try:
+        public_id = getattr(image.image, "public_id", None)
+
+        if public_id:
+            destroy(public_id, invalidate=True, resource_type="image")
+
+        image.delete()
+        messages.success(request, "Foto eliminada com sucesso.")
+
+    except Exception as error:
+        messages.error(request, f"Não foi possível eliminar a foto. Erro: {error}")
+
+    return redirect("gallery:album_detail", slug=album_slug)
