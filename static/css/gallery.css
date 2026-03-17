@@ -566,3 +566,136 @@
   height: 18px;
   display: block;
 }
+
+.galleryBulkBar{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: 0 0 24px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 1px solid var(--line-soft);
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+  box-shadow: var(--shadow);
+}
+
+.galleryBulkInfo{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.galleryBulkInfo strong{
+  color: var(--text);
+  font-size: 1.05rem;
+}
+
+.galleryBulkActions{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.galleryBulkDeleteBtn:disabled{
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.galleryCard.selectionMode{
+  cursor: pointer;
+}
+
+.gallerySelectBox{
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 4;
+  display: none;
+}
+
+.galleryCard.selectionMode .gallerySelectBox{
+  display: block;
+}
+
+.gallerySelectInput{
+  display: none;
+}
+
+.gallerySelectIndicator{
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(0,0,0,0.42);
+  color: white;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.16);
+  border: 1px solid rgba(255,255,255,0.14);
+  transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+
+.gallerySelectIndicator svg{
+  width: 18px;
+  height: 18px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.gallerySelectInput:checked + .gallerySelectIndicator{
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.gallerySelectInput:checked + .gallerySelectIndicator svg{
+  opacity: 1;
+  transform: scale(1);
+}
+
+.galleryCard.isSelected{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.04), 0 18px 40px rgba(0,0,0,0.24);
+}
+
+.galleryCard.isSelected .galleryImage{
+  filter: brightness(0.78);
+}
+
+@media (max-width: 640px){
+  .galleryBulkBar{
+    padding: 14px;
+    border-radius: 16px;
+    margin-bottom: 18px;
+  }
+
+  .galleryBulkActions{
+    width: 100%;
+  }
+
+  .galleryBulkActions .btn{
+    flex: 1;
+    justify-content: center;
+  }
+
+  .gallerySelectBox{
+    top: 8px;
+    right: 8px;
+  }
+
+  .gallerySelectIndicator{
+    width: 36px;
+    height: 36px;
+  }
+
+  .gallerySelectIndicator svg{
+    width: 16px;
+    height: 16px;
+  }
+}

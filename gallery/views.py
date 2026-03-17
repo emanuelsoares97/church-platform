@@ -48,7 +48,7 @@ def album_detail(request, slug):
         Q(expires_at__isnull=True) | Q(expires_at__gt=now)
     ).order_by("-uploaded_at")
 
-    if request.method == "POST":
+    if request.method == "POST" and "images" in request.FILES:
         if not request.user.is_authenticated:
             messages.error(request, "Precisas de iniciar sessão para adicionar fotos.")
             return redirect("gallery:album_detail", slug=album.slug)
@@ -104,3 +104,51 @@ def delete_image(request, image_id):
         messages.error(request, f"Não foi possível eliminar a foto. Erro: {error}")
 
     return redirect("gallery:album_detail", slug=album_slug)
+
+
+@login_required
+def delete_selected_images(request, slug):
+    """
+    Elimina várias imagens selecionadas do álbum.
+    """
+    album = get_object_or_404(GalleryAlbum, slug=slug, is_active=True)
+
+    if request.method != "POST":
+        messages.error(request, "Pedido inválido.")
+        return redirect("gallery:album_detail", slug=album.slug)
+
+    image_ids = request.POST.getlist("selected_images")
+
+    if not image_ids:
+        messages.error(request, "Nenhuma foto foi selecionada.")
+        return redirect("gallery:album_detail", slug=album.slug)
+
+    images = GalleryImage.objects.filter(
+        album=album,
+        id__in=image_ids,
+    )
+
+    deleted_count = 0
+
+    for image in images:
+        try:
+            public_id = getattr(image.image, "public_id", None)
+
+            if public_id:
+                destroy(public_id, invalidate=True, resource_type="image")
+
+            image.delete()
+            deleted_count += 1
+
+        except Exception:
+            continue
+
+    if deleted_count:
+        if deleted_count == 1:
+            messages.success(request, "1 foto eliminada com sucesso.")
+        else:
+            messages.success(request, f"{deleted_count} fotos eliminadas com sucesso.")
+    else:
+        messages.error(request, "Não foi possível eliminar as fotos selecionadas.")
+
+    return redirect("gallery:album_detail", slug=album.slug)

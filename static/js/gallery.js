@@ -10,9 +10,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const fileInput = document.querySelector('input[type="file"][name="images"]')
   const selectedCount = document.getElementById("gallerySelectedCount")
 
+  const toggleSelectionModeBtn = document.getElementById("toggleSelectionMode")
+  const bulkDeleteBtn = document.getElementById("bulkDeleteBtn")
+  const bulkCount = document.getElementById("galleryBulkCount")
+  const galleryCards = document.querySelectorAll(".galleryCard")
+  const selectInputs = document.querySelectorAll(".gallerySelectInput")
+
   let currentIndex = 0
   let touchStartX = 0
   let touchEndX = 0
+  let selectionMode = false
 
   function buildDownloadUrl(url, filename) {
     const marker = "/image/upload/"
@@ -41,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function showImage(index) {
-    if (!images.length || !modal || !modalImg) {
+    if (!images.length || !modal || !modalImg || selectionMode) {
       return
     }
 
@@ -122,11 +129,98 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedCount.textContent = `${totalFiles} imagens selecionadas`
   }
 
+  function updateBulkSelectionState() {
+    if (!bulkCount || !bulkDeleteBtn) {
+      return
+    }
+
+    const checkedInputs = document.querySelectorAll(".gallerySelectInput:checked")
+    const totalSelected = checkedInputs.length
+
+    bulkCount.textContent = totalSelected
+    bulkDeleteBtn.disabled = totalSelected === 0
+
+    galleryCards.forEach((card) => {
+      const input = card.querySelector(".gallerySelectInput")
+
+      if (!input) {
+        return
+      }
+
+      card.classList.toggle("isSelected", input.checked)
+      card.classList.toggle("selectionMode", selectionMode)
+    })
+
+    if (toggleSelectionModeBtn) {
+      toggleSelectionModeBtn.textContent = selectionMode ? "Cancelar seleção" : "Selecionar fotos"
+    }
+  }
+
+  function clearSelection() {
+    selectInputs.forEach((input) => {
+      input.checked = false
+    })
+
+    updateBulkSelectionState()
+  }
+
   images.forEach((img, index) => {
     img.addEventListener("click", () => {
+      if (selectionMode) {
+        const card = img.closest(".galleryCard")
+        const input = card ? card.querySelector(".gallerySelectInput") : null
+
+        if (input) {
+          input.checked = !input.checked
+          updateBulkSelectionState()
+        }
+
+        return
+      }
+
       showImage(index)
     })
   })
+
+  galleryCards.forEach((card) => {
+    card.addEventListener("click", (event) => {
+      if (!selectionMode) {
+        return
+      }
+
+      const clickedOnCheckbox = event.target.closest(".gallerySelectBox")
+      const clickedOnImage = event.target.closest(".galleryImage")
+
+      if (clickedOnCheckbox || clickedOnImage) {
+        return
+      }
+
+      const input = card.querySelector(".gallerySelectInput")
+
+      if (!input) {
+        return
+      }
+
+      input.checked = !input.checked
+      updateBulkSelectionState()
+    })
+  })
+
+  selectInputs.forEach((input) => {
+    input.addEventListener("change", updateBulkSelectionState)
+  })
+
+  if (toggleSelectionModeBtn) {
+    toggleSelectionModeBtn.addEventListener("click", () => {
+      selectionMode = !selectionMode
+
+      if (!selectionMode) {
+        clearSelection()
+      }
+
+      updateBulkSelectionState()
+    })
+  }
 
   if (fileInput) {
     fileInput.addEventListener("change", updateSelectedCount)
@@ -184,4 +278,6 @@ document.addEventListener("DOMContentLoaded", () => {
       showPreviousImage()
     }
   })
+
+  updateBulkSelectionState()
 })
