@@ -115,16 +115,18 @@
    ========================= */
 
 .galleryGrid{
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
+  width: 100%;
+  column-count: 3;
+  column-gap: 20px;
+  line-height: 0;
 }
 
 .galleryCard{
   position: relative;
-  display: block;
+  display: inline-block;
+  vertical-align: top;
   width: 100%;
-  margin: 0 0 22px;
+  margin: 0 0 20px;
   break-inside: avoid;
   -webkit-column-break-inside: avoid;
   page-break-inside: avoid;
@@ -134,6 +136,21 @@
   border: 1px solid var(--line-soft);
   box-shadow: var(--shadow);
   transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  animation: galleryCardFade 0.45s ease both;
+}
+
+.galleryCard:nth-child(3n + 1){
+  animation-delay: 0.04s;
+}
+
+.galleryCard:nth-child(3n + 2){
+  animation-delay: 0.1s;
+}
+
+.galleryCard:nth-child(3n + 3){
+  animation-delay: 0.16s;
 }
 
 .galleryCard:hover{
@@ -144,8 +161,13 @@
 
 .galleryImageWrap{
   position: relative;
+  display: block;
   overflow: hidden;
   background: #111;
+  width: 100%;
+  line-height: 0;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .galleryImage{
@@ -153,7 +175,10 @@
   height: auto;
   display: block;
   cursor: pointer;
+  object-fit: cover;
   transition: transform 0.35s ease, filter 0.35s ease;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 .galleryCard:hover .galleryImage{
@@ -182,10 +207,22 @@
   color: white;
   font-weight: 700;
   font-size: 0.95rem;
+  line-height: 1;
   padding: 8px 12px;
   border-radius: 999px;
   background: rgba(255,255,255,0.14);
   backdrop-filter: blur(6px);
+}
+
+@keyframes galleryCardFade{
+  from{
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to{
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* =========================
@@ -211,6 +248,7 @@
   justify-content: center;
   align-items: center;
   padding: 30px;
+  overflow: hidden;
 }
 
 .galleryModalContent{
@@ -218,6 +256,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  touch-action: pan-y;
+  user-select: none;
 }
 
 .galleryCounter{
@@ -241,6 +281,8 @@
   max-height: 82vh;
   border-radius: 18px;
   box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  transition: transform 0.24s ease, opacity 0.24s ease;
+  will-change: transform, opacity;
 }
 
 .galleryTopActions{
@@ -427,112 +469,8 @@
 }
 
 /* =========================
-   RESPONSIVO
+   AÇÕES DE ELIMINAÇÃO / SELEÇÃO
    ========================= */
-
-@media (max-width: 980px){
-  .galleryGrid{
-    column-count: 2;
-  }
-
-  .galleryAlbumsGrid{
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 640px){
-  .galleryHeroContent{
-    padding: 22px;
-  }
-
-  .galleryUploadBox{
-    padding: 20px;
-  }
-
-  .galleryGrid{
-    column-count: 2;
-    column-gap: 12px;
-  }
-
-  .galleryCard{
-    margin-bottom: 12px;
-    border-radius: 16px;
-  }
-
-  .galleryOverlay{
-    display: none;
-  }
-
-  .galleryModal{
-    padding: 16px;
-  }
-
-  .galleryModalImage{
-    max-width: 100%;
-    max-height: 72vh;
-    border-radius: 14px;
-  }
-
-  .galleryNav{
-    display: none;
-  }
-
-  .galleryTopActions{
-    top: 10px;
-    right: 12px;
-    gap: 8px;
-  }
-
-  .galleryIconBtn{
-    width: 42px;
-    height: 42px;
-  }
-
-  .galleryIconBtn svg{
-    width: 19px;
-    height: 19px;
-  }
-
-  .galleryClose{
-    font-size: 28px;
-  }
-
-  .galleryCounter{
-    top: -10px;
-    font-size: 0.83rem;
-    padding: 6px 11px;
-  }
-
-  .galleryAlbumsGrid{
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .galleryAlbumCard{
-    padding: 18px;
-    border-radius: 18px;
-  }
-
-  .galleryAlbumTop{
-    margin-bottom: 12px;
-  }
-
-  .galleryAlbumIcon{
-    width: 42px;
-    height: 42px;
-    border-radius: 12px;
-  }
-
-  .galleryAlbumFooter{
-    align-items: stretch;
-  }
-
-  .galleryAlbumFooter .btn,
-  .galleryAlbumFooter .btnSecondary{
-    width: 100%;
-    justify-content: center;
-  }
-}
 
 .galleryDeleteForm{
   position: absolute;
@@ -669,7 +607,126 @@
   filter: brightness(0.78);
 }
 
+/* =========================
+   RESPONSIVO
+   ========================= */
+
+@media (max-width: 980px){
+  .galleryGrid{
+    column-count: 2;
+  }
+
+  .galleryAlbumsGrid{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 640px){
+  .galleryHeroContent{
+    padding: 22px;
+  }
+
+  .galleryUploadBox{
+    padding: 20px;
+  }
+
+  .galleryGrid{
+    column-count: 2;
+    column-gap: 12px;
+  }
+
+  .galleryCard{
+    margin: 0 0 12px;
+    border-radius: 16px;
+  }
+
+  .galleryImageWrap{
+    width: 100%;
+    overflow: hidden;
+    background: #111;
+  }
+
+  .galleryImage{
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+
+  .galleryOverlay{
+    display: none;
+  }
+
+  .galleryModal{
+    padding: 16px;
+  }
+
+  .galleryModalImage{
+    max-width: 100%;
+    max-height: 72vh;
+    border-radius: 14px;
+  }
+
+  .galleryNav{
+    display: none;
+  }
+
+  .galleryTopActions{
+    top: 10px;
+    right: 12px;
+    gap: 8px;
+  }
+
+  .galleryIconBtn{
+    width: 42px;
+    height: 42px;
+  }
+
+  .galleryIconBtn svg{
+    width: 19px;
+    height: 19px;
+  }
+
+  .galleryClose{
+    font-size: 28px;
+  }
+
+  .galleryCounter{
+    top: -10px;
+    font-size: 0.83rem;
+    padding: 6px 11px;
+  }
+
+  .galleryAlbumsGrid{
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .galleryAlbumCard{
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .galleryAlbumTop{
+    margin-bottom: 12px;
+  }
+
+  .galleryAlbumIcon{
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+  }
+
+  .galleryAlbumFooter{
+    align-items: stretch;
+  }
+
+  .galleryAlbumFooter .btn,
+  .galleryAlbumFooter .btnSecondary{
+    width: 100%;
+    justify-content: center;
+  }
+
   .galleryBulkBar{
     padding: 14px;
     border-radius: 16px;
@@ -700,6 +757,21 @@
     height: 16px;
   }
 }
+
+@media (max-width: 420px){
+  .galleryBulkActions{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .galleryBulkActions .btn{
+    width: 100%;
+  }
+}
+
+/* =========================
+   CRIAR ÁLBUM
+   ========================= */
 
 .galleryCreateBox{
   border: 1px solid var(--line-soft);

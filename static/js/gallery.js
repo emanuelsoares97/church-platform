@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const modal = document.getElementById("galleryModal")
   const modalImg = document.getElementById("galleryModalImage")
+  const modalContent = document.querySelector(".galleryModalContent")
   const counter = document.getElementById("galleryCounter")
   const downloadBtn = document.getElementById("galleryDownloadBtn")
   const closeBtn = document.querySelector(".galleryClose")
@@ -18,9 +19,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let currentIndex = 0
   let touchStartX = 0
-  let touchEndX = 0
+  let touchCurrentX = 0
+  let isDraggingModal = false
   let selectionMode = false
 
+  // Constroi a url de download no caso de imagens vindas do Cloudinary
   function buildDownloadUrl(url, filename) {
     const marker = "/image/upload/"
 
@@ -34,11 +37,13 @@ document.addEventListener("DOMContentLoaded", () => {
     )
   }
 
+  // Tenta obter um nome base a partir da url da imagem
   function getFileNameFromUrl(url) {
     const lastPart = url.split("/").pop() || "imagem"
     return lastPart.split(".")[0]
   }
 
+  // Atualiza o contador do modal
   function updateCounter() {
     if (!counter || !images.length) {
       return
@@ -47,6 +52,29 @@ document.addEventListener("DOMContentLoaded", () => {
     counter.textContent = `${currentIndex + 1} / ${images.length}`
   }
 
+  // Atualiza o link de download da imagem atual no modal
+  function updateDownloadUrl(src) {
+    if (!downloadBtn) {
+      return
+    }
+
+    const fileNameFromUrl = getFileNameFromUrl(src)
+    const filename = `ucc-galeria-${fileNameFromUrl}`
+    downloadBtn.href = buildDownloadUrl(src, filename)
+  }
+
+  // Repõe o estado visual da imagem no modal
+  function resetModalImageState() {
+    if (!modalImg) {
+      return
+    }
+
+    modalImg.style.transition = "transform 0.24s ease, opacity 0.24s ease"
+    modalImg.style.transform = "translateX(0)"
+    modalImg.style.opacity = "1"
+  }
+
+  // Mostra uma imagem no modal com base no índice recebido
   function showImage(index) {
     if (!images.length || !modal || !modalImg || selectionMode) {
       return
@@ -67,15 +95,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.style.overflow = "hidden"
     modalImg.src = src
 
-    if (downloadBtn) {
-      const fileNameFromUrl = getFileNameFromUrl(src)
-      const filename = `ucc-galeria-${fileNameFromUrl}`
-      downloadBtn.href = buildDownloadUrl(src, filename)
-    }
-
+    updateDownloadUrl(src)
     updateCounter()
+    resetModalImageState()
   }
 
+  // Fecha o modal e limpa o estado da imagem
   function closeModal() {
     if (!modal || !modalImg) {
       return
@@ -83,32 +108,76 @@ document.addEventListener("DOMContentLoaded", () => {
 
     modal.style.display = "none"
     modalImg.src = ""
+    modalImg.style.transform = "translateX(0)"
+    modalImg.style.opacity = "1"
     document.body.style.overflow = ""
+    isDraggingModal = false
   }
 
-  function showNextImage() {
-    showImage(currentIndex + 1)
-  }
-
-  function showPreviousImage() {
-    showImage(currentIndex - 1)
-  }
-
-  function handleSwipe() {
-    const swipeDistance = touchEndX - touchStartX
-    const minSwipeDistance = 50
-
-    if (Math.abs(swipeDistance) < minSwipeDistance) {
+  // Faz a animação de saída/entrada quando se troca de imagem
+  function animateImageChange(direction, onComplete) {
+    if (!modalImg) {
+      onComplete()
       return
     }
 
-    if (swipeDistance < 0) {
-      showNextImage()
-    } else {
-      showPreviousImage()
-    }
+    const exitOffset = direction === "next" ? -70 : 70
+
+    modalImg.style.transition = "transform 0.18s ease, opacity 0.18s ease"
+    modalImg.style.transform = `translateX(${exitOffset}px)`
+    modalImg.style.opacity = "0.35"
+
+    window.setTimeout(() => {
+      onComplete()
+
+      const enterOffset = direction === "next" ? 70 : -70
+      modalImg.style.transition = "none"
+      modalImg.style.transform = `translateX(${enterOffset}px)`
+      modalImg.style.opacity = "0.35"
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          modalImg.style.transition = "transform 0.22s ease, opacity 0.22s ease"
+          modalImg.style.transform = "translateX(0)"
+          modalImg.style.opacity = "1"
+        })
+      })
+    }, 180)
   }
 
+  // Avança para a imagem seguinte
+  function showNextImage() {
+    animateImageChange("next", () => {
+      if (currentIndex + 1 >= images.length) {
+        currentIndex = 0
+      } else {
+        currentIndex += 1
+      }
+
+      const src = images[currentIndex].dataset.full || images[currentIndex].src
+      modalImg.src = src
+      updateDownloadUrl(src)
+      updateCounter()
+    })
+  }
+
+  // Volta para a imagem anterior
+  function showPreviousImage() {
+    animateImageChange("prev", () => {
+      if (currentIndex - 1 < 0) {
+        currentIndex = images.length - 1
+      } else {
+        currentIndex -= 1
+      }
+
+      const src = images[currentIndex].dataset.full || images[currentIndex].src
+      modalImg.src = src
+      updateDownloadUrl(src)
+      updateCounter()
+    })
+  }
+
+  // Atualiza o texto que mostra quantas imagens foram escolhidas no input file
   function updateSelectedCount() {
     if (!fileInput || !selectedCount) {
       return
@@ -129,6 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
     selectedCount.textContent = `${totalFiles} imagens selecionadas`
   }
 
+  // Atualiza o estado visual e o contador do modo de seleção múltipla
   function updateBulkSelectionState() {
     if (!bulkCount || !bulkDeleteBtn) {
       return
@@ -152,10 +222,13 @@ document.addEventListener("DOMContentLoaded", () => {
     })
 
     if (toggleSelectionModeBtn) {
-      toggleSelectionModeBtn.textContent = selectionMode ? "Cancelar seleção" : "Selecionar fotos"
+      toggleSelectionModeBtn.textContent = selectionMode
+        ? "Cancelar seleção"
+        : "Selecionar fotos"
     }
   }
 
+  // Limpa todas as seleções atuais
   function clearSelection() {
     selectInputs.forEach((input) => {
       input.checked = false
@@ -164,6 +237,9 @@ document.addEventListener("DOMContentLoaded", () => {
     updateBulkSelectionState()
   }
 
+  // Clique na imagem:
+  // - se estiver em modo seleção, seleciona/desseleciona
+  // - se não estiver, abre o modal
   images.forEach((img, index) => {
     img.addEventListener("click", () => {
       if (selectionMode) {
@@ -182,6 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
+  // Permite clicar no card para selecionar, mas evita conflito com imagem e checkbox
   galleryCards.forEach((card) => {
     card.addEventListener("click", (event) => {
       if (!selectionMode) {
@@ -206,10 +283,12 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   })
 
+  // Atualiza o estado quando uma checkbox muda
   selectInputs.forEach((input) => {
     input.addEventListener("change", updateBulkSelectionState)
   })
 
+  // Ativa ou desativa o modo de seleção
   if (toggleSelectionModeBtn) {
     toggleSelectionModeBtn.addEventListener("click", () => {
       selectionMode = !selectionMode
@@ -222,14 +301,17 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
+  // Atualiza o texto com a quantidade de imagens escolhidas para upload
   if (fileInput) {
     fileInput.addEventListener("change", updateSelectedCount)
   }
 
+  // Fecha o modal
   if (closeBtn) {
     closeBtn.addEventListener("click", closeModal)
   }
 
+  // Navegação para a esquerda
   if (prevBtn) {
     prevBtn.addEventListener("click", (e) => {
       e.stopPropagation()
@@ -237,6 +319,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
+  // Navegação para a direita
   if (nextBtn) {
     nextBtn.addEventListener("click", (e) => {
       e.stopPropagation()
@@ -244,23 +327,70 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
+  // Fecha o modal se o clique for fora da imagem
   if (modal) {
     modal.addEventListener("click", (e) => {
       if (e.target === modal) {
         closeModal()
       }
     })
+  }
 
-    modal.addEventListener("touchstart", (e) => {
+  // Swipe no telemóvel com arrasto visual da imagem
+  if (modalContent && modalImg) {
+    modalContent.addEventListener("touchstart", (e) => {
+      if (!modal || modal.style.display !== "flex" || selectionMode) {
+        return
+      }
+
       touchStartX = e.changedTouches[0].screenX
+      touchCurrentX = touchStartX
+      isDraggingModal = true
+      modalImg.style.transition = "none"
     }, { passive: true })
 
-    modal.addEventListener("touchend", (e) => {
-      touchEndX = e.changedTouches[0].screenX
-      handleSwipe()
+    modalContent.addEventListener("touchmove", (e) => {
+      if (!isDraggingModal || !modalImg) {
+        return
+      }
+
+      touchCurrentX = e.changedTouches[0].screenX
+      const diffX = touchCurrentX - touchStartX
+      const limitedDiff = Math.max(Math.min(diffX, 120), -120)
+
+      modalImg.style.transform = `translateX(${limitedDiff}px)`
+      modalImg.style.opacity = `${Math.max(0.55, 1 - Math.abs(limitedDiff) / 220)}`
+    }, { passive: true })
+
+    modalContent.addEventListener("touchend", () => {
+      if (!isDraggingModal || !modalImg) {
+        return
+      }
+
+      const swipeDistance = touchCurrentX - touchStartX
+      const minSwipeDistance = 60
+      isDraggingModal = false
+
+      if (Math.abs(swipeDistance) >= minSwipeDistance) {
+        if (swipeDistance < 0) {
+          showNextImage()
+        } else {
+          showPreviousImage()
+        }
+
+        return
+      }
+
+      resetModalImageState()
+    }, { passive: true })
+
+    modalContent.addEventListener("touchcancel", () => {
+      isDraggingModal = false
+      resetModalImageState()
     }, { passive: true })
   }
 
+  // Atalhos de teclado no modal
   document.addEventListener("keydown", (e) => {
     if (!modal || modal.style.display !== "flex") {
       return
@@ -279,5 +409,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
+  updateSelectedCount()
   updateBulkSelectionState()
 })
