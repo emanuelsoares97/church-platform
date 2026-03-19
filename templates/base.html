@@ -8,6 +8,15 @@
   <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
 
   <link rel="stylesheet" href="{% static 'css/global.css' %}">
+
+  <!-- PWA -->
+  <link rel="manifest" href="{% url 'manifest' %}">
+  <meta name="theme-color" content="#111111">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="UCC">
+  <link rel="apple-touch-icon" href="{% static 'img/icon-192.png' %}">
+
   {% block extra_head %}{% endblock %}
 </head>
 
@@ -111,5 +120,20 @@
 
   <script src="{% static 'js/navbar.js' %}"></script>
   {% block extra_js %}{% endblock %}
+
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("{% url 'service_worker' %}")
+        .then(function (registration) {
+          console.log("Service Worker registado:", registration.scope);
+        })
+        .catch(function (error) {
+          console.log("Erro SW:", error);
+        });
+    });
+  }
+</script>
+
 </body>
 </html>

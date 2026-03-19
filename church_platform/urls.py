@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
+from core.views_pwa import manifest, service_worker, offline
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -22,6 +23,11 @@ urlpatterns = [
 
     #galeria
     path("galeria/", include("gallery.urls")),
+
+    #pwa
+    path("manifest.json", manifest, name="manifest"),
+    path("sw.js", service_worker, name="service_worker"),
+    path("offline/", offline, name="offline"),
 ]
 
 if settings.DEBUG:

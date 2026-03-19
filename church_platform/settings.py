@@ -202,3 +202,5 @@ cloudinary.config(
     api_secret=config("CLOUDINARY_API_SECRET"),
     secure=True,
 )
+
+APP_VERSION = "v1"
