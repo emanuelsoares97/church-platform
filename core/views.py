@@ -10,3 +10,6 @@ def home(request):
         "featured_events": featured_events,
     }
     return render(request, "core/home.html", context)
+
+def about(request):
+    return render(request, "core/about.html")

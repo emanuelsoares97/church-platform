@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Sobre Nós | Unidos com Cristo{% endblock %}
+
+{% block content %}
+<section class="heroSection aboutHero">
+  <div class="container heroGrid">
+    <div class="heroContent">
+      <span class="sectionBadge">SOBRE NÓS</span>
+
+      <h1>
+        Uma igreja centrada em Cristo, comprometida com a Palavra e com pessoas
+      </h1>
+
+      <p>
+        A Igreja Unidos com Cristo é uma comunidade cristã dedicada a viver o Evangelho
+        com amor, verdade e simplicidade. O nosso desejo é ver vidas transformadas
+        pela presença de Deus, famílias fortalecidas e pessoas a crescerem na fé.
+      </p>
+
+      <div class="heroActions">
+        <a href="{% url 'core:home' %}" class="btn btnSecondary">Voltar à home</a>
+        <a href="#pastores" class="btn btnPrimary">Conhecer a liderança</a>
+      </div>
+    </div>
+
+    <aside class="heroSideCard">
+      <h3>O que valorizamos</h3>
+      <p class="heroSideCard__highlight">Cristo no centro</p>
+      <p>
+        Vivemos para glorificar a Deus, servir pessoas e proclamar a mensagem de Jesus
+        com fidelidade.
+      </p>
+
+      <div class="heroSideCard__box">
+        <p>
+          <strong>Base da nossa fé</strong><br>
+          A Palavra de Deus, a oração,<br>
+          a comunhão e o serviço.
+        </p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="sectionBlock">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">QUEM SOMOS</span>
+      <h2>Uma comunidade para caminhar em fé</h2>
+      <p>
+        Somos uma igreja que acredita no poder transformador de Jesus Cristo.
+        Procuramos ser uma casa espiritual onde cada pessoa possa encontrar acolhimento,
+        crescimento, discipulado e propósito.
+      </p>
+    </div>
+
+    <div class="cardGrid">
+      <article class="infoCard">
+        <h3>A nossa missão</h3>
+        <p>
+          Anunciar o Evangelho, fazer discípulos, cuidar de pessoas e servir a nossa
+          comunidade com amor e dedicação.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3>A nossa visão</h3>
+        <p>
+          Ser uma igreja saudável, bíblica e relevante, onde vidas são restauradas,
+          famílias são edificadas e Cristo é exaltado em tudo.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3>Os nossos valores</h3>
+        <p>
+          Valorizamos a presença de Deus, a verdade da Palavra, a comunhão entre irmãos,
+          a oração, a santidade e o serviço com humildade.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock" id="pastores">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">LIDERANÇA</span>
+      <h2>Os nossos pastores</h2>
+      <p>
+        A nossa liderança serve a igreja com dedicação, cuidado pastoral e compromisso
+        com a direção de Deus.
+      </p>
+    </div>
+
+    <div class="pastorSection">
+      <div class="pastorPhotoCard">
+        <img src="{% static 'img/pastores.png' %}" alt="Foto dos pastores da igreja">
+      </div>
+
+      <div class="pastorInfo">
+        <h3>Pr. Paulo Borja & Pra. Viviane Borja </h3>
+
+        <p>
+          Os nossos pastores têm como chamado servir a igreja, ensinar a Palavra de Deus,
+          acompanhar vidas e conduzir a comunidade em amor, fé e obediência ao Senhor.
+        </p>
+
+        <p>
+          Com dedicação ao ministério e cuidado pelas pessoas, procuram fortalecer famílias,
+          encorajar a caminhada cristã e cooperar para que a igreja cresça espiritualmente
+          e cumpra o propósito de Deus.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">NO QUE CREMOS</span>
+      <h2>Fundamentos da nossa fé</h2>
+      <p>
+        Estes princípios orientam a nossa caminhada e a forma como vivemos a vida cristã.
+      </p>
+    </div>
+
+    <div class="cardGrid">
+      <article class="infoCard">
+        <h3>A Bíblia</h3>
+        <p>
+          Cremos que a Bíblia é a Palavra de Deus, inspirada, verdadeira e suficiente
+          para ensinar, corrigir e orientar a nossa vida.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3>Jesus Cristo</h3>
+        <p>
+          Cremos em Jesus Cristo como Filho de Deus, Salvador e Senhor, único caminho
+          para a salvação e esperança para toda a humanidade.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3>Comunhão e serviço</h3>
+        <p>
+          Cremos na importância da igreja como corpo de Cristo, no discipulado, no amor
+          ao próximo e no serviço como expressão da fé.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock">
+  <div class="container">
+    <div class="ctaBox">
+      <h2>Queremos receber-te com alegria</h2>
+      <p>
+        Quer estejas a dar os primeiros passos na fé ou procures uma igreja para congregar,
+        serás muito bem-vindo entre nós.
+      </p>
+
+      <a href="{% url 'core:home' %}#contactos" class="btn btnPrimary">Entrar em contacto</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

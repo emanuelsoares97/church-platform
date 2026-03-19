@@ -9,7 +9,7 @@ from django.utils.text import slugify
 
 class GalleryAlbum(models.Model):
     """
-    Álbum de galeria para cultos, reuniões ou momentos da igreja.
+    Álbum de galeria para celebrações, reuniões ou momentos da igreja.
 
     Cada álbum pode ter um prazo de expiração configurável.
     """

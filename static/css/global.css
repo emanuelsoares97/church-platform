@@ -877,3 +877,44 @@ img {
   line-height: 1;
   cursor: pointer;
 }
+
+.aboutHero {
+  padding-bottom: 2rem;
+}
+
+.pastorSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.pastorPhotoCard {
+  background: #fff;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.pastorPhotoCard img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pastorInfo h3 {
+  margin-bottom: 0.5rem;
+}
+
+.pastorNameSecondary {
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .pastorSection {
+    grid-template-columns: 1fr;
+  }
+}
