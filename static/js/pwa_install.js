@@ -116,10 +116,8 @@ if (closeInstallModal) {
 }
 
 if (iosInstallModal) {
-  iosInstallModal.addEventListener("click", function (event) {
-    if (event.target === iosInstallModal) {
-      iosInstallModal.hidden = true;
-    }
+  iosInstallModal.addEventListener("click", function () {
+    iosInstallModal.hidden = true;
   });
 }
 

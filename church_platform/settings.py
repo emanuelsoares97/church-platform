@@ -203,4 +203,4 @@ cloudinary.config(
     secure=True,
 )
 
-APP_VERSION = "v1"
+APP_VERSION = "v2"

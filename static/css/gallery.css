@@ -115,13 +115,14 @@
    ========================= */
 
 .galleryGrid{
-  column-count: 3;
-  column-gap: 22px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
 }
 
 .galleryCard{
   position: relative;
-  display: inline-block;
+  display: block;
   width: 100%;
   margin: 0 0 22px;
   break-inside: avoid;
