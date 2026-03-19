@@ -62,28 +62,28 @@
   </div>
 
   {% for reg in page_obj %}
-  <div class="table__row" data-registration-row>
+  <div class="table__row">
 
     <div>
       <strong>{{ reg.buyer_name }}</strong><br>
       <span class="small">{{ reg.buyer_email }}</span>
 
-      <div class="badgesRow">
+      <div class="badgesRow registrationBadges">
 
         {% if reg.p_paid == reg.p_total %}
-          <span class="badge" data-registration-paid-badge><span class="dot"></span>Todos pagos</span>
+          <span class="badge"><span class="dot"></span>Todos pagos</span>
         {% elif reg.p_paid == 0 %}
-          <span class="badge" data-registration-paid-badge><span class="dot bad"></span>Não pago</span>
+          <span class="badge"><span class="dot bad"></span>Não pago</span>
         {% else %}
-          <span class="badge" data-registration-paid-badge><span class="dot warn"></span>{{ reg.p_paid }}/{{ reg.p_total }} pagos</span>
+          <span class="badge"><span class="dot warn"></span>{{ reg.p_paid }}/{{ reg.p_total }} pagos</span>
         {% endif %}
 
         {% if reg.p_checked == reg.p_total %}
-          <span class="badge" data-registration-checkin-badge><span class="dot"></span>Check-in completo</span>
+          <span class="badge"><span class="dot"></span>Check-in completo</span>
         {% elif reg.p_checked == 0 %}
-          <span class="badge" data-registration-checkin-badge><span class="dot bad"></span>Sem check-in</span>
+          <span class="badge"><span class="dot bad"></span>Sem check-in</span>
         {% else %}
-          <span class="badge" data-registration-checkin-badge><span class="dot warn"></span>{{ reg.p_checked }}/{{ reg.p_total }} check-ins</span>
+          <span class="badge"><span class="dot warn"></span>{{ reg.p_checked }}/{{ reg.p_total }} check-ins</span>
         {% endif %}
 
       </div>
@@ -103,6 +103,7 @@
         <form
           class="js-ajax-form"
           data-action-type="payment"
+          data-current-state="{% if p.is_paid %}paid{% else %}unpaid{% endif %}"
           method="post"
           action="{% url 'management:toggle_participant_paid' p.id %}"
         >
@@ -118,6 +119,7 @@
         <form
           class="js-ajax-form"
           data-action-type="checkin"
+          data-current-state="{% if p.checked_in %}checked{% else %}unchecked{% endif %}"
           method="post"
           action="{% url 'management:toggle_participant_checkin' p.id %}"
         >
@@ -143,14 +145,14 @@
 
     </div>
 
-    <div class="actionsCol">
+    <div class="actionsCol" data-event-price-positive="{% if event.price > 0 %}1{% else %}0{% endif %}">
 
-      {% if reg.p_paid != reg.p_total %}
       <form
         class="js-ajax-form"
         data-action-type="pay-all"
         method="post"
         action="{% url 'management:mark_registration_paid_full' reg.id %}"
+        {% if reg.p_paid == reg.p_total %}hidden{% endif %}
       >
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.get_full_path }}">
@@ -158,22 +160,24 @@
           💳 Pagar todos
         </button>
       </form>
-      {% endif %}
 
-      {% if reg.p_checked != reg.p_total %}
       <form
         class="js-ajax-form"
         data-action-type="checkin-all"
         method="post"
         action="{% url 'management:checkin_all' reg.id %}"
+        {% if reg.p_checked == reg.p_total %}hidden{% endif %}
       >
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.get_full_path }}">
-        <button class="btn sm secondary" type="submit">
+        <button
+          class="btn sm secondary"
+          type="submit"
+          {% if event.price > 0 and reg.p_paid != reg.p_total %}disabled{% endif %}
+        >
           ✅ Check-in todos
         </button>
       </form>
-      {% endif %}
 
     </div>
 

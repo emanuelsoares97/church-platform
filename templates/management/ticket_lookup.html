@@ -4,7 +4,7 @@
 {% block mgmt_title %}Participante — {{ participant.full_name }}{% endblock %}
 
 {% block mgmt_content %}
-<section class="lookupPage" data-event-has-price="{% if participant.registration.event.price > 0 %}1{% else %}0{% endif %}">
+<section class="lookupPage">
 
   <div class="lookupCard">
 
@@ -25,22 +25,22 @@
     </div>
 
     {% if participant.checked_in %}
-      <div class="statusBig statusBig--done" data-lookup-status-big>
+      <div id="lookup-status-big" class="statusBig statusBig--done">
         ☑️ Check-in já realizado
       </div>
 
     {% elif participant.is_paid %}
-      <div class="statusBig statusBig--ok" data-lookup-status-big>
+      <div id="lookup-status-big" class="statusBig statusBig--ok">
         ✔ Participante pronto para entrar
       </div>
 
     {% elif participant.registration.event.price > 0 %}
-      <div class="statusBig statusBig--bad" data-lookup-status-big>
+      <div id="lookup-status-big" class="statusBig statusBig--bad">
         ⚠ Pagamento pendente
       </div>
 
     {% else %}
-      <div class="statusBig statusBig--neutral" data-lookup-status-big>
+      <div id="lookup-status-big" class="statusBig statusBig--neutral">
         🎟 Entrada gratuita
       </div>
     {% endif %}
@@ -49,26 +49,26 @@
 
       {% if participant.registration.event.price > 0 %}
         {% if participant.is_paid %}
-          <span class="badge badge--ok" data-lookup-payment-badge>
+          <span id="lookup-payment-badge" class="badge badge--ok">
             ✔ Pagamento confirmado
           </span>
         {% else %}
-          <span class="badge badge--warn" data-lookup-payment-badge>
+          <span id="lookup-payment-badge" class="badge badge--warn">
             ⚠ Pagamento pendente
           </span>
         {% endif %}
       {% else %}
-        <span class="badge" data-lookup-payment-badge>
+        <span class="badge">
           🎟 Evento gratuito
         </span>
       {% endif %}
 
       {% if participant.checked_in %}
-        <span class="badge badge--ok" data-lookup-checkin-badge>
+        <span id="lookup-checkin-badge" class="badge badge--ok">
           ✔ Check-in realizado
         </span>
       {% else %}
-        <span class="badge badge--warn" data-lookup-checkin-badge>
+        <span id="lookup-checkin-badge" class="badge badge--warn">
           ⬜ Check-in por fazer
         </span>
       {% endif %}
@@ -108,15 +108,6 @@
         <input type="hidden" name="next" value="{{ request.get_full_path }}">
         <input type="hidden" name="value" value="{% if participant.checked_in %}0{% else %}1{% endif %}">
 
-        <button class="btn actionBtnWide"
-                type="submit"
-                {% if not participant.is_paid and participant.registration.event.price > 0 %}disabled title="Pagamento pendente"{% endif %}>
-          {% if participant.checked_in %}
-            Desfazer check-in
-          {% else %}
-            Confirmar entrada
-          {% endif %}
-        </button>
       </form>
 
       <a class="btn secondary actionBtnWide"

@@ -127,9 +127,12 @@ def mark_registration_paid_full(request, reg_id):
 
     Participant.objects.filter(registration=reg).update(is_paid=True, paid_at=now)
 
-    messages.success(request, "Pagamento total confirmado")
+    is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
 
-    if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
+    if not is_ajax:
+        messages.success(request, "Pagamento total confirmado")
+
+    if is_ajax:
         return JsonResponse(
             {
                 "success": True,
@@ -171,9 +174,12 @@ def toggle_participant_paid(request, participant_id):
     reg.paid_at = now if all_paid else None
     reg.save(update_fields=["paid_amount", "is_paid", "paid_at"])
 
-    messages.success(request, "Pagamento atualizado")
+    is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
 
-    if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
+    if not is_ajax:
+        messages.success(request, "Pagamento atualizado")
+
+    if is_ajax:
         return JsonResponse(
             {
                 "success": True,
@@ -206,10 +212,13 @@ def toggle_participant_checkin(request, participant_id):
     )
     event = p.registration.event
 
-    if not p.is_paid and event.price > 0:
-        messages.error(request, "Não é possível fazer check-in sem pagamento confirmado")
+    is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
 
-        if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
+    if not p.is_paid and event.price > 0:
+        if not is_ajax:
+            messages.error(request, "Não é possível fazer check-in sem pagamento confirmado")
+
+        if is_ajax:
             return JsonResponse(
                 {
                     "success": False,
@@ -225,9 +234,10 @@ def toggle_participant_checkin(request, participant_id):
     p.mark_checked_in(new_value)
     p.save(update_fields=["checked_in", "checked_in_at"])
 
-    messages.success(request, "Check-in atualizado")
+    if not is_ajax:
+        messages.success(request, "Check-in atualizado")
 
-    if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
+    if is_ajax:
         return JsonResponse(
             {
                 "success": True,
@@ -254,10 +264,13 @@ def checkin_all(request, reg_id):
         pk=reg_id,
     )
 
-    if reg.event.price > 0 and reg.participants.filter(is_paid=False).exists():
-        messages.error(request, "Ainda existem participantes por pagar")
+    is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
 
-        if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
+    if reg.event.price > 0 and reg.participants.filter(is_paid=False).exists():
+        if not is_ajax:
+            messages.error(request, "Ainda existem participantes por pagar")
+
+        if is_ajax:
             return JsonResponse(
                 {
                     "success": False,
@@ -277,9 +290,10 @@ def checkin_all(request, reg_id):
             p.checked_in_at = now
             p.save(update_fields=["checked_in", "checked_in_at"])
 
-    messages.success(request, "Check-in de todos os participantes registado")
+    if not is_ajax:
+        messages.success(request, "Check-in de todos os participantes registado")
 
-    if request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest":
+    if is_ajax:
         return JsonResponse(
             {
                 "success": True,
