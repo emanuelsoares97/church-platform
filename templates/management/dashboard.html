@@ -3,31 +3,110 @@
 {% block mgmt_title %}Painel de Gestão{% endblock %}
 
 {% block mgmt_content %}
-<div class="cards">
+<div class="dashboardHero">
+  <div class="dashboardHero__content">
+    <span class="dashboardHero__eyebrow">Área interna</span>
+    <h2>Bem-vindo ao painel de gestão</h2>
+    <p>
+      Gere eventos, acompanha inscrições e valida check-ins de forma rápida.
+    </p>
+  </div>
+</div>
 
-  <div class="card">
-    <div class="card__inner">
-      <div class="card__title">Eventos</div>
-      <p class="muted">Gerir eventos e inscrições</p>
-      <a class="btn secondary" href="{% url 'management:events_list' %}">Abrir</a>
-    </div>
+<div class="dashboardStats">
+  <div class="statCard">
+    <div class="statCard__label">Módulos ativos</div>
+    <div class="statCard__value">3</div>
+    <div class="statCard__hint">Dashboard, Eventos e Scanner</div>
   </div>
 
-  <div class="card">
-    <div class="card__inner">
-      <div class="card__title">Scanner</div>
-      <p class="muted">Check-in por QR code</p>
-      <a class="btn secondary" href="{% url 'management:scan' %}">Abrir</a>
-    </div>
+  <div class="statCard">
+    <div class="statCard__label">Área</div>
+    <div class="statCard__value">Gestão</div>
+    <div class="statCard__hint">Uso interno da liderança / equipa</div>
   </div>
 
-  <div class="card">
-    <div class="card__inner">
-      <div class="card__title">Dashboard</div>
-      <p class="muted">Métricas gerais</p>
-      <a class="btn secondary" href="#">Em breve</a>
-    </div>
+  <div class="statCard">
+    <div class="statCard__label">Estado</div>
+    <div class="statCard__value">Online</div>
+    <div class="statCard__hint">Sistema pronto para operação</div>
+  </div>
+</div>
+
+<div class="dashboardSection">
+  <div class="sectionHeader">
+    <h3>Módulos principais</h3>
+    <p>Navegação rápida para as áreas principais da gestão.</p>
   </div>
 
+  <div class="cards cards--dashboard">
+    <article class="card card--feature">
+      <div class="card__inner">
+        <div class="featureIcon">📅</div>
+        <div class="card__title">Eventos</div>
+        <p class="card__text">
+          Consultar eventos, abrir a gestão de inscrições e acompanhar a operação.
+        </p>
+        <div class="card__actions">
+          <a class="btn secondary" href="{% url 'management:events_list' %}">
+            Abrir módulo
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="card card--feature">
+      <div class="card__inner">
+        <div class="featureIcon">📷</div>
+        <div class="card__title">Scanner</div>
+        <p class="card__text">
+          Fazer check-in rápido por QR code e validar entradas no momento.
+        </p>
+        <div class="card__actions">
+          <a class="btn secondary" href="{% url 'management:scan' %}">
+            Abrir scanner
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <article class="card card--feature card--muted">
+      <div class="card__inner">
+        <div class="featureIcon">📊</div>
+        <div class="card__title">Relatórios</div>
+        <p class="card__text">
+          Área reservada para métricas, exportações e visão consolidada.
+        </p>
+        <div class="card__actions">
+          <span class="badge">Em breve</span>
+        </div>
+      </div>
+    </article>
+  </div>
+</div>
+
+<div class="dashboardSection">
+  <div class="sectionHeader">
+    <h3>Ações rápidas</h3>
+    <p>Atalhos para as tarefas mais comuns.</p>
+  </div>
+
+  <div class="quickActions">
+    <a class="quickAction" href="{% url 'management:events_list' %}">
+      <span class="quickAction__icon">🗂️</span>
+      <span class="quickAction__text">
+        <strong>Gerir eventos</strong>
+        <small>Aceder à lista de eventos</small>
+      </span>
+    </a>
+
+    <a class="quickAction" href="{% url 'management:scan' %}">
+      <span class="quickAction__icon">✅</span>
+      <span class="quickAction__text">
+        <strong>Ir para scanner</strong>
+        <small>Check-in rápido</small>
+      </span>
+    </a>
+  </div>
 </div>
 {% endblock %}

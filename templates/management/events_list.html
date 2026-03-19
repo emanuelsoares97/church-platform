@@ -1,28 +1,48 @@
 {% extends "management/base_management.html" %}
 
-{% block mgmt_title %}Gestão de eventos{% endblock %}
+{% block mgmt_title %}Gestão de Eventos{% endblock %}
 
 {% block mgmt_content %}
-  <div class="cards">
-    {% for e in events %}
-      <div class="card">
-        <div class="card__inner">
-          <div class="card__title">{{ e.title }}</div>
+<div class="sectionHeader sectionHeader--spaced">
+  <div>
+    <h3>Eventos disponíveis</h3>
+    <p>Escolhe um evento para abrir a gestão de inscrições e operação.</p>
+  </div>
+</div>
 
-          <div class="card__meta">
-            <span class="kpi">Inscrições: <strong>{{ e.reg_count }}</strong></span>
-            {% if e.is_active %}
-              <span class="kpi"><strong>Ativo</strong></span>
-            {% else %}
-              <span class="kpi">Inativo</span>
-            {% endif %}
-          </div>
+<div class="cards cards--dashboard">
+  {% for e in events %}
+    <article class="card card--feature">
+      <div class="card__inner">
+        <div class="featureIcon">📅</div>
+        <div class="card__title">{{ e.title }}</div>
 
-          <a class="btn secondary" href="{% url 'management:event_regs' e.id %}">Gerir inscrições</a>
+        <div class="card__meta">
+          <span class="kpi">Inscrições: <strong>{{ e.reg_count }}</strong></span>
+
+          {% if e.is_active %}
+            <span class="kpi"><strong>Ativo</strong></span>
+          {% else %}
+            <span class="kpi">Inativo</span>
+          {% endif %}
+        </div>
+
+        <p class="card__text">
+          Abrir área de gestão deste evento para pagamentos, check-in e acompanhamento.
+        </p>
+
+        <div class="card__actions">
+          <a class="btn secondary" href="{% url 'management:event_regs' e.id %}">
+            Gerir inscrições
+          </a>
         </div>
       </div>
-    {% empty %}
-      <p class="muted">Ainda não existem eventos disponíveis.</p>
-    {% endfor %}
-  </div>
+    </article>
+  {% empty %}
+    <div class="emptyState">
+      <h3>Sem eventos disponíveis</h3>
+      <p class="muted">Ainda não existem eventos para apresentar nesta área.</p>
+    </div>
+  {% endfor %}
+</div>
 {% endblock %}

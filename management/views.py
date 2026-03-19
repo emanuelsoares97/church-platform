@@ -47,7 +47,7 @@ def build_event_kpis(event):
 @login_required
 @user_passes_test(can_manage_events)
 def events_list(request):
-    """dashboard principal com lista de eventos e contadores."""
+    """lista de eventos para gestão."""
     events = (
         Event.objects.all()
         .annotate(reg_count=Count("registrations"))

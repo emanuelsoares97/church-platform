@@ -2,23 +2,30 @@
 {% load static %}
 
 {% block extra_head %}
+  {{ block.super }}
   <link rel="stylesheet" href="{% static 'css/management_v2.css' %}">
   {% block mgmt_extra_head %}{% endblock %}
 {% endblock %}
 
 {% block content %}
-<header class="mgmt__header">
-  <div class="mgmt__title">
-    <h1>{% block mgmt_title %}Gestão{% endblock %}</h1>
-    <small>Painel interno • Unidos com Cristo</small>
+<section class="mgmtPage">
+  <header class="mgmtHeader">
+    <div class="mgmtHeader__top">
+      <div class="mgmtHeader__titleWrap">
+        <h1>{% block mgmt_title %}Gestão{% endblock %}</h1>
+        <small>Painel interno • Unidos com Cristo</small>
+      </div>
+
+      <div class="mgmtHeader__actions">
+        <a class="btn secondary" href="{% url 'admin:index' %}">Admin Django</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="mgmtMain">
+    {% block mgmt_content %}{% endblock %}
   </div>
-
-
-</header>
-
-<div class="mgmt">
-  {% block mgmt_content %}{% endblock %}
-</div>
+</section>
 {% endblock %}
 
 {% block extra_js %}
