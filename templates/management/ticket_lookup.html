@@ -4,7 +4,7 @@
 {% block mgmt_title %}Participante — {{ participant.full_name }}{% endblock %}
 
 {% block mgmt_content %}
-<section class="lookupPage">
+<section class="lookupPage" data-event-has-price="{% if participant.registration.event.price > 0 %}1{% else %}0{% endif %}">
 
   <div class="lookupCard">
 
@@ -24,69 +24,66 @@
       </div>
     </div>
 
-
-    <!-- ESTADO PRINCIPAL -->
     {% if participant.checked_in %}
-      <div class="statusBig statusBig--done">
+      <div class="statusBig statusBig--done" data-lookup-status-big>
         ☑️ Check-in já realizado
       </div>
 
     {% elif participant.is_paid %}
-      <div class="statusBig statusBig--ok">
+      <div class="statusBig statusBig--ok" data-lookup-status-big>
         ✔ Participante pronto para entrar
       </div>
 
     {% elif participant.registration.event.price > 0 %}
-      <div class="statusBig statusBig--bad">
+      <div class="statusBig statusBig--bad" data-lookup-status-big>
         ⚠ Pagamento pendente
       </div>
 
     {% else %}
-      <div class="statusBig statusBig--neutral">
+      <div class="statusBig statusBig--neutral" data-lookup-status-big>
         🎟 Entrada gratuita
       </div>
     {% endif %}
 
-
-
-    <!-- BADGES -->
     <div class="badgesRow lookupBadges">
 
       {% if participant.registration.event.price > 0 %}
         {% if participant.is_paid %}
-          <span class="badge badge--ok">
+          <span class="badge badge--ok" data-lookup-payment-badge>
             ✔ Pagamento confirmado
           </span>
         {% else %}
-          <span class="badge badge--warn">
+          <span class="badge badge--warn" data-lookup-payment-badge>
             ⚠ Pagamento pendente
           </span>
         {% endif %}
       {% else %}
-        <span class="badge">
+        <span class="badge" data-lookup-payment-badge>
           🎟 Evento gratuito
         </span>
       {% endif %}
 
       {% if participant.checked_in %}
-        <span class="badge badge--ok">
+        <span class="badge badge--ok" data-lookup-checkin-badge>
           ✔ Check-in realizado
         </span>
       {% else %}
-        <span class="badge badge--warn">
+        <span class="badge badge--warn" data-lookup-checkin-badge>
           ⬜ Check-in por fazer
         </span>
       {% endif %}
 
     </div>
 
-
-
-    <!-- AÇÕES -->
     <div class="actionsCol lookupActions">
 
       {% if participant.registration.event.price > 0 %}
-        <form method="post" action="{% url 'management:toggle_participant_paid' participant.id %}">
+        <form
+          class="js-ajax-form"
+          data-action-type="payment-text"
+          method="post"
+          action="{% url 'management:toggle_participant_paid' participant.id %}"
+        >
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.get_full_path }}">
           <input type="hidden" name="value" value="{% if participant.is_paid %}0{% else %}1{% endif %}">
@@ -101,9 +98,12 @@
         </form>
       {% endif %}
 
-
-
-      <form method="post" action="{% url 'management:toggle_participant_checkin' participant.id %}">
+      <form
+        class="js-ajax-form"
+        data-action-type="checkin-text"
+        method="post"
+        action="{% url 'management:toggle_participant_checkin' participant.id %}"
+      >
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.get_full_path }}">
         <input type="hidden" name="value" value="{% if participant.checked_in %}0{% else %}1{% endif %}">
@@ -111,29 +111,23 @@
         <button class="btn actionBtnWide"
                 type="submit"
                 {% if not participant.is_paid and participant.registration.event.price > 0 %}disabled title="Pagamento pendente"{% endif %}>
-
           {% if participant.checked_in %}
             Desfazer check-in
           {% else %}
             Confirmar entrada
           {% endif %}
-
         </button>
       </form>
-
-
 
       <a class="btn secondary actionBtnWide"
          href="{% url 'management:registration_group' participant.registration.id %}">
         Ver grupo
       </a>
 
-
       <a class="btn secondary actionBtnWide"
          href="{% url 'management:event_regs' participant.registration.event.id %}?q={{ participant.ticket_code }}">
         Ver na lista de inscrições
       </a>
-
 
       <a class="btn actionBtnWide"
          href="{% url 'management:scan' %}">
@@ -147,5 +141,4 @@
 </section>
 
 <script src="{% static 'js/management_ajax.js' %}"></script>
-
 {% endblock %}

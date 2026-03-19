@@ -12,6 +12,29 @@
 {% block mgmt_content %}
 <section class="groupPage">
   <div class="groupCard">
+
+    <div class="kpiGrid kpiGrid--compact">
+      <div class="kpiCard">
+        <div class="kpiValue" id="kpi-total-regs">{{ kpis.total_regs }}</div>
+        <div class="kpiLabel">INS</div>
+      </div>
+
+      <div class="kpiCard">
+        <div class="kpiValue" id="kpi-total-paid">{{ kpis.total_paid_participants }}</div>
+        <div class="kpiLabel">PAG</div>
+      </div>
+
+      <div class="kpiCard">
+        <div class="kpiValue" id="kpi-total-participants">{{ kpis.total_participants }}</div>
+        <div class="kpiLabel">PART</div>
+      </div>
+
+      <div class="kpiCard">
+        <div class="kpiValue" id="kpi-total-checkins">{{ kpis.total_checkins }}</div>
+        <div class="kpiLabel">CHK</div>
+      </div>
+    </div>
+
     <div class="groupHeader">
       <div>
         <p class="sectionEyebrow">
@@ -40,10 +63,14 @@
       </div>
     </div>
 
-    <!-- acoes rapidas do grupo -->
     <div class="actionsCol groupTopActions" style="margin-top:18px;">
       {% if reg.event.price > 0 and paid_participants != total_participants %}
-        <form method="post" action="{% url 'management:mark_registration_paid_full' reg.id %}">
+        <form
+          class="js-ajax-form"
+          data-action-type="pay-all"
+          method="post"
+          action="{% url 'management:mark_registration_paid_full' reg.id %}"
+        >
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.get_full_path }}">
           <button class="btn secondary actionBtnWide" type="submit">
@@ -57,11 +84,19 @@
       {% endif %}
 
       {% if checked_participants != total_participants %}
-        <form method="post" action="{% url 'management:checkin_all' reg.id %}">
+        <form
+          class="js-ajax-form"
+          data-action-type="checkin-all"
+          method="post"
+          action="{% url 'management:checkin_all' reg.id %}"
+        >
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.get_full_path }}">
-          <button class="btn actionBtnWide" type="submit"
-                  {% if reg.event.price > 0 and paid_participants != total_participants %}disabled title="Ainda existem participantes por pagar"{% endif %}>
+          <button
+            class="btn actionBtnWide"
+            type="submit"
+            {% if reg.event.price > 0 and paid_participants != total_participants %}disabled title="Ainda existem participantes por pagar"{% endif %}
+          >
             {% if total_participants == 1 %}
               ✅ Confirmar entrada
             {% else %}
@@ -96,13 +131,18 @@
             <span class="groupCellLabel">Pagamento</span>
 
             {% if reg.event.price > 0 %}
-              <form method="post" action="{% url 'management:toggle_participant_paid' p.id %}">
+              <form
+                class="js-ajax-form"
+                data-action-type="payment-text"
+                method="post"
+                action="{% url 'management:toggle_participant_paid' p.id %}"
+              >
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.get_full_path }}">
                 <input type="hidden" name="value" value="{% if p.is_paid %}0{% else %}1{% endif %}">
 
                 <button class="btn sm secondary groupActionBtn" type="submit">
-                  {% if p.is_paid %}✅ Confirmado{% else %}⬜ Confirmar{% endif %}
+                  {% if p.is_paid %}Remover pagamento{% else %}Confirmar pagamento{% endif %}
                 </button>
               </form>
             {% else %}
@@ -113,14 +153,22 @@
           <div class="groupCell">
             <span class="groupCellLabel">Check-in</span>
 
-            <form method="post" action="{% url 'management:toggle_participant_checkin' p.id %}">
+            <form
+              class="js-ajax-form"
+              data-action-type="checkin-text"
+              method="post"
+              action="{% url 'management:toggle_participant_checkin' p.id %}"
+            >
               {% csrf_token %}
               <input type="hidden" name="next" value="{{ request.get_full_path }}">
               <input type="hidden" name="value" value="{% if p.checked_in %}0{% else %}1{% endif %}">
 
-              <button class="btn sm secondary groupActionBtn" type="submit"
-                      {% if not p.is_paid and reg.event.price > 0 %}disabled title="Pagamento pendente"{% endif %}>
-                {% if p.checked_in %}✅ Feito{% else %}⬜ Confirmar{% endif %}
+              <button
+                class="btn sm secondary groupActionBtn"
+                type="submit"
+                {% if not p.is_paid and reg.event.price > 0 %}disabled title="Pagamento pendente"{% endif %}
+              >
+                {% if p.checked_in %}Desfazer check-in{% else %}Confirmar entrada{% endif %}
               </button>
             </form>
           </div>
@@ -141,5 +189,4 @@
 </section>
 
 <script src="{% static 'js/management_ajax.js' %}"></script>
-
 {% endblock %}
