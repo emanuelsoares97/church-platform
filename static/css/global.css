@@ -603,45 +603,52 @@ img {
 
 .footer,
 .siteFooter {
-  border-top: 1px solid var(--line-soft);
+  width: min(92%, var(--max));
+  margin: 0 auto;
   padding: 28px 0 40px;
+  border-top: 1px solid var(--line-soft);
   color: var(--muted);
 }
 
-.footer {
-  width: min(92%, var(--max));
-  margin: 0 auto;
+.footerTop {
   display: flex;
   justify-content: space-between;
-  gap: 24px;
+  align-items: flex-start;
+  gap: 32px;
   flex-wrap: wrap;
 }
 
-.footer > div {
+.footerBrandBlock,
+.footerSocialBlock {
   display: flex;
   flex-direction: column;
+}
+
+.footerBrandBlock {
   gap: 10px;
+  flex: 1 1 320px;
 }
 
-.socialRow {
-  display: flex;
-  align-items: center;
+.footerSocialBlock {
   gap: 12px;
+  align-items: flex-end;
 }
 
-.footerGrid strong,
 .footerStrong {
   display: inline-block;
-  margin-bottom: 8px;
   color: var(--white);
+  font-size: 1.05rem;
 }
 
-.footerGrid p {
-  margin-bottom: 6px;
+.footerText {
+  color: var(--muted);
+  max-width: 460px;
 }
 
-.footerContact {
-  text-align: right;
+.footerContactList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .footerLabel {
@@ -654,9 +661,23 @@ img {
 
 .footerAddress {
   display: block;
-  margin-top: 12px;
   color: var(--muted);
   font-size: 0.92rem;
+}
+
+.footerBottom {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.footerDev {
+  color: var(--muted);
 }
 
 .socialIcons {
@@ -664,25 +685,23 @@ img {
   gap: 10px;
 }
 
+.socialIcons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .socialIcon {
   width: 26px;
   height: 26px;
   fill: var(--muted);
-  transition: 0.2s ease;
+  transition: fill 0.2s ease, transform 0.2s ease;
 }
 
 .socialIcon:hover,
 .socialIcon:focus-visible {
   fill: var(--accent);
-}
-
-.footerSocial span,
-.footerSocial a {
-  color: var(--muted);
-}
-
-.footerSocial a:hover {
-  color: var(--accent);
+  transform: translateY(-1px);
 }
 
 /* =========================
@@ -713,10 +732,20 @@ img {
     padding-top: 60px;
   }
 
-  .footer > div {
+  .footerTop {
     flex-direction: column;
     align-items: flex-start;
-    gap: 18px;
+    gap: 22px;
+  }
+
+  .footerSocialBlock {
+    align-items: flex-start;
+  }
+
+  .footerBottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 
   .footerStrong {
@@ -724,13 +753,11 @@ img {
   }
 
   .footerLabel,
-  .footerAddress {
+  .footerAddress,
+  .footerText,
+  .footerBottom p,
+  .footerContactList span {
     font-size: 1rem;
-  }
-
-  .footerContact {
-    text-align: left;
-    margin-top: 18px;
   }
 }
 
@@ -764,4 +791,89 @@ img {
   .emptyCard {
     padding: 22px;
   }
+
+  .installAppBtn {
+    right: 12px;
+    bottom: 12px;
+    padding: 11px 16px;
+    font-size: 0.92rem;
+  }
+}
+
+/* =========================
+   PWA INSTALL
+   ========================= */
+
+.installAppBtn {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1200;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  background: #111111;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.installAppBtn:hover {
+  opacity: 0.95;
+}
+
+.installModal {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.installModalCard {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  color: var(--text-dark);
+  border-radius: 18px;
+  padding: 24px 20px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.installModalCard h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: var(--text-dark);
+}
+
+.installModalCard p {
+  margin-bottom: 10px;
+  color: var(--text-dark);
+}
+
+.installModalCard ol {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.installModalCard li + li {
+  margin-top: 8px;
+}
+
+.installModalClose {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-dark);
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
 }

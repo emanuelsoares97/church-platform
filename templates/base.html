@@ -46,8 +46,8 @@
         <span class="navToggle__bar"></span>
       </button>
 
-      <nav class="navMenu navMenu--desktop">
-        <a href="{% url 'core:home' %}">Início</a>       
+      <nav class="navMenu navMenu--desktop" aria-label="Navegação principal">
+        <a href="{% url 'core:home' %}">Início</a>
         <a href="#sobre">Sobre</a>
         <a href="#cultos">Cultos</a>
         <a href="#contactos">Contactos</a>
@@ -58,11 +58,10 @@
     </div>
   </header>
 
-  <!-- MENU MOBILE FORA DO HEADER -->
-  <div class="navOverlay" id="nav-overlay"></div>
+  <div class="navOverlay" id="nav-overlay" aria-hidden="true"></div>
 
-  <nav class="navMenuMobile" id="nav-menu">
-    <a href="{% url 'core:home' %}">Início</a>       
+  <nav class="navMenuMobile" id="nav-menu" aria-label="Menu mobile">
+    <a href="{% url 'core:home' %}">Início</a>
     <a href="#sobre">Sobre</a>
     <a href="#cultos">Cultos</a>
     <a href="#contactos">Contactos</a>
@@ -86,15 +85,23 @@
   </main>
 
   <footer class="footer" id="contactos">
-    <div>
-      <strong class="footerStrong">Unidos com Cristo</strong><br>
-      <span>Contactos: email@igreja.pt | 91 000 0000</span>
-      <span class="footerAddress">Morada: Rua Luís de Queiroz, n° 26, Almada, Portugal</span>
-    </div>
+    <div class="footerTop">
+      <div class="footerBrandBlock">
+        <strong class="footerStrong">Unidos com Cristo</strong>
 
-    <div class="footerSocial">
-      <div class="socialRow">
-        <span class="footerLabel">Redes sociais:</span>
+        <p class="footerText">
+          Uma comunidade de fé, comunhão e esperança.
+        </p>
+
+        <div class="footerContactList">
+          <span>Contactos: email@igreja.pt | 91 000 0000</span>
+          <span class="footerAddress">Morada: Rua Luís de Queiroz, n° 26, Almada, Portugal</span>
+        </div>
+      </div>
+
+      <div class="footerSocialBlock">
+        <span class="footerLabel">Segue-nos</span>
+
         <div class="socialIcons">
           <a href="https://www.instagram.com/church_platform/" target="_blank" rel="noopener" aria-label="Instagram">
             <svg viewBox="0 0 24 24" class="socialIcon" aria-hidden="true">
@@ -102,7 +109,7 @@
             </svg>
           </a>
 
-          <a href="https://www.facebook.com/SntAlmada/?ref=PRODASH_UPSELL_xav_ig_profile_page_web#" target="_blank" rel="noopener" aria-label="Facebook">
+          <a href="https://www.facebook.com/SntAlmada/" target="_blank" rel="noopener" aria-label="Facebook">
             <svg viewBox="0 0 24 24" class="socialIcon" aria-hidden="true">
               <path d="M22 12a10 10 0 1 0-11.5 9.9v-7H8v-3h2.5V9.5c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.4h-1.2c-1.2 0-1.6.8-1.6 1.6V12H17l-.4 3h-2.7v7A10 10 0 0 0 22 12z"/>
             </svg>
@@ -116,24 +123,41 @@
         </div>
       </div>
     </div>
+
+    <div class="footerBottom">
+      <p>© {% now "Y" %} Unidos com Cristo. Todos os direitos reservados.</p>
+      <p class="footerDev">Desenvolvido por Emanuel Soares</p>
+    </div>
   </footer>
 
+  <button id="installAppBtn" class="installAppBtn" type="button" hidden>
+    Instalar app
+  </button>
+
+  <div id="iosInstallModal" class="installModal" hidden>
+    <div class="installModalCard" role="dialog" aria-modal="true" aria-labelledby="installModalTitle">
+      <button id="closeInstallModal" class="installModalClose" type="button" aria-label="Fechar">
+        &times;
+      </button>
+
+      <h3 id="installModalTitle">Instalar app</h3>
+        <p id="iosInstallText">No iPhone, para instalares a app:</p>
+
+        <p id="iosBrowserHelp" hidden>
+            No iPhone, a instalação da app só pode ser feita pelo <strong>Safari</strong>.
+            Abre este site no Safari e depois toca em <strong>Partilhar</strong> &rarr;
+            <strong>Adicionar ao ecrã principal</strong>.
+        </p>
+
+      <ol>
+        <li>Toca no botão <strong>Partilhar</strong>.</li>
+        <li>Escolhe <strong>Adicionar ao ecrã principal</strong>.</li>
+      </ol>
+    </div>
+  </div>
+
   <script src="{% static 'js/navbar.js' %}"></script>
+  <script src="{% static 'js/pwa-install.js' %}"></script>
   {% block extra_js %}{% endblock %}
-
-<script>
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", function () {
-      navigator.serviceWorker.register("{% url 'service_worker' %}")
-        .then(function (registration) {
-          console.log("Service Worker registado:", registration.scope);
-        })
-        .catch(function (error) {
-          console.log("Erro SW:", error);
-        });
-    });
-  }
-</script>
-
 </body>
 </html>
