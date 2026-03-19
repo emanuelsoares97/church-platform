@@ -462,5 +462,57 @@ def export_event_registrations_excel(request, event_id):
 
     return response
 
+@login_required
+@user_passes_test(can_manage_events)
+def reports(request):
+    """lista de eventos para acesso rápido aos relatórios."""
+    events = (
+        Event.objects.all()
+        .annotate(reg_count=Count("registrations"))
+        .order_by("-id")
+    )
+    return render(request, "management/reports.html", {"events": events})
 
 
+@login_required
+@user_passes_test(can_manage_events)
+def event_report(request, event_id):
+    """relatório resumido de um evento."""
+    event = get_object_or_404(Event, pk=event_id)
+
+    registrations = Registration.objects.filter(event=event)
+    participants = Participant.objects.filter(registration__event=event)
+
+    total_regs = registrations.count()
+    total_participants = participants.count()
+    total_paid = participants.filter(is_paid=True).count()
+    total_checkins = participants.filter(checked_in=True).count()
+
+    price = event.price or Decimal("0.00")
+    expected_amount = price * total_participants
+    received_amount = price * total_paid
+    pending_amount = expected_amount - received_amount
+
+    checkin_rate = 0
+    if total_participants > 0:
+        checkin_rate = round((total_checkins / total_participants) * 100)
+
+    paid_rate = 0
+    if total_participants > 0:
+        paid_rate = round((total_paid / total_participants) * 100)
+
+    context = {
+        "event": event,
+        "report": {
+            "total_regs": total_regs,
+            "total_participants": total_participants,
+            "total_paid": total_paid,
+            "total_checkins": total_checkins,
+            "expected_amount": expected_amount,
+            "received_amount": received_amount,
+            "pending_amount": pending_amount,
+            "checkin_rate": checkin_rate,
+            "paid_rate": paid_rate,
+        },
+    }
+    return render(request, "management/event_report.html", context)

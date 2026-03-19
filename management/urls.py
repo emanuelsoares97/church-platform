@@ -25,4 +25,6 @@ urlpatterns = [
         views.export_event_registrations_excel,
         name="export_event_registrations_excel",
     ),
+    path("relatorios/", views.reports, name="reports"),
+    path("eventos/<int:event_id>/relatorio/", views.event_report, name="event_report"),
 ]

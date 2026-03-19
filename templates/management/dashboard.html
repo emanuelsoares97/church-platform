@@ -1,4 +1,9 @@
 {% extends "management/base_management.html" %}
+{% load static %}
+
+{% block mgmt_styles %}
+<link rel="stylesheet" href="{% static 'css/management/dashboard.css' %}">
+{% endblock %}
 
 {% block mgmt_title %}Painel de Gestão{% endblock %}
 
@@ -16,8 +21,8 @@
 <div class="dashboardStats">
   <div class="statCard">
     <div class="statCard__label">Módulos ativos</div>
-    <div class="statCard__value">3</div>
-    <div class="statCard__hint">Dashboard, Eventos e Scanner</div>
+    <div class="statCard__value">4</div>
+    <div class="statCard__hint">Dashboard, Eventos, Scanner e Relatórios</div>
   </div>
 
   <div class="statCard">
@@ -70,15 +75,17 @@
       </div>
     </article>
 
-    <article class="card card--feature card--muted">
+    <article class="card card--feature">
       <div class="card__inner">
         <div class="featureIcon">📊</div>
         <div class="card__title">Relatórios</div>
         <p class="card__text">
-          Área reservada para métricas, exportações e visão consolidada.
+          Ver métricas, totais financeiros e exportações por evento.
         </p>
         <div class="card__actions">
-          <span class="badge">Em breve</span>
+          <a class="btn secondary" href="{% url 'management:reports' %}">
+            Abrir relatórios
+          </a>
         </div>
       </div>
     </article>
@@ -105,6 +112,14 @@
       <span class="quickAction__text">
         <strong>Ir para scanner</strong>
         <small>Check-in rápido</small>
+      </span>
+    </a>
+
+    <a class="quickAction" href="{% url 'management:reports' %}">
+      <span class="quickAction__icon">📈</span>
+      <span class="quickAction__text">
+        <strong>Ver relatórios</strong>
+        <small>Métricas e resumos</small>
       </span>
     </a>
   </div>

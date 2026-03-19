@@ -3,7 +3,9 @@
 
 {% block extra_head %}
   {{ block.super }}
-  <link rel="stylesheet" href="{% static 'css/management_v2.css' %}">
+  <link rel="stylesheet" href="{% static 'css/management/base.css' %}">
+  <link rel="stylesheet" href="{% static 'css/management/components.css' %}">
+  {% block mgmt_styles %}{% endblock %}
   {% block mgmt_extra_head %}{% endblock %}
 {% endblock %}
 

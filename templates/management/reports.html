@@ -5,13 +5,13 @@
 <link rel="stylesheet" href="{% static 'css/management/events.css' %}">
 {% endblock %}
 
-{% block mgmt_title %}Gestão de Eventos{% endblock %}
+{% block mgmt_title %}Relatórios{% endblock %}
 
 {% block mgmt_content %}
 <div class="sectionHeader sectionHeader--spaced">
   <div>
-    <h3>Eventos disponíveis</h3>
-    <p>Escolhe um evento para abrir a gestão de inscrições e operação.</p>
+    <h3>Relatórios por evento</h3>
+    <p>Escolhe um evento para ver métricas, presença e valores.</p>
   </div>
 </div>
 
@@ -19,12 +19,11 @@
   {% for e in events %}
     <article class="card card--feature">
       <div class="card__inner">
-        <div class="featureIcon">📅</div>
+        <div class="featureIcon">📊</div>
         <div class="card__title">{{ e.title }}</div>
 
         <div class="card__meta">
           <span class="kpi">Inscrições: <strong>{{ e.reg_count }}</strong></span>
-
           {% if e.is_active %}
             <span class="kpi"><strong>Ativo</strong></span>
           {% else %}
@@ -33,16 +32,12 @@
         </div>
 
         <p class="card__text">
-          Abrir área de gestão deste evento para pagamentos, check-in e acompanhamento.
+          Abrir relatório detalhado deste evento.
         </p>
 
         <div class="card__actions">
-          <a class="btn secondary" href="{% url 'management:event_regs' e.id %}">
-            Gerir inscrições
-          </a>
-
           <a class="btn secondary" href="{% url 'management:event_report' e.id %}">
-            Relatório
+            Ver relatório
           </a>
         </div>
       </div>
@@ -50,7 +45,7 @@
   {% empty %}
     <div class="emptyState">
       <h3>Sem eventos disponíveis</h3>
-      <p class="muted">Ainda não existem eventos para apresentar nesta área.</p>
+      <p class="muted">Ainda não existem eventos para gerar relatórios.</p>
     </div>
   {% endfor %}
 </div>

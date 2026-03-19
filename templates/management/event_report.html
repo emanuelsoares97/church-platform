@@ -1,0 +1,86 @@
+{% extends "management/base_management.html" %}
+{% load static %}
+
+{% block mgmt_styles %}
+<link rel="stylesheet" href="{% static 'css/management/dashboard.css' %}">
+{% endblock %}
+
+{% block mgmt_title %}Relatório — {{ event.title }}{% endblock %}
+
+{% block mgmt_content %}
+<div class="dashboardHero">
+  <div class="dashboardHero__content">
+    <span class="dashboardHero__eyebrow">Relatório do evento</span>
+    <h2>{{ event.title }}</h2>
+    <p>
+      Visão resumida de inscrições, pagamentos, presença e valores.
+    </p>
+  </div>
+</div>
+
+<div class="kpiGrid kpiGrid--compact">
+  <div class="kpiCard">
+    <div class="kpiValue">{{ report.total_regs }}</div>
+    <div class="kpiLabel">INSCRIÇÕES</div>
+  </div>
+
+  <div class="kpiCard">
+    <div class="kpiValue">{{ report.total_participants }}</div>
+    <div class="kpiLabel">PARTICIPANTES</div>
+  </div>
+
+  <div class="kpiCard">
+    <div class="kpiValue">{{ report.total_paid }}</div>
+    <div class="kpiLabel">PAGOS</div>
+  </div>
+
+  <div class="kpiCard">
+    <div class="kpiValue">{{ report.total_checkins }}</div>
+    <div class="kpiLabel">CHECK-INS</div>
+  </div>
+</div>
+
+<div class="dashboardStats">
+  <div class="statCard">
+    <div class="statCard__label">Valor esperado</div>
+    <div class="statCard__value">{{ report.expected_amount }}€</div>
+    <div class="statCard__hint">Total teórico com base no preço do evento</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statCard__label">Recebido</div>
+    <div class="statCard__value">{{ report.received_amount }}€</div>
+    <div class="statCard__hint">Montante já confirmado como pago</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statCard__label">Em falta</div>
+    <div class="statCard__value">{{ report.pending_amount }}€</div>
+    <div class="statCard__hint">Valor ainda não confirmado</div>
+  </div>
+</div>
+
+<div class="dashboardStats">
+  <div class="statCard">
+    <div class="statCard__label">Taxa de pagamento</div>
+    <div class="statCard__value">{{ report.paid_rate }}%</div>
+    <div class="statCard__hint">Participantes pagos sobre o total</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statCard__label">Taxa de presença</div>
+    <div class="statCard__value">{{ report.checkin_rate }}%</div>
+    <div class="statCard__hint">Check-ins realizados sobre o total</div>
+  </div>
+
+  <div class="statCard">
+    <div class="statCard__label">Exportação</div>
+    <div class="statCard__value">Excel</div>
+    <div class="statCard__hint">
+      <a class="btn secondary" href="{% url 'management:export_event_registrations_excel' event.id %}">
+        Exportar
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
