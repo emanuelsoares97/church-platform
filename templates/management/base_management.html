@@ -19,7 +19,21 @@
       </div>
 
       <div class="mgmtHeader__actions">
-        <a class="btn secondary" href="{% url 'admin:index' %}">Admin Django</a>
+        <div class="mgmtUserBox">
+          <span class="mgmtUserBox__label">Sessão</span>
+          <strong class="mgmtUserBox__name">{{ request.user.username }}</strong>
+        </div>
+
+        <a class="btn secondary" href="{% url 'admin:index' %}">
+          Admin
+        </a>
+
+        <form method="post" action="{% url 'logout' %}" class="logoutForm">
+          {% csrf_token %}
+        <button class="btn secondary logoutBtn" type="submit">
+            🚪 Sair
+        </button>
+        </form>
       </div>
     </div>
   </header>
