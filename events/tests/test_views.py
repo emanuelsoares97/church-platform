@@ -119,22 +119,22 @@ class ManagementViewsTest(TestCase):
     def test_dashboard_home_requires_login(self):
         """dashboard requer login."""
         self.client.logout()
-        response = self.client.get(reverse("events_mgmt:home"))
+        response = self.client.get(reverse("management:home"))
         self.assertEqual(response.status_code, 302)  # redirect to login
 
     def test_dashboard_home(self):
         """dashboard acessível com permissão."""
-        response = self.client.get(reverse("events_mgmt:home"))
+        response = self.client.get(reverse("management:home"))
         self.assertEqual(response.status_code, 200)
 
     def test_event_registrations(self):
         """lista inscrições do evento."""
-        response = self.client.get(reverse("events_mgmt:event_regs", kwargs={"event_id": self.event.id}))
+        response = self.client.get(reverse("management:event_regs", kwargs={"event_id": self.event.id}))
         self.assertEqual(response.status_code, 200)
 
     def test_scan_page(self):
         """página do scanner."""
-        response = self.client.get(reverse("events_mgmt:scan"))
+        response = self.client.get(reverse("management:scan"))
         self.assertEqual(response.status_code, 200)
 
     def test_mark_registration_paid_full(self):
@@ -149,7 +149,7 @@ class ManagementViewsTest(TestCase):
         Participant.objects.create(registration=reg, full_name="João", ticket_code="T1")
         Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2")
         
-        response = self.client.post(reverse("events_mgmt:mark_registration_paid_full", kwargs={"reg_id": reg.id}))
+        response = self.client.post(reverse("management:mark_registration_paid_full", kwargs={"reg_id": reg.id}))
         self.assertEqual(response.status_code, 302)
         reg.refresh_from_db()
         self.assertTrue(reg.is_paid)
@@ -167,13 +167,13 @@ class ManagementViewsTest(TestCase):
         part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1")
         
         # marcar como pago
-        response = self.client.post(reverse("events_mgmt:toggle_participant_paid", kwargs={"participant_id": part.id}), {"value": "1"})
+        response = self.client.post(reverse("management:toggle_participant_paid", kwargs={"participant_id": part.id}), {"value": "1"})
         self.assertEqual(response.status_code, 302)
         part.refresh_from_db()
         self.assertTrue(part.is_paid)
         
         # desmarcar
-        response = self.client.post(reverse("events_mgmt:toggle_participant_paid", kwargs={"participant_id": part.id}), {"value": "0"})
+        response = self.client.post(reverse("management:toggle_participant_paid", kwargs={"participant_id": part.id}), {"value": "0"})
         self.assertEqual(response.status_code, 302)
         part.refresh_from_db()
         self.assertFalse(part.is_paid)
@@ -189,7 +189,7 @@ class ManagementViewsTest(TestCase):
         )
         part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
         
-        response = self.client.post(reverse("events_mgmt:toggle_participant_checkin", kwargs={"participant_id": part.id}), {"value": "1"})
+        response = self.client.post(reverse("management:toggle_participant_checkin", kwargs={"participant_id": part.id}), {"value": "1"})
         self.assertEqual(response.status_code, 302)
         part.refresh_from_db()
         self.assertTrue(part.checked_in)
@@ -205,7 +205,7 @@ class ManagementViewsTest(TestCase):
         )
         part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=False)
         
-        response = self.client.post(reverse("events_mgmt:toggle_participant_checkin", kwargs={"participant_id": part.id}), {"value": "1"})
+        response = self.client.post(reverse("management:toggle_participant_checkin", kwargs={"participant_id": part.id}), {"value": "1"})
         self.assertEqual(response.status_code, 302)
         part.refresh_from_db()
         self.assertFalse(part.checked_in)
@@ -222,7 +222,7 @@ class ManagementViewsTest(TestCase):
         p1 = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
         p2 = Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2", is_paid=True)
         
-        response = self.client.post(reverse("events_mgmt:checkin_all", kwargs={"reg_id": reg.id}))
+        response = self.client.post(reverse("management:checkin_all", kwargs={"reg_id": reg.id}))
         self.assertEqual(response.status_code, 302)
         p1.refresh_from_db()
         p2.refresh_from_db()
@@ -241,7 +241,7 @@ class ManagementViewsTest(TestCase):
         p1 = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
         p2 = Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2", is_paid=False)
         
-        response = self.client.post(reverse("events_mgmt:checkin_all", kwargs={"reg_id": reg.id}))
+        response = self.client.post(reverse("management:checkin_all", kwargs={"reg_id": reg.id}))
         self.assertEqual(response.status_code, 302)
         p1.refresh_from_db()
         p2.refresh_from_db()
@@ -259,7 +259,7 @@ class ManagementViewsTest(TestCase):
         )
         part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
         
-        response = self.client.post(reverse("events_mgmt:scan_checkin_api"), {"ticket_code": "T1"})
+        response = self.client.post(reverse("management:scan_checkin_api"), {"ticket_code": "T1"})
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertTrue(data["ok"])
@@ -269,7 +269,7 @@ class ManagementViewsTest(TestCase):
 
     def test_scan_checkin_api_not_found(self):
         """código inválido retorna erro."""
-        response = self.client.post(reverse("events_mgmt:scan_checkin_api"), {"ticket_code": "INVALID"})
+        response = self.client.post(reverse("management:scan_checkin_api"), {"ticket_code": "INVALID"})
         self.assertEqual(response.status_code, 404)
         data = response.json()
         self.assertFalse(data["ok"])
@@ -286,7 +286,7 @@ class ManagementViewsTest(TestCase):
         )
         part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=False)
         
-        response = self.client.post(reverse("events_mgmt:scan_checkin_api"), {"ticket_code": "T1"})
+        response = self.client.post(reverse("management:scan_checkin_api"), {"ticket_code": "T1"})
         self.assertEqual(response.status_code, 409)
         data = response.json()
         self.assertFalse(data["ok"])
@@ -303,7 +303,7 @@ class ManagementViewsTest(TestCase):
         )
         part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1")
         
-        response = self.client.get(reverse("events_mgmt:ticket_lookup", kwargs={"ticket_code": "T1"}))
+        response = self.client.get(reverse("management:ticket_lookup", kwargs={"ticket_code": "T1"}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "João")
 
@@ -319,7 +319,7 @@ class ManagementViewsTest(TestCase):
         p1 = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True, checked_in=True)
         p2 = Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2", is_paid=False, checked_in=False)
         
-        response = self.client.get(reverse("events_mgmt:registration_group", kwargs={"reg_id": reg.id}))
+        response = self.client.get(reverse("management:registration_group", kwargs={"reg_id": reg.id}))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "João Silva")
 
@@ -336,7 +336,7 @@ class ManagementViewsTest(TestCase):
         
         # marcar como pago via AJAX
         response = self.client.post(
-            reverse("events_mgmt:toggle_participant_paid", kwargs={"participant_id": part.id}),
+            reverse("management:toggle_participant_paid", kwargs={"participant_id": part.id}),
             {"value": "1"},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
@@ -358,7 +358,7 @@ class ManagementViewsTest(TestCase):
         part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
         
         response = self.client.post(
-            reverse("events_mgmt:toggle_participant_checkin", kwargs={"participant_id": part.id}),
+            reverse("management:toggle_participant_checkin", kwargs={"participant_id": part.id}),
             {"value": "1"},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
@@ -380,7 +380,7 @@ class ManagementViewsTest(TestCase):
         part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=False)
         
         response = self.client.post(
-            reverse("events_mgmt:toggle_participant_checkin", kwargs={"participant_id": part.id}),
+            reverse("management:toggle_participant_checkin", kwargs={"participant_id": part.id}),
             {"value": "1"},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
@@ -404,7 +404,7 @@ class ManagementViewsTest(TestCase):
         p2 = Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2", is_paid=True)
         
         response = self.client.post(
-            reverse("events_mgmt:checkin_all", kwargs={"reg_id": reg.id}),
+            reverse("management:checkin_all", kwargs={"reg_id": reg.id}),
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
         self.assertEqual(response.status_code, 200)
@@ -428,7 +428,7 @@ class ManagementViewsTest(TestCase):
         p2 = Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2", is_paid=False)
         
         response = self.client.post(
-            reverse("events_mgmt:checkin_all", kwargs={"reg_id": reg.id}),
+            reverse("management:checkin_all", kwargs={"reg_id": reg.id}),
             HTTP_X_REQUESTED_WITH='XMLHttpRequest'
         )
         self.assertEqual(response.status_code, 200)

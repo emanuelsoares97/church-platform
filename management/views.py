@@ -8,21 +8,52 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.http import HttpResponse
-from .models import Event, Registration, Participant
-from .permissions import can_manage_events
+from events.models import Event, Registration, Participant
+from events.permissions import can_manage_events
 from openpyxl import Workbook
 from openpyxl.styles import Font
 
+
 @login_required
 @user_passes_test(can_manage_events)
-def dashboard_home(request):
+def dashboard(request):
+    """home da gestão (hub principal)."""
+    return render(request, "management/dashboard.html")
+
+def build_event_kpis(event):
+    """Calcula os KPIs principais de um evento para a área de gestão."""
+    regs_base = Registration.objects.filter(event=event)
+    parts_base = Participant.objects.filter(registration__event=event)
+
+    total_regs = regs_base.count()
+    total_participants = parts_base.count()
+    total_paid_participants = parts_base.filter(is_paid=True).count()
+    total_checkins = parts_base.filter(checked_in=True).count()
+    pending_checkins = total_participants - total_checkins
+
+    checkin_rate = 0
+    if total_participants > 0:
+        checkin_rate = round((total_checkins / total_participants) * 100)
+
+    return {
+        "total_regs": total_regs,
+        "total_paid_participants": total_paid_participants,
+        "total_participants": total_participants,
+        "total_checkins": total_checkins,
+        "pending_checkins": pending_checkins,
+        "checkin_rate": checkin_rate,
+    }
+
+@login_required
+@user_passes_test(can_manage_events)
+def events_list(request):
     """dashboard principal com lista de eventos e contadores."""
     events = (
         Event.objects.all()
         .annotate(reg_count=Count("registrations"))
         .order_by("-id")
     )
-    return render(request, "management/home.html", {"events": events})
+    return render(request, "management/events_list.html", {"events": events})
 
 
 @login_required
@@ -65,15 +96,37 @@ def event_registrations(request, event_id):
     elif checkin == "0":
         qs = qs.filter(p_total__gt=0).exclude(p_checked=F("p_total"))
 
-    kpis = build_event_kpis(event)
+    regs_base = Registration.objects.filter(event=event)
+    parts_base = Participant.objects.filter(registration__event=event)
+
+    kpi_total_regs = regs_base.count()
+    kpi_total_participants = parts_base.count()
+    kpi_total_paid_participants = parts_base.filter(is_paid=True).count()
+    kpi_total_checkins = parts_base.filter(checked_in=True).count()
+    kpi_pending_checkins = kpi_total_participants - kpi_total_checkins
+
+    kpi_checkin_rate = 0
+    if kpi_total_participants > 0:
+        kpi_checkin_rate = round((kpi_total_checkins / kpi_total_participants) * 100)
 
     paginator = Paginator(qs, 20)
     page_obj = paginator.get_page(request.GET.get("page"))
 
     context = {
-        "kpis": kpis,
+        "event": event,
+        "page_obj": page_obj,
+        "filters": {"q": q, "paid": paid, "checkin": checkin},
+        "kpis": {
+            "total_regs": kpi_total_regs,
+            "total_paid_participants": kpi_total_paid_participants,
+            "total_participants": kpi_total_participants,
+            "total_checkins": kpi_total_checkins,
+            "pending_checkins": kpi_pending_checkins,
+            "checkin_rate": kpi_checkin_rate,
+        },
     }
     return render(request, "management/event_registrations.html", context)
+
 
 
 @login_required
@@ -93,10 +146,7 @@ def mark_registration_paid_full(request, reg_id):
 
     messages.success(request, "Pagamento total confirmado")
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-    return JsonResponse({
-        'success': True,
-        'kpis': build_event_kpis(reg.event),
-    })
+        return JsonResponse({'success': True})
     return redirect(request.POST.get("next") or "management:home")
 
 
@@ -129,10 +179,7 @@ def toggle_participant_paid(request, participant_id):
 
     messages.success(request, "Pagamento atualizado")
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        return JsonResponse({
-        'success': True,
-        'kpis': build_event_kpis(p.registration.event),
-    })
+        return JsonResponse({'success': True})
     return redirect(request.POST.get("next") or "management:home")
 
 
@@ -155,10 +202,7 @@ def toggle_participant_checkin(request, participant_id):
 
     messages.success(request, "Check-in atualizado")
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        return JsonResponse({
-        'success': True,
-        'kpis': build_event_kpis(p.registration.event),
-    })
+        return JsonResponse({'success': True})
     return redirect(request.POST.get("next") or "management:home")
 
 
@@ -188,10 +232,7 @@ def checkin_all(request, reg_id):
 
     messages.success(request, "Check-in de todos os participantes registado")
     if request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest':
-        return JsonResponse({
-        'success': True,
-        'kpis': build_event_kpis(reg.event),
-    })
+        return JsonResponse({'success': True})
     return redirect(request.POST.get("next") or "management:home")
 
 
@@ -420,3 +461,6 @@ def export_event_registrations_excel(request, event_id):
     workbook.save(response)
 
     return response
+
+
+

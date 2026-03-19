@@ -86,7 +86,7 @@
     <div class="actionsCol lookupActions">
 
       {% if participant.registration.event.price > 0 %}
-        <form method="post" action="{% url 'events_mgmt:toggle_participant_paid' participant.id %}">
+        <form method="post" action="{% url 'management:toggle_participant_paid' participant.id %}">
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.get_full_path }}">
           <input type="hidden" name="value" value="{% if participant.is_paid %}0{% else %}1{% endif %}">
@@ -103,7 +103,7 @@
 
 
 
-      <form method="post" action="{% url 'events_mgmt:toggle_participant_checkin' participant.id %}">
+      <form method="post" action="{% url 'management:toggle_participant_checkin' participant.id %}">
         {% csrf_token %}
         <input type="hidden" name="next" value="{{ request.get_full_path }}">
         <input type="hidden" name="value" value="{% if participant.checked_in %}0{% else %}1{% endif %}">
@@ -124,19 +124,19 @@
 
 
       <a class="btn secondary actionBtnWide"
-         href="{% url 'events_mgmt:registration_group' participant.registration.id %}">
+         href="{% url 'management:registration_group' participant.registration.id %}">
         Ver grupo
       </a>
 
 
       <a class="btn secondary actionBtnWide"
-         href="{% url 'events_mgmt:event_regs' participant.registration.event.id %}?q={{ participant.ticket_code }}">
+         href="{% url 'management:event_regs' participant.registration.event.id %}?q={{ participant.ticket_code }}">
         Ver na lista de inscrições
       </a>
 
 
       <a class="btn actionBtnWide"
-         href="{% url 'events_mgmt:scan' %}">
+         href="{% url 'management:scan' %}">
         Voltar ao scan
       </a>
 

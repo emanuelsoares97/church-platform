@@ -43,7 +43,7 @@
     <!-- acoes rapidas do grupo -->
     <div class="actionsCol groupTopActions" style="margin-top:18px;">
       {% if reg.event.price > 0 and paid_participants != total_participants %}
-        <form method="post" action="{% url 'events_mgmt:mark_registration_paid_full' reg.id %}">
+        <form method="post" action="{% url 'management:mark_registration_paid_full' reg.id %}">
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.get_full_path }}">
           <button class="btn secondary actionBtnWide" type="submit">
@@ -57,7 +57,7 @@
       {% endif %}
 
       {% if checked_participants != total_participants %}
-        <form method="post" action="{% url 'events_mgmt:checkin_all' reg.id %}">
+        <form method="post" action="{% url 'management:checkin_all' reg.id %}">
           {% csrf_token %}
           <input type="hidden" name="next" value="{{ request.get_full_path }}">
           <button class="btn actionBtnWide" type="submit"
@@ -96,7 +96,7 @@
             <span class="groupCellLabel">Pagamento</span>
 
             {% if reg.event.price > 0 %}
-              <form method="post" action="{% url 'events_mgmt:toggle_participant_paid' p.id %}">
+              <form method="post" action="{% url 'management:toggle_participant_paid' p.id %}">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.get_full_path }}">
                 <input type="hidden" name="value" value="{% if p.is_paid %}0{% else %}1{% endif %}">
@@ -113,7 +113,7 @@
           <div class="groupCell">
             <span class="groupCellLabel">Check-in</span>
 
-            <form method="post" action="{% url 'events_mgmt:toggle_participant_checkin' p.id %}">
+            <form method="post" action="{% url 'management:toggle_participant_checkin' p.id %}">
               {% csrf_token %}
               <input type="hidden" name="next" value="{{ request.get_full_path }}">
               <input type="hidden" name="value" value="{% if p.checked_in %}0{% else %}1{% endif %}">
@@ -129,11 +129,11 @@
     </div>
 
     <div class="actionsCol groupBottomActions">
-      <a class="btn secondary actionBtnWide" href="{% url 'events_mgmt:event_regs' reg.event.id %}?q={{ reg.buyer_email }}">
+      <a class="btn secondary actionBtnWide" href="{% url 'management:event_regs' reg.event.id %}?q={{ reg.buyer_email }}">
         Ver na lista de inscrições
       </a>
 
-      <a class="btn actionBtnWide" href="{% url 'events_mgmt:scan' %}">
+      <a class="btn actionBtnWide" href="{% url 'management:scan' %}">
         Voltar ao scan
       </a>
     </div>

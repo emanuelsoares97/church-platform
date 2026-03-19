@@ -16,7 +16,7 @@ urlpatterns = [
     path("", include("events.urls")),
 
     # gestão
-    path("gestao/", include(("events.management_urls", "events_mgmt"), namespace="events_mgmt")),
+    path("gestao/", include("management.urls")),
     
     #paginas principais
     path("", include("core.urls")),

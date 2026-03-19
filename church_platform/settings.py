@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "events",
     "core",
     "gallery",
+    "management",
 ]
 
 
@@ -157,7 +158,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # urls de autenticação
 LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "events_mgmt:home"
+LOGIN_REDIRECT_URL = "management:home"
 LOGOUT_REDIRECT_URL = "login"
 
 

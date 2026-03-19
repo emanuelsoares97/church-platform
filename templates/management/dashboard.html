@@ -1,0 +1,33 @@
+{% extends "management/base_management.html" %}
+
+{% block mgmt_title %}Painel de Gestão{% endblock %}
+
+{% block mgmt_content %}
+<div class="cards">
+
+  <div class="card">
+    <div class="card__inner">
+      <div class="card__title">Eventos</div>
+      <p class="muted">Gerir eventos e inscrições</p>
+      <a class="btn secondary" href="{% url 'management:events_list' %}">Abrir</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__inner">
+      <div class="card__title">Scanner</div>
+      <p class="muted">Check-in por QR code</p>
+      <a class="btn secondary" href="{% url 'management:scan' %}">Abrir</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card__inner">
+      <div class="card__title">Dashboard</div>
+      <p class="muted">Métricas gerais</p>
+      <a class="btn secondary" href="#">Em breve</a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
