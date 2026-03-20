@@ -8,7 +8,7 @@
     <div class="sectionTitle">
       <span class="sectionBadge">MINISTÉRIOS</span>
       <h2>Áreas da igreja</h2>
-      <p>
+      <p class="sectionText">
         Espaços onde cada pessoa pode ser acolhida, discipulada e servir com os dons
         que Deus lhe deu.
       </p>
@@ -17,11 +17,11 @@
     <div class="cardGrid">
       {% for ministerio in ministries %}
         <article class="infoCard">
-          <h3>{{ ministerio.nome }}</h3>
-          <p>{{ ministerio.descricao }}</p>
+          <h3 class="infoCardTitle">{{ ministerio.nome }}</h3>
+          <p class="infoCardText">{{ ministerio.descricao }}</p>
 
           {% if ministerio.show_saber_mais %}
-            <div class="eventCardActions">
+            <div class="infoCardActions">
               <a href="{{ ministerio.saber_mais_href }}" class="btn btnSecondary">Saber mais</a>
             </div>
           {% endif %}
@@ -31,4 +31,3 @@
   </div>
 </section>
 {% endblock %}
-
