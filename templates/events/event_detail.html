@@ -125,17 +125,12 @@
               </div>
             </div>
           {% else %}
-            <div class="field">
-              <label>Tipo de evento</label>
-              <div class="badge">
-                <span class="dot"></span>
-                Evento gratuito (inscrição confirmada automaticamente)
-              </div>
-            </div>
+            <input type="hidden" name="payment_method" value="LOCAL">
+
           {% endif %}
 
           <div class="field">
-            <label>Participantes</label>
+
             <div class="small" style="margin-bottom:8px;opacity:.9;">
               Preenche o nome de cada participante (1 por bilhete).
             </div>

@@ -3,47 +3,64 @@
 {% block title %}Inscrição confirmada — {{ event.title }}{% endblock %}
 
 {% block content %}
-<section class="container">
-  <div class="card">
+<section class="container confirmationPage">
+  <div class="confirmationCard">
 
-    <h1>Inscrição confirmada ✅</h1>
+    <div class="confirmationHero">
+      <div class="confirmationIcon">✅</div>
+      <span class="confirmationBadge">Inscrição registada</span>
+      <h1>Inscrição confirmada</h1>
+      <p class="confirmationLead">
+        A tua inscrição no evento <strong>{{ event.title }}</strong> foi registada com sucesso.
+      </p>
+      <p class="confirmationSubtext">
+        Em breve receberás um e-mail com os detalhes da inscrição e os bilhetes correspondentes.
+      </p>
+    </div>
 
-    <p>
-      A tua inscrição no evento <strong>{{ event.title }}</strong>
-      foi registada com sucesso.
-    </p>
+    <div class="confirmationGrid">
+      <div class="confirmationBox">
+        <h3>Resumo da inscrição</h3>
 
-    <p>
-      Em breve receberás um e-mail com os detalhes da inscrição.
-    </p>
+        <div class="summaryItem">
+          <span class="summaryLabel">Evento</span>
+          <span class="summaryValue">{{ event.title }}</span>
+        </div>
 
-    <hr>
+        <div class="summaryItem">
+          <span class="summaryLabel">Quantidade</span>
+          <span class="summaryValue">{{ registration.ticket_qty }}</span>
+        </div>
 
-    <h3>Resumo da inscrição</h3>
+        <div class="summaryItem">
+          <span class="summaryLabel">Estado</span>
+          <span class="summaryValue">
+            {% if registration.is_paid %}
+              <span class="statusBadge statusBadge--ok">Confirmada</span>
+            {% else %}
+              <span class="statusBadge statusBadge--warn">A aguardar pagamento</span>
+            {% endif %}
+          </span>
+        </div>
+      </div>
 
-    <ul>
-      <li><strong>Quantidade:</strong> {{ registration.ticket_qty }}</li>
+      {% if participants %}
+      <div class="confirmationBox">
+        <h3>Participantes</h3>
 
-      <li>
-        <strong>Estado:</strong>
-        {% if registration.is_paid %}
-          Confirmada
-        {% else %}
-          A aguardar pagamento
-        {% endif %}
-      </li>
-    </ul>
+        <div class="participantsSummary">
+          {% for p in participants %}
+            <div class="participantSummaryItem">
+              <span class="participantNumber">{{ forloop.counter }}</span>
+              <span class="participantText">{{ p.full_name }}</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
 
-    {% if participants %}
-      <h4>Participantes</h4>
-      <ul>
-        {% for p in participants %}
-          <li>{{ p.full_name }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-
-    <div style="margin-top:20px;">
+    <div class="confirmationActions">
       <a class="btn primary" href="{% url 'events:event_list' %}">
         Voltar aos eventos
       </a>

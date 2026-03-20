@@ -32,7 +32,12 @@ def event_detail(request, slug):
     event = get_object_or_404(Event, slug=slug, is_active=True)
 
     if request.method == "POST":
-        form = RegistrationForm(request.POST)
+        post_data = request.POST.copy()
+
+        if event.price == 0 and not post_data.get("payment_method"):
+            post_data["payment_method"] = "LOCAL"
+
+        form = RegistrationForm(post_data)
         participant_names = request.POST.getlist("participant_name")
 
         if form.is_valid():
