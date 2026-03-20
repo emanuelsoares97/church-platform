@@ -78,6 +78,10 @@
         </p>
       </article>
     </div>
+
+    <div class="sectionActionCenter">
+      <a href="{% url 'core:about' %}" class="btn btnPrimary">Saber mais sobre nós</a>
+    </div>
   </div>
 </section>
 
@@ -99,7 +103,7 @@
 
       <div class="timeCard">
         <strong>Quarta-feira</strong>
-        <span>19:30 · Grupo de Celulas</span>
+        <span>19:30 · Grupo de Células</span>
       </div>
 
       <div class="timeCard">
@@ -145,6 +149,10 @@
           relacionamentos saudáveis em Cristo.
         </p>
       </article>
+    </div>
+
+    <div class="sectionActionCenter">
+      <a href="{% url 'core:ministerios' %}" class="btn btnPrimary">Ver todos os ministérios</a>
     </div>
   </div>
 </section>
@@ -199,6 +207,46 @@
   </div>
 </section>
 
+<section class="sectionBlock" id="visita-nos">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">PRIMEIRA VISITA</span>
+      <h2>Vais visitar-nos pela primeira vez?</h2>
+      <p class="sectionText">
+        Queremos que te sintas bem recebido desde o primeiro momento. Aqui encontras
+        um ambiente de comunhão, adoração e ensino da Palavra, preparado para toda a família.
+      </p>
+    </div>
+
+    <div class="cardGrid">
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Ambiente acolhedor</h3>
+        <p class="infoCardText">
+          Serás recebido com simplicidade, carinho e disponibilidade para te ajudar no que precisares.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Para toda a família</h3>
+        <p class="infoCardText">
+          Há espaço para crianças, jovens e adultos crescerem juntos na fé e na comunhão.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Como chegar</h3>
+        <p class="infoCardText">
+          Estamos localizados em Almada e teremos alegria em receber-te num dos nossos encontros.
+        </p>
+      </article>
+    </div>
+
+    <div class="sectionActionCenter">
+      <a href="#contactos" class="btn btnPrimary">Ver contactos e morada</a>
+    </div>
+  </div>
+</section>
+
 <section class="sectionBlock">
   <div class="container">
     <div class="ctaBox">
@@ -208,7 +256,7 @@
         para congregar, teremos alegria em receber-te.
       </p>
 
-      <a href="#contactos" class="btn btnPrimary">Falar connosco</a>
+      <a href="{% url 'core:contacts' %}" class="btn btnPrimary">Falar connosco</a>
     </div>
   </div>
 </section>

@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Contactos | Unidos com Cristo{% endblock %}
+
+{% block content %}
+<section class="heroSection">
+  <div class="container heroGrid">
+    <div class="heroContent">
+      <span class="sectionBadge">CONTACTOS</span>
+
+      <h1>
+        Estamos aqui para te receber
+      </h1>
+
+      <p>
+        Queremos que seja simples encontrar-nos, falar connosco e visitar a nossa igreja.
+        Aqui tens as informações principais para entrares em contacto e saberes onde estamos.
+      </p>
+
+      <div class="heroActions">
+        <a href="#info-contactos" class="btn btnPrimary">Ver informações</a>
+        <a href="#mapa" class="btn btnSecondary">Ver localização</a>
+      </div>
+    </div>
+
+    <aside class="heroSideCard">
+      <h3>Primeira visita</h3>
+      <p class="heroSideCard__highlight">Serás muito bem-vindo</p>
+      <p>
+        Se vais visitar-nos pela primeira vez, teremos alegria em receber-te e ajudar-te
+        no que for necessário.
+      </p>
+
+      <div class="heroSideCard__box">
+        <p>
+          <strong>Encontro principal</strong><br>
+          Domingo às 18:00
+        </p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="sectionBlock" id="info-contactos">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">INFORMAÇÕES</span>
+      <h2>Como falar connosco</h2>
+      <p class="sectionText">
+        Aqui encontras os dados principais da igreja para visita, contacto e acompanhamento.
+      </p>
+    </div>
+
+    <div class="cardGrid">
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Morada</h3>
+        <p class="infoCardText">
+          Rua Luís de Queiroz, n° 26<br>
+          Almada, Portugal
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Telefone / WhatsApp</h3>
+        <p class="infoCardText">
+          +351 9XX XXX XXX
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Email</h3>
+        <p class="infoCardText">
+          email@igreja.pt
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">HORÁRIOS</span>
+      <h2>Quando nos reunimos</h2>
+      <p class="sectionText">
+        Estes horários podem ser ajustados depois conforme a programação real da igreja.
+      </p>
+    </div>
+
+    <div class="cardGrid">
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Domingo</h3>
+        <p class="infoCardText">18:00 · Celebração</p>
+      </article>
+
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Quarta-feira</h3>
+        <p class="infoCardText">19:30 · Grupo de Células</p>
+      </article>
+
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Sábado</h3>
+        <p class="infoCardText">20:30 · Evento de Jovens</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">REDES SOCIAIS</span>
+      <h2>Segue-nos também online</h2>
+      <p class="sectionText">
+        Podes acompanhar novidades, eventos e conteúdos da igreja através das nossas redes.
+      </p>
+    </div>
+
+    <div class="cardGrid">
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Instagram</h3>
+        <p class="infoCardText">@unidoscomcristo</p>
+      </article>
+
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Facebook</h3>
+        <p class="infoCardText">Unidos com Cristo</p>
+      </article>
+
+      <article class="infoCard">
+        <h3 class="infoCardTitle">YouTube</h3>
+        <p class="infoCardText">Unidos com Cristo</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock" id="mapa">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">LOCALIZAÇÃO</span>
+      <h2>Como chegar</h2>
+      <p class="sectionText">
+        Encontra-nos facilmente através da morada ou abre a localização diretamente no mapa.
+      </p>
+    </div>
+
+    <div class="infoCard">
+      <h3 class="infoCardTitle">Igreja Unidos com Cristo</h3>
+      <p class="infoCardText">
+        Rua Luís de Queiroz, n° 26, Almada, Portugal
+      </p>
+
+      <div class="infoCardActions">
+        <a
+          href="https://www.google.com/maps/search/?api=1&query=Rua+Luís+de+Queiroz+26+Almada"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btnPrimary"
+        >
+          Abrir no Google Maps
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock">
+  <div class="container">
+    <div class="ctaBox">
+      <h2>Esperamos por ti</h2>
+      <p>
+        Teremos alegria em receber-te num dos nossos encontros e caminhar contigo em fé,
+        comunhão e crescimento espiritual.
+      </p>
+
+      <a href="{% url 'core:home' %}" class="btn btnSecondary">Voltar à home</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
