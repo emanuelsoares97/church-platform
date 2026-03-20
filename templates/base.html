@@ -62,14 +62,14 @@
   <div class="navOverlay" id="nav-overlay" aria-hidden="true"></div>
 
   <nav class="navMenuMobile" id="nav-menu" aria-label="Menu mobile">
-    <a href="{% url 'core:home' %}">Início</a>
-    <a href="{% url 'core:about' %}">Sobre</a>
-    <a href="{% url 'core:ministerios' %}">Ministérios</a>
-    <a href="#celebrações">celebrações</a>
-    <a href="#contactos">Contactos</a>
-    <a href="{% url 'gallery:album_list' %}">Galeria</a>
-    <a href="{% url 'events:event_list' %}">Eventos</a>
-    <a href="{% url 'management:home' %}" class="navBtn">Gestão</a>
+      <a href="{% url 'core:home' %}">Início</a>
+      <a href="{% url 'core:about' %}">Sobre</a>
+      <a href="{% url 'core:ministerios' %}">Ministérios</a>
+      <a href="{% url 'core:home' %}#celebrações" >Celebrações</a>
+      <a href="{% url 'core:home' %}#contactos">Contactos</a>
+      <a href="{% url 'gallery:album_list' %}">Galeria</a>
+      <a href="{% url 'events:event_list' %}">Eventos</a>
+      <a href="{% url 'management:home' %}" class="navBtn">Gestão</a>
   </nav>
 
   <main class="pageMain">
