@@ -322,6 +322,50 @@ img {
 }
 
 /* =========================
+   FORM HELPERS (layout base)
+   ========================= */
+
+/* Layout base para grupos de campos em páginas públicas.
+   Nota: não estiliza inputs diretamente (para evitar breaking changes). */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 12px 0;
+}
+
+.field label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.formActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+/* Erros de formulário.
+   Nota: não escondemos por defeito (a galeria renderiza erros sem `.show`). */
+.formError {
+  margin: 8px 0 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+}
+
+.formError.show {
+  display: block;
+}
+
+/* Texto de ajuda/observações de formulários. */
+.formHelp {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+/* =========================
    BUTTONS
    ========================= */
 
@@ -355,6 +399,13 @@ img {
 .btnSecondary:hover,
 .btn.secondary:hover {
   background: var(--card);
+}
+
+/* Variante opcional para botões mais compactos.
+   Nota: não substitui o padrão existente; só aplica quando a classe é usada. */
+.btnSmall {
+  padding: 10px 16px;
+  font-size: 0.92rem;
 }
 
 /* =========================
@@ -491,6 +542,12 @@ img {
   margin: 0 auto;
 }
 
+.sectionText {
+  color: var(--muted);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
 .cardGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -512,6 +569,25 @@ img {
 
 .infoCard p {
   color: var(--muted);
+}
+
+.infoCardTitle {
+  margin-bottom: 12px;
+  font-size: 1.3rem;
+}
+
+.infoCardText {
+  color: var(--muted);
+}
+
+.infoCardMeta {
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.infoCardActions {
+  margin-top: 22px;
 }
 
 .timeGrid {
