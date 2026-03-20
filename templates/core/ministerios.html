@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Ministérios | Unidos com Cristo{% endblock %}
+
+{% block content %}
+<section class="sectionBlock" id="ministerios">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">MINISTÉRIOS</span>
+      <h2>Áreas da igreja</h2>
+      <p>
+        Espaços onde cada pessoa pode ser acolhida, discipulada e servir com os dons
+        que Deus lhe deu.
+      </p>
+    </div>
+
+    <div class="cardGrid">
+      {% for ministerio in ministries %}
+        <article class="infoCard">
+          <h3>{{ ministerio.nome }}</h3>
+          <p>{{ ministerio.descricao }}</p>
+
+          {% if ministerio.show_saber_mais %}
+            <div class="eventCardActions">
+              <a href="{{ ministerio.saber_mais_href }}" class="btn btnSecondary">Saber mais</a>
+            </div>
+          {% endif %}
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
