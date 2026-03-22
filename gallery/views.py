@@ -1,9 +1,10 @@
 from cloudinary.uploader import destroy
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+
+from management.permissions import can_manage_gallery, media_or_leadership_required
 
 from .forms import GalleryAlbumForm
 from .models import GalleryAlbum, GalleryImage
@@ -28,7 +29,7 @@ def album_list(request):
     )
 
 
-@login_required
+@media_or_leadership_required
 def create_album(request):
     """
     Permite criar um novo álbum da galeria sem usar o admin.
@@ -59,7 +60,7 @@ def create_album(request):
 def album_detail(request, slug):
     """
     Mostra o detalhe de um álbum e permite upload de múltiplas imagens
-    para utilizadores autenticados.
+    apenas a utilizadores com permissão de gestão da galeria.
     """
     now = timezone.now()
 
@@ -78,8 +79,8 @@ def album_detail(request, slug):
     ).order_by("-uploaded_at")
 
     if request.method == "POST" and "images" in request.FILES:
-        if not request.user.is_authenticated:
-            messages.error(request, "Precisas de iniciar sessão para adicionar fotos.")
+        if not can_manage_gallery(request.user):
+            messages.error(request, "Não tens permissão para adicionar fotos.")
             return redirect("gallery:album_detail", slug=album.slug)
 
         uploaded_files = request.FILES.getlist("images")
@@ -108,7 +109,7 @@ def album_detail(request, slug):
     )
 
 
-@login_required
+@media_or_leadership_required
 def delete_image(request, image_id):
     """
     Elimina uma imagem da base de dados e do Cloudinary.
@@ -135,7 +136,7 @@ def delete_image(request, image_id):
     return redirect("gallery:album_detail", slug=album_slug)
 
 
-@login_required
+@media_or_leadership_required
 def delete_selected_images(request, slug):
     """
     Elimina várias imagens selecionadas do álbum.

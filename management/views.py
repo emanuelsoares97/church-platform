@@ -1,7 +1,6 @@
 from decimal import Decimal
 
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.paginator import Paginator
 from django.db.models import Count, F, Q
 from django.http import HttpResponse, JsonResponse
@@ -10,14 +9,17 @@ from django.utils import timezone
 from django.views.decorators.http import require_POST
 
 from events.models import Event, Participant, Registration
-from events.permissions import can_manage_events
+from management.permissions import (
+    leadership_required,
+    management_required,
+    reception_or_leadership_required,
+)
 
 from openpyxl import Workbook
 from openpyxl.styles import Font
 
 
-@login_required
-@user_passes_test(can_manage_events)
+@management_required
 def dashboard(request):
     """home da gestão (hub principal)."""
     return render(request, "management/dashboard.html")
@@ -48,8 +50,7 @@ def build_event_kpis(event):
     }
 
 
-@login_required
-@user_passes_test(can_manage_events)
+@management_required
 def events_list(request):
     """lista de eventos para gestão."""
     events = (
@@ -60,8 +61,7 @@ def events_list(request):
     return render(request, "management/events_list.html", {"events": events})
 
 
-@login_required
-@user_passes_test(can_manage_events)
+@reception_or_leadership_required
 def event_registrations(request, event_id):
     """lista inscrições de um evento com filtros e paginação."""
     event = get_object_or_404(Event, pk=event_id)
@@ -112,8 +112,7 @@ def event_registrations(request, event_id):
     return render(request, "management/event_registrations.html", context)
 
 
-@login_required
-@user_passes_test(can_manage_events)
+@reception_or_leadership_required
 @require_POST
 def mark_registration_paid_full(request, reg_id):
     """marca toda a inscrição como paga (todos os participantes)."""
@@ -144,8 +143,7 @@ def mark_registration_paid_full(request, reg_id):
     return redirect(request.POST.get("next") or "management:home")
 
 
-@login_required
-@user_passes_test(can_manage_events)
+@reception_or_leadership_required
 @require_POST
 def toggle_participant_paid(request, participant_id):
     """alterna status de pagamento de um participante específico."""
@@ -201,8 +199,7 @@ def toggle_participant_paid(request, participant_id):
     return redirect(request.POST.get("next") or "management:home")
 
 
-@login_required
-@user_passes_test(can_manage_events)
+@reception_or_leadership_required
 @require_POST
 def toggle_participant_checkin(request, participant_id):
     """alterna status de check-in de um participante (bloqueado se não pago)."""
@@ -254,8 +251,7 @@ def toggle_participant_checkin(request, participant_id):
     return redirect(request.POST.get("next") or "management:home")
 
 
-@login_required
-@user_passes_test(can_manage_events)
+@reception_or_leadership_required
 @require_POST
 def checkin_all(request, reg_id):
     """faz check-in de todos os participantes da inscrição (se pagos)."""
@@ -305,15 +301,13 @@ def checkin_all(request, reg_id):
     return redirect(request.POST.get("next") or "management:home")
 
 
-@login_required
-@user_passes_test(can_manage_events)
+@management_required
 def scan_page(request):
     """página do scanner qr para check-in rápido."""
     return render(request, "management/scan.html")
 
 
-@login_required
-@user_passes_test(can_manage_events)
+@management_required
 @require_POST
 def scan_checkin_api(request):
     """api para check-in via scanner qr (valida código e faz check-in)."""
@@ -392,8 +386,7 @@ def scan_checkin_api(request):
     )
 
 
-@login_required
-@user_passes_test(can_manage_events)
+@management_required
 def ticket_lookup(request, ticket_code):
     """busca participante por código do bilhete."""
     participant = get_object_or_404(
@@ -408,8 +401,7 @@ def ticket_lookup(request, ticket_code):
     )
 
 
-@login_required
-@user_passes_test(can_manage_events)
+@management_required
 def registration_group(request, reg_id):
     """página detalhada de um grupo de participantes."""
     reg = get_object_or_404(
@@ -435,7 +427,7 @@ def registration_group(request, reg_id):
     )
 
 
-@login_required
+@leadership_required
 def export_event_registrations_excel(request, event_id):
     """
     Exporta para Excel os participantes de um evento.
@@ -535,8 +527,7 @@ def export_event_registrations_excel(request, event_id):
     return response
 
 
-@login_required
-@user_passes_test(can_manage_events)
+@leadership_required
 def reports(request):
     """lista de eventos para acesso rápido aos relatórios."""
     events = (
@@ -547,8 +538,7 @@ def reports(request):
     return render(request, "management/reports.html", {"events": events})
 
 
-@login_required
-@user_passes_test(can_manage_events)
+@leadership_required
 def event_report(request, event_id):
     """relatório resumido de um evento."""
     event = get_object_or_404(Event, pk=event_id)
