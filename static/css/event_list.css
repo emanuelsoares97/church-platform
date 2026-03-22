@@ -9,13 +9,9 @@
 
 .eventsHeader{
   margin-bottom:30px;
+  text-align: center;
 }
 
-.eventsHeader h1{
-  margin:0;
-  font-size:42px;
-  letter-spacing:-.5px;
-}
 
 .subtitle{
   margin-top:8px;
