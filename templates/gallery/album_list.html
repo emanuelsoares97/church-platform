@@ -19,14 +19,7 @@
         </p>
       </div>
 
-      {% if user.is_authenticated %}
-        <div class="galleryListHeaderActions">
-          <a class="galleryCreateAlbumBtn" href="{% url 'gallery:create_album' %}">
-            <span class="galleryCreateAlbumBtnIcon">＋</span>
-            <span>Criar álbum</span>
-          </a>
-        </div>
-      {% endif %}
+
     </div>
 
     {% if albums %}

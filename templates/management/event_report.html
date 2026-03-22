@@ -73,14 +73,16 @@
     <div class="statCard__hint">Check-ins realizados sobre o total</div>
   </div>
 
-  <div class="statCard">
-    <div class="statCard__label">Exportação</div>
-    <div class="statCard__value">Excel</div>
-    <div class="statCard__hint">
-      <a class="btn secondary" href="{% url 'management:export_event_registrations_excel' event.id %}">
-        Exportar
-      </a>
+  {% if can_view_reports %}
+    <div class="statCard">
+      <div class="statCard__label">Exportação</div>
+      <div class="statCard__value">Excel</div>
+      <div class="statCard__hint">
+        <a class="btn secondary" href="{% url 'management:export_event_registrations_excel' event.id %}">
+          Exportar
+        </a>
+      </div>
     </div>
-  </div>
+  {% endif %}
 </div>
 {% endblock %}

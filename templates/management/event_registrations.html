@@ -26,12 +26,14 @@
   </div>
 </div>
 
-<a
-  class="btn secondary"
-  href="{% url 'management:export_event_registrations_excel' event.id %}"
->
-  Exportar Excel
-</a>
+{% if can_view_reports %}
+  <a
+    class="btn secondary"
+    href="{% url 'management:export_event_registrations_excel' event.id %}"
+  >
+    Exportar Excel
+  </a>
+{% endif %}
 
 <form class="filters" method="get">
   <input name="q" placeholder="Pesquisar nome/email/ticket" value="{{ filters.q }}">

@@ -24,15 +24,17 @@
           <strong class="mgmtUserBox__name">{{ request.user.username }}</strong>
         </div>
 
-        <a class="btn secondary" href="{% url 'admin:index' %}">
-          Admin
-        </a>
+        {% if request.user.is_staff %}
+          <a class="btn secondary" href="{% url 'admin:index' %}">
+            Admin
+          </a>
+        {% endif %}
 
         <form method="post" action="{% url 'logout' %}" class="logoutForm">
           {% csrf_token %}
-        <button class="btn secondary logoutBtn" type="submit">
+          <button class="btn secondary logoutBtn" type="submit">
             🚪 Sair
-        </button>
+          </button>
         </form>
       </div>
     </div>
