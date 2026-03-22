@@ -30,7 +30,7 @@
       </div>
     </section>
 
-    {% if user.is_authenticated %}
+    {% if can_manage_gallery %}
       <section class="galleryUploadBox">
         <div class="galleryUploadHeader">
           <h3>Adicionar fotos</h3>
@@ -54,7 +54,7 @@
       </section>
     {% endif %}
 
-    {% if images and user.is_authenticated %}
+    {% if images and can_manage_gallery %}
       <section class="galleryBulkBar" id="galleryBulkBar">
         <div class="galleryBulkInfo">
           <strong id="galleryBulkCount">0</strong>
@@ -86,7 +86,7 @@
           {% for image in images %}
             <article class="galleryCard" data-image-id="{{ image.id }}">
               <div class="galleryImageWrap">
-                {% if user.is_authenticated %}
+                {% if can_manage_gallery %}
                   <label class="gallerySelectBox">
                     <input type="checkbox" name="selected_images" value="{{ image.id }}" class="gallerySelectInput">
                     <span class="gallerySelectIndicator">
