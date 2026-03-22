@@ -176,7 +176,7 @@ img {
   padding: 10px 18px;
   border-radius: 999px;
   font-weight: 700;
-  background: var(--accent);
+  background: rgba(128, 128, 128, 0.268);
   color: var(--text-dark) !important;
   transition: 0.25s ease;
 }
@@ -1030,11 +1030,13 @@ img {
 }
 
 .confirmationHero h1 {
+  color: black;
   margin: 0 0 12px;
   font-size: 2rem;
 }
 
 .confirmationLead {
+  color: #666;
   font-size: 1.05rem;
   margin-bottom: 8px;
 }
@@ -1081,6 +1083,7 @@ img {
 }
 
 .summaryValue {
+  color: #666;
   font-weight: 600;
   text-align: right;
 }
@@ -1133,6 +1136,7 @@ img {
 }
 
 .participantText {
+  color: #666;
   font-weight: 500;
 }
 

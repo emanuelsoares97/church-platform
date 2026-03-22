@@ -80,7 +80,7 @@ def send_registration_tickets_email(registration_id: int) -> None:
             "qr_image_url": qr_image_url,
         }
 
-        html = render_to_string("emails/registration_ticket.html", context)
+        html = render_to_string("emails/registration_ticket.html", context) #template usado para o bilhete
 
         _send_email_resend(
             subject=subject,
