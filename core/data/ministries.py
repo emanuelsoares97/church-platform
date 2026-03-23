@@ -10,12 +10,14 @@ MINISTRIES = [
     {
         "nome": "Crianças",
         "descricao": "Ensino bíblico, actividades e acompanhamento adequado para os mais pequenos crescerem na fé.",
+        "imagem": "img/ministries/kidslogo.png",
         "show_saber_mais": True,
         "saber_mais_href": "#",
     },
     {
         "nome": "Jovens",
         "descricao": "Um espaço para comunhão, discipulado, amizade e fortalecimento espiritual numa fase importante da vida.",
+        "imagem": "img/ministries/younglogo.png",
         "show_saber_mais": True,
         "saber_mais_href": "#",
     },

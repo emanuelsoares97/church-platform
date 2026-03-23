@@ -1,33 +1,57 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %}Ministérios | Unidos com Cristo{% endblock %}
+{% block title %}Ministérios | Comunidade Cristã Conexão{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/event_list.css' %}">
+{% endblock %}
 
 {% block content %}
-<section class="sectionBlock" id="ministerios">
-  <div class="container">
-    <div class="sectionTitle">
-      <span class="sectionBadge">MINISTÉRIOS</span>
-      <h2>Áreas da igreja</h2>
-      <p class="sectionText">
-        Espaços onde cada pessoa pode ser acolhida, discipulada e servir com os dons
-        que Deus lhe deu.
-      </p>
-    </div>
+<div class="eventsWrap">
 
-    <div class="cardGrid">
+  <div class="sectionTitle">
+    <span class="sectionBadge">MINISTÉRIOS</span>
+    <h2>Áreas da igreja</h2>
+    <p class="sectionText">
+      Espaços onde cada pessoa pode ser acolhida, discipulada e servir com os dons
+      que Deus lhe deu.
+    </p>
+  </div>
+
+  {% if ministries %}
+    <div class="eventsGrid">
       {% for ministerio in ministries %}
-        <article class="infoCard">
-          <h3 class="infoCardTitle">{{ ministerio.nome }}</h3>
-          <p class="infoCardText">{{ ministerio.descricao }}</p>
+        <article class="eventCard">
 
-          {% if ministerio.show_saber_mais %}
-            <div class="infoCardActions">
-              <a href="{{ ministerio.saber_mais_href }}" class="btn btnSecondary">Saber mais</a>
+          {% if ministerio.imagem %}
+            <div class="eventImage"
+                 style="background-image: url('{% static ministerio.imagem %}');">
             </div>
+          {% else %}
+            <div class="eventImage fallback"></div>
           {% endif %}
+
+          <div class="eventContent">
+            <h2>{{ ministerio.nome }}</h2>
+
+            <p class="infoCardText">
+              {{ ministerio.descricao }}
+            </p>
+
+            {% if ministerio.show_saber_mais %}
+              <div class="eventFooter">
+                <a href="{{ ministerio.saber_mais_href }}" class="cta">Saber mais →</a>
+              </div>
+            {% endif %}
+          </div>
+
         </article>
       {% endfor %}
     </div>
-  </div>
-</section>
+  {% else %}
+    <p class="empty">Sem ministérios disponíveis neste momento.</p>
+  {% endif %}
+
+</div>
 {% endblock %}

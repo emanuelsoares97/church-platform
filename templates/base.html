@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Unidos com Cristo{% endblock %}</title>
+  <title>{% block title %}Comunidade Cristã Conexão{% endblock %}</title>
   <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
 
   <link rel="stylesheet" href="{% static 'css/global.css' %}">
@@ -25,10 +25,10 @@
     <div class="container navBar">
       <a href="{% url 'core:home' %}" class="brandLink">
         <div class="brand">
-          <img src="{% static 'img/ucc-logo.jpeg' %}" alt="Igreja Unidos com Cristo" class="brandLogo">
+          <img src="{% static 'img/ccclogo.png' %}" alt="Igreja Comunidade Cristã Conexão" class="brandLogo">
 
           <div class="brandText">
-            <strong>Unidos com Cristo</strong>
+            <strong>Comunidade Cristã Conexão</strong>
             <span>Plataforma da Igreja</span>
           </div>
         </div>
@@ -48,7 +48,7 @@
 
       <nav class="navMenu navMenu--desktop" aria-label="Navegação principal">
         <a href="{% url 'core:home' %}">Início</a>
-        <a href="{% url 'core:about' %}">Sobre</a>
+        <a href="{% url 'core:about' %}">Sobre Nós</a>
         <a href="{% url 'core:ministerios' %}">Ministérios</a>
         <a href="{% url 'core:home' %}#celebrações">Celebrações</a>
         <a href="{% url 'gallery:album_list' %}">Galeria</a>
@@ -70,7 +70,7 @@
 
   <nav class="navMenuMobile" id="nav-menu" aria-label="Menu mobile">
       <a href="{% url 'core:home' %}">Início</a>
-      <a href="{% url 'core:about' %}">Sobre</a>
+      <a href="{% url 'core:about' %}">Sobre Nós</a>
       <a href="{% url 'core:ministerios' %}">Ministérios</a>
       <a href="{% url 'core:home' %}#celebrações">Celebrações</a>
       <a href="{% url 'gallery:album_list' %}">Galeria</a>
@@ -103,7 +103,7 @@
   <footer class="footer" id="contactos">
     <div class="footerTop">
       <div class="footerBrandBlock">
-        <strong class="footerStrong">Unidos com Cristo</strong>
+        <strong class="footerStrong">Comunidade Cristã Conexão</strong>
 
         <p class="footerText">
           Uma comunidade de fé, comunhão e esperança.
@@ -141,7 +141,7 @@
     </div>
 
     <div class="footerBottom">
-      <p>© {% now "Y" %} Unidos com Cristo. Todos os direitos reservados.</p>
+      <p>© {% now "Y" %} Comunidade Cristã Conexão. Todos os direitos reservados.</p>
       <p class="footerDev">Desenvolvido por Deus Connosco</p>
     </div>
   </footer>
