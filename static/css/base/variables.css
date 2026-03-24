@@ -1,0 +1,27 @@
+:root {
+  --bg: #0b1220;
+  --bg-dark: rgba(11, 18, 32, 0.86);
+  --bg-darker: rgba(11, 18, 32, 0.96);
+
+  --card: rgba(255, 255, 255, 0.06);
+  --card-soft: rgba(255, 255, 255, 0.04);
+  --card-light: rgba(255, 255, 255, 0.10);
+  --card-gradient-top: rgba(255, 255, 255, 0.12);
+  --card-gradient-bottom: rgba(255, 255, 255, 0.05);
+
+  --text: rgba(255, 255, 255, 0.92);
+  --text-dark: #1f2937;
+  --muted: rgba(255, 255, 255, 0.72);
+  --white: #ffffff;
+
+  --accent: #d4a017;
+  --accent-dark: #b8850f;
+  --ok: #22c55e;
+
+  --line: rgba(255, 255, 255, 0.10);
+  --line-soft: rgba(255, 255, 255, 0.08);
+
+  --shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+  --radius: 20px;
+  --max: 1200px;
+}

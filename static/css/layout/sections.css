@@ -1,0 +1,36 @@
+.sectionBlock {
+  padding: 70px 0;
+}
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.sectionTitle h2 {
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  margin-bottom: 10px;
+}
+
+.sectionTitle p {
+  color: var(--muted);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.sectionText {
+  color: var(--muted);
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.sectionActionCenter {
+  text-align: center;
+  margin-top: 32px;
+}
+
+@media (max-width: 640px) {
+  .sectionTitle p {
+    font-size: 0.98rem;
+  }
+}

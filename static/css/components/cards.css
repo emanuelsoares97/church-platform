@@ -1,0 +1,141 @@
+.heroSideCard {
+  background: linear-gradient(180deg, var(--card-gradient-top), var(--card-gradient-bottom));
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+
+.heroSideCard h3 {
+  margin-bottom: 12px;
+  font-size: 1.4rem;
+}
+
+.heroSideCard p {
+  color: var(--muted);
+}
+
+.heroSideCard__highlight {
+  margin-bottom: 8px;
+  color: var(--white) !important;
+  font-weight: 700;
+}
+
+.heroSideCard__box {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.heroSideCard__box p {
+  color: var(--text);
+}
+
+.infoCard {
+  background: var(--card);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+
+.infoCard h3 {
+  margin-bottom: 12px;
+  font-size: 1.3rem;
+}
+
+.infoCard p {
+  color: var(--muted);
+}
+
+.infoCardTitle {
+  margin-bottom: 12px;
+  font-size: 1.3rem;
+}
+
+.infoCardText {
+  color: var(--muted);
+}
+
+.infoCardMeta {
+  color: var(--muted);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.infoCardActions {
+  margin-top: 22px;
+}
+
+.timeCard {
+  text-align: center;
+  padding: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.timeCard strong {
+  display: block;
+  font-size: 1.25rem;
+  margin-bottom: 8px;
+}
+
+.timeCard span {
+  color: var(--muted);
+}
+
+.emptyCard {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius);
+  padding: 38px 24px;
+  box-shadow: var(--shadow);
+}
+
+.emptyCard h3 {
+  margin-bottom: 12px;
+}
+
+.emptyCard p {
+  color: var(--muted);
+  margin-bottom: 22px;
+}
+
+.ctaBox {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(212, 160, 23, 0.18), rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--line-soft);
+  border-radius: 28px;
+  padding: 50px 24px;
+  box-shadow: var(--shadow);
+}
+
+.ctaBox h2 {
+  font-size: clamp(1.9rem, 3vw, 3rem);
+  margin-bottom: 14px;
+}
+
+.ctaBox p {
+  color: var(--muted);
+  max-width: 760px;
+  margin: 0 auto 24px;
+}
+
+@media (max-width: 640px) {
+  .infoCard p,
+  .ctaBox p {
+    font-size: 0.98rem;
+  }
+
+  .infoCard,
+  .timeCard,
+  .heroSideCard,
+  .ctaBox,
+  .emptyCard {
+    padding: 22px;
+  }
+}

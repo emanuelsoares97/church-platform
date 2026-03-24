@@ -1,0 +1,132 @@
+.footer,
+.siteFooter {
+  width: min(92%, var(--max));
+  margin: 0 auto;
+  padding: 28px 0 40px;
+  border-top: 1px solid var(--line-soft);
+  color: var(--muted);
+}
+
+.footerTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.footerBrandBlock,
+.footerSocialBlock {
+  display: flex;
+  flex-direction: column;
+}
+
+.footerBrandBlock {
+  gap: 10px;
+  flex: 1 1 320px;
+}
+
+.footerSocialBlock {
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.footerStrong {
+  display: inline-block;
+  color: var(--white);
+  font-size: 1.05rem;
+}
+
+.footerText {
+  color: var(--muted);
+  max-width: 460px;
+}
+
+.footerContactList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footerLabel {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.footerAddress {
+  display: block;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.footerBottom {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.footerDev {
+  color: var(--muted);
+}
+
+.socialIcons {
+  display: flex;
+  gap: 10px;
+}
+
+.socialIcons a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.socialIcon {
+  width: 26px;
+  height: 26px;
+  fill: var(--muted);
+  transition: fill 0.2s ease, transform 0.2s ease;
+}
+
+.socialIcon:hover,
+.socialIcon:focus-visible {
+  fill: var(--accent);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 900px) {
+  .footerTop {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+  }
+
+  .footerSocialBlock {
+    align-items: flex-start;
+  }
+
+  .footerBottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .footerStrong {
+    font-size: 1.2rem;
+  }
+
+  .footerLabel,
+  .footerAddress,
+  .footerText,
+  .footerBottom p,
+  .footerContactList span {
+    font-size: 1rem;
+  }
+}

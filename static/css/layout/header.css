@@ -1,0 +1,214 @@
+.siteHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  backdrop-filter: blur(10px);
+  background: var(--bg-dark);
+  border-bottom: 1px solid var(--line);
+  transition: all 0.3s ease;
+}
+
+.siteHeader.scrolled {
+  backdrop-filter: blur(14px);
+  background: rgba(11, 18, 32, 0.92);
+  border-bottom: 1px solid var(--line);
+}
+
+.navBar {
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  position: relative;
+  z-index: 1101;
+  transition: min-height 0.3s ease, padding 0.3s ease;
+}
+
+.siteHeader.scrolled .navBar {
+  min-height: 64px;
+}
+
+.brandLink {
+  text-decoration: none;
+  position: relative;
+  z-index: 1102;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brandLogo {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.brandText strong {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.brandText span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.navMenu--desktop {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  color: var(--muted);
+  font-size: 0.98rem;
+}
+
+.navMenu--desktop a:hover {
+  color: var(--white);
+}
+
+.navToggle {
+  display: none;
+  width: 40px;
+  height: 32px;
+  border: 0;
+  background: transparent;
+  padding: 8px;
+  cursor: pointer;
+  position: relative;
+  z-index: 1102;
+}
+
+.navToggle__bar {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--white);
+  border-radius: 4px;
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+.navToggle__bar:nth-child(1) {
+  top: 6px;
+}
+
+.navToggle__bar:nth-child(2) {
+  top: 15px;
+}
+
+.navToggle__bar:nth-child(3) {
+  top: 24px;
+}
+
+.navToggle.is-open .navToggle__bar:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+}
+
+.navToggle.is-open .navToggle__bar:nth-child(2) {
+  opacity: 0;
+}
+
+.navToggle.is-open .navToggle__bar:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
+}
+
+.navOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 10, 18, 0.65);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  z-index: 1198;
+}
+
+.navOverlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.navMenuMobile {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(82vw, 320px);
+  padding: 96px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  background: var(--bg-darker);
+  border-right: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+  z-index: 1199;
+}
+
+.navMenuMobile.is-open {
+  transform: translateX(0);
+}
+
+.navMenuMobile a {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: var(--muted);
+  background: transparent;
+}
+
+.navMenuMobile a:hover {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.navMenuMobile .navBtn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+@media (max-width: 900px) {
+  .navBar {
+    min-height: auto;
+    padding: 18px 0;
+  }
+
+  .navToggle {
+    display: block;
+  }
+
+  .navMenu--desktop {
+    display: none;
+  }
+}
+
+@media (min-width: 901px) {
+  .navOverlay,
+  .navMenuMobile {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .brandText span {
+    display: none;
+  }
+}

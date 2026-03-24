@@ -21,7 +21,7 @@ def ministerios(request):
     context = {
         "ministries": MINISTRIES,
     }
-    return render(request, "core/ministerios.html", context)
+    return render(request, "core/ministries.html", context)
 
 def contacts(request):
     return render(request, "core/contacts.html")

@@ -1,0 +1,34 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 12px 0;
+}
+
+.field label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.formActions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.formError {
+  margin: 8px 0 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+}
+
+.formError.show {
+  display: block;
+}
+
+.formHelp {
+  color: var(--muted);
+  font-size: 14px;
+  margin-top: 6px;
+}
