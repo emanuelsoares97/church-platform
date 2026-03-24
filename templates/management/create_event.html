@@ -1,0 +1,117 @@
+{% extends "management/base_management.html" %}
+{% load static %}
+
+{% block mgmt_styles %}
+<link rel="stylesheet" href="{% static 'css/management/dashboard.css' %}">
+{% endblock %}
+
+{% block mgmt_title %}Criar evento{% endblock %}
+
+{% block mgmt_content %}
+<section class="mgmtEventCreateHero">
+  <div class="mgmtEventCreateHeroContent">
+    <span class="sectionBadge">EVENTOS</span>
+    <h2>Criar novo evento</h2>
+    <p class="mgmtEventCreateHeroDescription">
+      Preenche os dados abaixo para criar um novo evento e abrir as inscrições com prazo definido.
+    </p>
+  </div>
+</section>
+
+<section class="mgmtEventCreateBox">
+  <form method="post" class="mgmtEventCreateForm" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="formError">{{ form.non_field_errors|join:", " }}</div>
+    {% endif %}
+
+    <div class="mgmtEventFormGrid">
+      <div class="mgmtEventField">
+        <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+        {{ form.title }}
+        {% if form.title.errors %}
+          <div class="formError">{{ form.title.errors|join:", " }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mgmtEventField">
+        <label for="{{ form.location.id_for_label }}">{{ form.location.label }}</label>
+        {{ form.location }}
+        {% if form.location.errors %}
+          <div class="formError">{{ form.location.errors|join:", " }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="mgmtEventField">
+      <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+      {{ form.description }}
+      {% if form.description.errors %}
+        <div class="formError">{{ form.description.errors|join:", " }}</div>
+      {% endif %}
+    </div>
+
+    <div class="mgmtEventField mgmtEventField--upload">
+      <label for="{{ form.banner_image.id_for_label }}">{{ form.banner_image.label }}</label>
+      {{ form.banner_image }}
+      <div class="small">Imagem de destaque para o cartão e a página pública do evento.</div>
+      {% if form.banner_image.errors %}
+        <div class="formError">{{ form.banner_image.errors|join:", " }}</div>
+      {% endif %}
+    </div>
+
+    <div class="mgmtEventFormGrid mgmtEventFormGrid--triple">
+      <div class="mgmtEventField mgmtEventField--date">
+        <label for="{{ form.date.id_for_label }}">
+          {{ form.date.label }} <span class="mgmtFieldLabelIcon" aria-hidden="true">&#128197;</span>
+        </label>
+        <div class="mgmtEventInputWrap mgmtEventInputWrap--calendar">
+          {{ form.date }}
+        </div>
+        {% if form.date.errors %}
+          <div class="formError">{{ form.date.errors|join:", " }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mgmtEventField mgmtEventField--date">
+        <label for="{{ form.registration_deadline.id_for_label }}">
+          {{ form.registration_deadline.label }} <span class="mgmtFieldLabelIcon" aria-hidden="true">&#128197;</span>
+        </label>
+        <div class="mgmtEventInputWrap mgmtEventInputWrap--deadline">
+          {{ form.registration_deadline }}
+        </div>
+        <div class="small">Depois deste momento, o formulário público fecha automaticamente.</div>
+        {% if form.registration_deadline.errors %}
+          <div class="formError">{{ form.registration_deadline.errors|join:", " }}</div>
+        {% endif %}
+      </div>
+
+      <div class="mgmtEventField">
+        <label for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+        {{ form.price }}
+        {% if form.price.errors %}
+          <div class="formError">{{ form.price.errors|join:", " }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="mgmtEventField">
+      <label for="{{ form.ticket_qty.id_for_label }}">{{ form.ticket_qty.label }}</label>
+      {{ form.ticket_qty }}
+      {% if form.ticket_qty.help_text %}
+        <div class="small">{{ form.ticket_qty.help_text }}</div>
+      {% endif %}
+      <div class="small">Este campo nao bloqueia vendas sozinho; serve para planeamento interno.</div>
+      {% if form.ticket_qty.errors %}
+        <div class="formError">{{ form.ticket_qty.errors|join:", " }}</div>
+      {% endif %}
+    </div>
+
+    <div class="mgmtEventCreateActions">
+      <a class="btn secondary" href="{% url 'management:events_list' %}">Cancelar</a>
+      <button class="btn" type="submit">Criar evento</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

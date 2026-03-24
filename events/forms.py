@@ -29,3 +29,52 @@ class EventAdminForm(forms.ModelForm):
             return image
 
         return optimize_uploaded_image(image)
+
+
+class EventCreateForm(forms.ModelForm):
+    """Formulário para criação de eventos na área de gestão."""
+
+    ticket_qty = forms.IntegerField(
+        min_value=1,
+        initial=1,
+        label="Número de bilhetes (planeamento)",
+        help_text="Nao limita inscricoes automaticamente.",
+    )
+
+    class Meta:
+        model = Event
+        fields = [
+            "title",
+            "description",
+            "banner_image",
+            "date",
+            "location",
+            "price",
+            "registration_deadline",
+        ]
+        widgets = {
+            "title": forms.TextInput(attrs={"placeholder": "Ex.: Conferência Jovem"}),
+            "description": forms.Textarea(attrs={"rows": 4, "placeholder": "Descrição opcional do evento"}),
+            "banner_image": forms.ClearableFileInput(attrs={"accept": "image/*"}),
+            "date": forms.DateInput(attrs={"type": "date"}),
+            "location": forms.TextInput(attrs={"placeholder": "Ex.: Auditório Principal"}),
+            "price": forms.NumberInput(attrs={"min": 0, "step": "0.01"}),
+            "registration_deadline": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+        }
+        labels = {
+            "title": "Título",
+            "description": "Descrição",
+            "banner_image": "Banner do evento",
+            "date": "Data do evento",
+            "location": "Local",
+            "price": "Preço",
+            "registration_deadline": "Inscrições abertas até",
+        }
+
+    def clean_banner_image(self):
+        image = self.cleaned_data.get("banner_image")
+
+        if not image:
+            return image
+
+        return optimize_uploaded_image(image)

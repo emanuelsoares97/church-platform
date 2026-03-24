@@ -55,6 +55,12 @@
         <h2>Inscrição</h2>
         <p class="help">Preenche os dados e os nomes de todos os participantes (1 por bilhete).</p>
 
+        {% if not registration_open %}
+          <div class="formError show" style="margin-bottom:14px;">
+            As inscrições para este evento já se encontram encerradas.
+          </div>
+        {% endif %}
+
         <form method="POST" id="regForm" novalidate>
           {% csrf_token %}
 
@@ -142,7 +148,7 @@
           </div>
 
           <div class="actions">
-            <button class="btn" type="submit" id="submitBtn">Confirmar inscrição</button>
+            <button class="btn" type="submit" id="submitBtn" {% if not registration_open %}disabled{% endif %}>Confirmar inscrição</button>
             <button class="btn secondary" type="reset" id="resetBtn">Limpar</button>
           </div>
 

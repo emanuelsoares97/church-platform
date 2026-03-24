@@ -119,6 +119,183 @@
 	color: var(--muted);
 }
 
+.mgmtEventCreateHero {
+	margin-bottom: 20px;
+}
+
+.mgmtEventCreateHeroContent {
+	position: relative;
+	overflow: hidden;
+	background:
+		radial-gradient(circle at top right, rgba(255,255,255,0.08), transparent 35%),
+		linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015));
+	border: 1px solid var(--line);
+	border-radius: 22px;
+	padding: 26px;
+	box-shadow: var(--shadow);
+}
+
+.mgmtEventCreateHeroContent::after {
+	content: "";
+	position: absolute;
+	inset: auto -40px -40px auto;
+	width: 180px;
+	height: 180px;
+	background: radial-gradient(circle, rgba(255,255,255,0.05), transparent 70%);
+	pointer-events: none;
+}
+
+.mgmtEventCreateHero h2 {
+	margin: 10px 0;
+	font-size: clamp(1.7rem, 2.7vw, 2.4rem);
+	line-height: 1.1;
+}
+
+.mgmtEventCreateHeroDescription {
+	margin: 0;
+	max-width: 760px;
+	color: var(--muted);
+	line-height: 1.6;
+}
+
+.mgmtEventCreateBox {
+	border: 1px solid var(--line);
+	background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+	border-radius: 22px;
+	padding: 24px;
+	box-shadow: var(--shadow);
+}
+
+.mgmtEventCreateForm {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+.mgmtEventFormGrid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 16px;
+}
+
+.mgmtEventFormGrid--triple {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mgmtEventField {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.mgmtEventField label {
+	font-weight: 700;
+}
+
+.mgmtFieldLabelIcon {
+	font-size: 13px;
+	vertical-align: middle;
+	margin-left: 4px;
+	opacity: 0.9;
+}
+
+.mgmtEventField--date {
+	padding: 12px;
+	border: 1px solid var(--line);
+	border-radius: 16px;
+	background: rgba(255, 255, 255, 0.03);
+}
+
+.mgmtEventInputWrap {
+	position: relative;
+}
+
+.mgmtEventInputWrap::after {
+	position: absolute;
+	top: 50%;
+	right: 10px;
+	transform: translateY(-50%);
+	padding: 3px 8px;
+	border-radius: 999px;
+	border: 1px solid var(--line);
+	background: rgba(255, 255, 255, 0.04);
+	color: var(--muted);
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	pointer-events: none;
+}
+
+.mgmtEventInputWrap--calendar::after {
+	content: "\1F4C5";
+}
+
+.mgmtEventInputWrap--deadline::after {
+	content: "\1F4C5";
+}
+
+.mgmtEventField input,
+.mgmtEventField textarea,
+.mgmtEventField select {
+	width: 100%;
+	border: 1px solid var(--line);
+	background: rgba(0, 0, 0, 0.16);
+	color: var(--text);
+	border-radius: 14px;
+	padding: 12px 14px;
+	outline: none;
+	transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.mgmtEventInputWrap input {
+	padding-right: 62px;
+}
+
+.mgmtEventInputWrap input[type="date"]::-webkit-calendar-picker-indicator,
+.mgmtEventInputWrap input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+	opacity: 0;
+	width: 20px;
+	cursor: pointer;
+}
+
+.mgmtEventField textarea {
+	min-height: 120px;
+	resize: vertical;
+}
+
+.mgmtEventField--upload input[type="file"] {
+	padding: 10px;
+	background: rgba(255, 255, 255, 0.03);
+	border-style: dashed;
+}
+
+.mgmtEventField--upload input[type="file"]::file-selector-button {
+	margin-right: 10px;
+	padding: 8px 12px;
+	border-radius: 10px;
+	border: 1px solid var(--line);
+	background: rgba(255, 255, 255, 0.06);
+	color: var(--text);
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.mgmtEventField input:focus,
+.mgmtEventField textarea:focus,
+.mgmtEventField select:focus {
+	border-color: var(--accent);
+	background: rgba(255, 255, 255, 0.05);
+}
+
+.mgmtEventCreateActions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+	flex-wrap: wrap;
+	margin-top: 4px;
+}
+
 @media (max-width: 900px) {
 	.dashboardStats {
 		grid-template-columns: 1fr;
@@ -126,5 +303,26 @@
 
 	.dashboardHero h2 {
 		font-size: 24px;
+	}
+
+	.mgmtEventFormGrid,
+	.mgmtEventFormGrid--triple {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 560px) {
+	.mgmtEventCreateHeroContent,
+	.mgmtEventCreateBox {
+		padding: 18px;
+	}
+
+	.mgmtEventCreateActions {
+		flex-direction: column;
+	}
+
+	.mgmtEventCreateActions .btn {
+		width: 100%;
+		justify-content: center;
 	}
 }

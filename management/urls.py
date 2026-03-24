@@ -6,6 +6,7 @@ app_name = "management"
 urlpatterns = [
     path("", views.dashboard, name="home"),
     path("eventos/", views.events_list, name="events_list"),
+    path("eventos/criar/", views.create_event_view, name="create_event"),
 
     path("evento/<int:event_id>/inscricoes/", views.event_registrations, name="event_regs"),
 

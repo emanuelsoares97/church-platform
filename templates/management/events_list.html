@@ -13,6 +13,10 @@
     <h3>Eventos disponíveis</h3>
     <p>Escolhe um evento para abrir a gestão de inscrições e operação.</p>
   </div>
+
+  {% if can_manage_registrations %}
+    <a class="btn" href="{% url 'management:create_event' %}">Criar evento</a>
+  {% endif %}
 </div>
 
 <div class="cards cards--dashboard">

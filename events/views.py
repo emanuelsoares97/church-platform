@@ -30,6 +30,11 @@ def event_list(request):
 def event_detail(request, slug):
     """página do evento com formulário de inscrição."""
     event = get_object_or_404(Event, slug=slug, is_active=True)
+    registration_open = event.is_registration_open()
+
+    if request.method == "POST" and not registration_open:
+        messages.error(request, "As inscrições para este evento já se encontram encerradas.")
+        return redirect("events:event_detail", slug=event.slug)
 
     if request.method == "POST":
         post_data = request.POST.copy()
@@ -54,7 +59,12 @@ def event_detail(request, slug):
                 return render(
                     request,
                     "events/event_detail.html",
-                    {"event": event, "form": form, "participant_values": participant_names},
+                    {
+                        "event": event,
+                        "form": form,
+                        "participant_values": participant_names,
+                        "registration_open": registration_open,
+                    },
                 )
 
             now = timezone.now()
@@ -101,14 +111,24 @@ def event_detail(request, slug):
         return render(
             request,
             "events/event_detail.html",
-            {"event": event, "form": form, "participant_values": participant_names},
+            {
+                "event": event,
+                "form": form,
+                "participant_values": participant_names,
+                "registration_open": registration_open,
+            },
         )
 
     form = RegistrationForm()
     return render(
         request,
         "events/event_detail.html",
-        {"event": event, "form": form, "participant_values": []},
+        {
+            "event": event,
+            "form": form,
+            "participant_values": [],
+            "registration_open": registration_open,
+        },
     )
 
 

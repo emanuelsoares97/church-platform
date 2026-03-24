@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
+from events.forms import EventCreateForm
 from events.models import Event, Participant, Registration
 from management.permissions import (
     leadership_required,
@@ -59,6 +60,27 @@ def events_list(request):
         .order_by("-id")
     )
     return render(request, "management/events_list.html", {"events": events})
+
+
+@reception_or_leadership_required
+def create_event_view(request):
+    """Permite criar eventos através da área de gestão."""
+    if request.method == "POST":
+        form = EventCreateForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.is_active = True
+            event.save()
+
+            messages.success(request, "Evento criado com sucesso.")
+            return redirect("management:events_list")
+
+        messages.error(request, "Verifica os campos do formulário.")
+    else:
+        form = EventCreateForm()
+
+    return render(request, "management/create_event.html", {"form": form})
 
 
 @reception_or_leadership_required

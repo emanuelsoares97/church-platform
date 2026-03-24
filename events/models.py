@@ -12,6 +12,7 @@ class Event(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     date = models.DateField()
+    registration_deadline = models.DateTimeField(null=True, blank=True)
     location = models.CharField(max_length=200)
     price = models.DecimalField(max_digits=6, decimal_places=2, default=Decimal("5.00"))
     description = models.TextField(blank=True)
@@ -37,6 +38,12 @@ class Event(models.Model):
 
     def __str__(self):
         return self.title or "Evento sem título"
+
+    def is_registration_open(self):
+        """Indica se o evento ainda aceita novas inscrições."""
+        if not self.registration_deadline:
+            return True
+        return timezone.now() <= self.registration_deadline
 
 
 class Registration(models.Model):
