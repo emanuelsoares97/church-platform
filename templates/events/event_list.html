@@ -31,6 +31,12 @@
           {% endif %}
 
           <div class="eventContent">
+            {% if event.can_accept_registrations %}
+              <div class="eventStatus eventStatusOpen">Inscrições abertas</div>
+            {% else %}
+              <div class="eventStatus eventStatusClosed">Inscrições encerradas</div>
+            {% endif %}
+
             <h2>{{ event.title }}</h2>
 
             <div class="eventMeta">
@@ -40,7 +46,11 @@
             </div>
 
             <div class="eventFooter">
-              <span class="price">{{ event.price }}€</span>
+              {% if event.price > 0 %}
+                <span class="price">{{ event.price }}€</span>
+              {% else %}
+                <span class="price">Gratuito</span>
+              {% endif %}
               <span class="cta">Ver evento →</span>
             </div>
           </div>

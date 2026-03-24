@@ -52,6 +52,7 @@ class EventCreateForm(forms.ModelForm):
             "location",
             "price",
             "registration_deadline",
+            "is_active",
         ]
         widgets = {
             "title": forms.TextInput(attrs={"placeholder": "Ex.: Conferência Jovem"}),
@@ -61,6 +62,7 @@ class EventCreateForm(forms.ModelForm):
             "location": forms.TextInput(attrs={"placeholder": "Ex.: Auditório Principal"}),
             "price": forms.NumberInput(attrs={"min": 0, "step": "0.01"}),
             "registration_deadline": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "is_active": forms.CheckboxInput(),
         }
         labels = {
             "title": "Título",
@@ -70,6 +72,7 @@ class EventCreateForm(forms.ModelForm):
             "location": "Local",
             "price": "Preço",
             "registration_deadline": "Inscrições abertas até",
+            "is_active": "Evento ativo e visível",
         }
 
     def clean_banner_image(self):

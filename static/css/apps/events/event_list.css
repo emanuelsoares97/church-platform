@@ -104,3 +104,24 @@
 	color: var(--muted);
 	margin-top: 20px;
 }
+
+.eventStatus {
+	display: inline-block;
+	padding: 6px 10px;
+	border-radius: 999px;
+	font-size: 12px;
+	font-weight: 600;
+	width: fit-content;
+}
+
+.eventStatusOpen {
+	background: var(--success-bg);
+	color: var(--ok);
+	border: 1px solid var(--ok);
+}
+
+.eventStatusClosed {
+	background: var(--error-bg);
+	color: var(--error);
+	border: 1px solid var(--error);
+}

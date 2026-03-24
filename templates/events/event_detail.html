@@ -12,15 +12,23 @@
      data-price="{{ event.price }}"
      data-banner-url="{% if event.banner_image %}{{ event.banner_image.url }}{% endif %}">
 
-
   <div class="grid">
-    <!-- COLUNA ESQUERDA -->
     <section class="card">
       <div class="hero">
         <div class="watermark" aria-hidden="true"></div>
 
         <div class="heroInner">
-          <div class="badge"><span class="dot" aria-hidden="true"></span> Inscrições abertas</div>
+          {% if registration_open %}
+            <div class="badge">
+              <span class="dot" aria-hidden="true"></span>
+              Inscrições abertas
+            </div>
+          {% else %}
+            <div class="badge badgeClosed">
+              <span class="dot" aria-hidden="true"></span>
+              Inscrições encerradas
+            </div>
+          {% endif %}
 
           <h1>{{ event.title|upper }}</h1>
 
@@ -38,8 +46,6 @@
               <div class="chip">🎟️ Preço: <strong class="chipStrong">Gratuito</strong></div>
             {% endif %}
           </div>
-
-
         </div>
 
         <div class="section" id="sobre">
@@ -49,7 +55,6 @@
       </div>
     </section>
 
-    <!-- COLUNA DIREITA -->
     <section class="card" id="inscricao">
       <div class="formCard">
         <h2>Inscrição</h2>
@@ -132,16 +137,13 @@
             </div>
           {% else %}
             <input type="hidden" name="payment_method" value="LOCAL">
-
           {% endif %}
 
           <div class="field">
-
             <div class="small" style="margin-bottom:8px;opacity:.9;">
               Preenche o nome de cada participante (1 por bilhete).
             </div>
 
-            <!-- ERRO INLINE (JS) -->
             <div class="formError" id="formError" role="alert" aria-live="polite"></div>
 
             <div id="participants"></div>

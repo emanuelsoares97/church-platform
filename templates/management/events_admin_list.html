@@ -58,7 +58,7 @@
                 </div>
 
                 <p class="card__text">
-                  Editar configuração do evento arquivado.
+                  Editar configuração do evento arquivado. Use \"Desarquivar\" para retornar à gestão ativa.
                 </p>
 
                 <div class="card__actions">
@@ -66,7 +66,7 @@
                     Editar
                   </a>
 
-                  <form method="post" action="{% url 'management:event_unarchive' e.id %}">
+                  <form method="post" action="{% url 'management:event_unarchive' e.id %}" style="display:inline;">
                     {% csrf_token %}
                     <input type="hidden" name="next" value="{{ request.get_full_path }}">
                     <button class="btn secondary" type="submit">Desarquivar</button>
@@ -90,14 +90,14 @@
               <span class="kpi">Inscrições: <strong>{{ e.reg_count }}</strong></span>
 
               {% if e.is_active %}
-                <span class="kpi"><strong>Ativo</strong></span>
+                <span class="kpi"><strong style="color: #4CAF50;">Ativo</strong></span>
               {% else %}
-                <span class="kpi">Inativo</span>
+                <span class="kpi"><strong style="color: #FFA500;">Inativo</strong></span>
               {% endif %}
             </div>
 
             <p class="card__text">
-              Editar configuração do evento e gerir arquivamento.
+              Editar configuração, ativar/desativar ou arquivar este evento.
             </p>
 
             <div class="card__actions">
@@ -105,7 +105,21 @@
                 Editar
               </a>
 
-              <form method="post" action="{% url 'management:event_archive' e.id %}">
+              {% if e.is_active %}
+                <form method="post" action="{% url 'management:event_deactivate' e.id %}" style="display:inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button class="btn secondary" type="submit">Desativar</button>
+                </form>
+              {% else %}
+                <form method="post" action="{% url 'management:event_activate' e.id %}" style="display:inline;">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                  <button class="btn secondary" type="submit">Ativar</button>
+                </form>
+              {% endif %}
+
+              <form method="post" action="{% url 'management:event_archive' e.id %}" style="display:inline;">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.get_full_path }}">
                 <button class="btn secondary" type="submit">Arquivar</button>

@@ -68,7 +68,6 @@ def build_event_kpis(event):
 @reception_or_leadership_required
 def events_list(request):
     """lista operacional de eventos para gestão."""
-    Event.archive_past_events()
     events = (
         Event.objects.filter(is_archived=False)
         .annotate(reg_count=Count("registrations"))
@@ -80,7 +79,6 @@ def events_list(request):
 @leadership_required
 def events_admin_list(request):
     """lista administrativa de eventos para edição e arquivamento."""
-    Event.archive_past_events()
     archived = request.GET.get("archived") == "1"
 
     events = (
@@ -269,8 +267,32 @@ def event_registrations(request, event_id):
 
 @reception_or_leadership_required
 @require_POST
+def deactivate_event(request, event_id):
+    """Desativa um evento, removendo-o da área pública."""
+    event = get_object_or_404(Event, pk=event_id)
+    event.is_active = False
+    event.save(update_fields=["is_active"])
+
+    messages.success(request, "Evento desativado com sucesso.")
+    return redirect(request.POST.get("next") or "management:events_admin_list")
+
+
+@reception_or_leadership_required
+@require_POST
+def activate_event(request, event_id):
+    """Ativa um evento, tornando-o visível na área pública."""
+    event = get_object_or_404(Event, pk=event_id)
+    event.is_active = True
+    event.save(update_fields=["is_active"])
+
+    messages.success(request, "Evento ativado com sucesso.")
+    return redirect(request.POST.get("next") or "management:events_admin_list")
+
+
+@leadership_required
+@require_POST
 def archive_event(request, event_id):
-    """Arquiva um evento a partir da listagem de gestão."""
+    """Arquiva um evento na seção de histórico."""
     event = get_object_or_404(Event, pk=event_id)
     event.is_archived = True
     event.save(update_fields=["is_archived"])

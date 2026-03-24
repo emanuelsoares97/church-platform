@@ -40,17 +40,27 @@ class Event(models.Model):
     def __str__(self):
         return self.title or "Evento sem título"
 
+    def is_past(self):
+        """Verifica se a data do evento já passou."""
+        return timezone.now().date() > self.date
+
     def is_registration_open(self):
         """Indica se o evento ainda aceita novas inscrições."""
         if not self.registration_deadline:
             return True
         return timezone.now() <= self.registration_deadline
 
-    @classmethod
-    def archive_past_events(cls):
-        """Arquiva automaticamente eventos cuja data já passou."""
-        today = timezone.localdate()
-        return cls.objects.filter(is_archived=False, date__lt=today).update(is_archived=True)
+    def can_accept_registrations(self):
+        """
+        Verifica se o evento pode aceitar novas inscrições.
+        Requer: estar ativo, não arquivado, prazo aberto, data ainda não passou.
+        """
+        return (
+            self.is_active
+            and not self.is_archived
+            and self.is_registration_open()
+            and not self.is_past()
+        )
 
 
 class Registration(models.Model):

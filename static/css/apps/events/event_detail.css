@@ -79,6 +79,11 @@
 	box-shadow: 0 0 0 6px var(--success-shadow);
 }
 
+.badge.badgeClosed .dot {
+	background: var(--error);
+	box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.15);
+}
+
 .hero h1 {
 	margin: 10px 0 8px;
 	font-size: 44px;
@@ -283,6 +288,11 @@ input:focus {
 
 .small {
 	font-size: 13px;
+}
+
+.priceEach {
+	font-size: 13px;
+	color: var(--muted);
 }
 
 .actions {

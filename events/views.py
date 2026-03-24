@@ -5,7 +5,6 @@ import qrcode
 from django.conf import settings
 from django.contrib import messages
 from django.db import transaction
-from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
@@ -23,11 +22,15 @@ def make_ticket_code(registration: Registration, idx: int) -> str:
 
 
 def event_list(request):
-    """lista eventos ativos para inscrição pública."""
-    Event.archive_past_events()
+    """lista eventos ativos na área pública."""
+    today = timezone.now().date()
+
     events = (
-        Event.objects.filter(is_active=True, is_archived=False)
-        .filter(Q(registration_deadline__isnull=True) | Q(registration_deadline__gte=timezone.now()))
+        Event.objects.filter(
+            is_active=True,
+            is_archived=False,
+            date__gte=today,
+        )
         .order_by("date")
     )
     return render(request, "events/event_list.html", {"events": events})
@@ -35,9 +38,16 @@ def event_list(request):
 
 def event_detail(request, slug):
     """página do evento com formulário de inscrição."""
-    Event.archive_past_events()
-    event = get_object_or_404(Event, slug=slug, is_active=True, is_archived=False)
-    registration_open = event.is_registration_open()
+    today = timezone.now().date()
+    event = get_object_or_404(
+        Event,
+        slug=slug,
+        is_active=True,
+        is_archived=False,
+        date__gte=today,
+    )
+
+    registration_open = event.can_accept_registrations()
 
     if request.method == "POST" and not registration_open:
         messages.error(request, "As inscrições para este evento já se encontram encerradas.")
@@ -141,8 +151,7 @@ def event_detail(request, slug):
 
 def registration_success(request, slug, public_id):
     """página de confirmação após inscrição bem-sucedida."""
-    Event.archive_past_events()
-    event = get_object_or_404(Event, slug=slug, is_active=True, is_archived=False)
+    event = get_object_or_404(Event, slug=slug)
 
     registration = get_object_or_404(
         Registration.objects.select_related("event").prefetch_related("participants"),

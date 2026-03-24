@@ -13,6 +13,8 @@ urlpatterns = [
     path("eventos/administracao/", views.events_admin_list, name="events_admin_list"),
     path("eventos/criar/", views.create_event_view, name="create_event"),
     path("eventos/<int:event_id>/editar/", views.edit_event_view, name="event_edit"),
+    path("eventos/<int:event_id>/ativar/", views.activate_event, name="event_activate"),
+    path("eventos/<int:event_id>/desativar/", views.deactivate_event, name="event_deactivate"),
     path("eventos/<int:event_id>/arquivar/", views.archive_event, name="event_archive"),
     path("eventos/<int:event_id>/desarquivar/", views.unarchive_event, name="event_unarchive"),
 

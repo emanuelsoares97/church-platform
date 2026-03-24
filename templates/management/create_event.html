@@ -128,6 +128,20 @@
       {% endif %}
     </div>
 
+    {% if is_edit %}
+      <div class="mgmtEventField">
+        <label for="{{ form.is_active.id_for_label }}">
+          {{ form.is_active }} {{ form.is_active.label }}
+        </label>
+        <div class="small">
+          Quando desativado, o evento desaparece da área pública mas continua acessível aqui para gestão.
+        </div>
+        {% if form.is_active.errors %}
+          <div class="formError">{{ form.is_active.errors|join:", " }}</div>
+        {% endif %}
+      </div>
+    {% endif %}
+
     <div class="mgmtEventCreateActions">
       <a class="btn secondary" href="{% url 'management:events_list' %}">Cancelar</a>
       <button class="btn" type="submit">{% if is_edit %}Guardar alterações{% else %}Criar evento{% endif %}</button>
