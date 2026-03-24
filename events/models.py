@@ -23,6 +23,7 @@ class Event(models.Model):
         folder="church-platform/events",
     )
     is_active = models.BooleanField(default=True)
+    is_archived = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
@@ -44,6 +45,12 @@ class Event(models.Model):
         if not self.registration_deadline:
             return True
         return timezone.now() <= self.registration_deadline
+
+    @classmethod
+    def archive_past_events(cls):
+        """Arquiva automaticamente eventos cuja data já passou."""
+        today = timezone.localdate()
+        return cls.objects.filter(is_archived=False, date__lt=today).update(is_archived=True)
 
 
 class Registration(models.Model):

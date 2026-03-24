@@ -10,7 +10,10 @@ urlpatterns = [
     path("galeria/albuns/", views.gallery_albums_list, name="gallery_albums_list"),
     path("galeria/albuns/<slug:slug>/", views.management_album_detail, name="management_album_detail"),
     path("eventos/", views.events_list, name="events_list"),
+    path("eventos/administracao/", views.events_admin_list, name="events_admin_list"),
     path("eventos/criar/", views.create_event_view, name="create_event"),
+    path("eventos/<int:event_id>/editar/", views.edit_event_view, name="event_edit"),
+    path("eventos/<int:event_id>/arquivar/", views.archive_event, name="event_archive"),
 
     path("evento/<int:event_id>/inscricoes/", views.event_registrations, name="event_regs"),
 

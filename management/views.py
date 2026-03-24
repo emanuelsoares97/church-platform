@@ -67,13 +67,35 @@ def build_event_kpis(event):
 
 @reception_or_leadership_required
 def events_list(request):
-    """lista de eventos para gestão."""
+    """lista operacional de eventos para gestão."""
+    Event.archive_past_events()
     events = (
-        Event.objects.all()
+        Event.objects.filter(is_archived=False)
         .annotate(reg_count=Count("registrations"))
         .order_by("-id")
     )
     return render(request, "management/events_list.html", {"events": events})
+
+
+@leadership_required
+def events_admin_list(request):
+    """lista administrativa de eventos para edição e arquivamento."""
+    Event.archive_past_events()
+    archived = request.GET.get("archived") == "1"
+
+    events = (
+        Event.objects.filter(is_archived=archived)
+        .annotate(reg_count=Count("registrations"))
+        .order_by("-date", "-id")
+    )
+    return render(
+        request,
+        "management/events_admin_list.html",
+        {
+            "events": events,
+            "show_archived": archived,
+        },
+    )
 
 
 @media_or_leadership_required
@@ -165,6 +187,34 @@ def create_event_view(request):
 
 
 @reception_or_leadership_required
+def edit_event_view(request, event_id):
+    """Permite editar um evento através da área de gestão."""
+    event = get_object_or_404(Event, pk=event_id)
+
+    if request.method == "POST":
+        form = EventCreateForm(request.POST, request.FILES, instance=event)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Evento atualizado com sucesso.")
+            return redirect("management:events_list")
+
+        messages.error(request, "Verifica os campos do formulário.")
+    else:
+        form = EventCreateForm(instance=event)
+
+    return render(
+        request,
+        "management/create_event.html",
+        {
+            "form": form,
+            "is_edit": True,
+            "event": event,
+        },
+    )
+
+
+@reception_or_leadership_required
 def event_registrations(request, event_id):
     """lista inscrições de um evento com filtros e paginação."""
     event = get_object_or_404(Event, pk=event_id)
@@ -213,6 +263,18 @@ def event_registrations(request, event_id):
         "kpis": build_event_kpis(event),
     }
     return render(request, "management/event_registrations.html", context)
+
+
+@reception_or_leadership_required
+@require_POST
+def archive_event(request, event_id):
+    """Arquiva um evento a partir da listagem de gestão."""
+    event = get_object_or_404(Event, pk=event_id)
+    event.is_archived = True
+    event.save(update_fields=["is_archived"])
+
+    messages.success(request, "Evento arquivado com sucesso.")
+    return redirect("management:events_list")
 
 
 @reception_or_leadership_required

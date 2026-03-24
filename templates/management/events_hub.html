@@ -11,11 +11,12 @@
 <div class="sectionHeader sectionHeader--spaced">
   <div>
     <h3>Gestão de Eventos</h3>
-    <p>Acesso rápido para criar eventos e gerir os eventos existentes.</p>
+    <p>Separação entre operação diária e administração dos eventos.</p>
   </div>
 </div>
 
 <div class="cards cards--dashboard">
+  {% if can_view_reports %}
   <article class="card card--feature">
     <div class="card__inner">
       <div class="featureIcon">➕</div>
@@ -26,16 +27,30 @@
       </div>
     </div>
   </article>
+  {% endif %}
 
   <article class="card card--feature">
     <div class="card__inner">
-      <div class="featureIcon">📋</div>
-      <div class="card__title">Gerir eventos existentes</div>
-      <p class="card__text">Ver a lista de eventos e abrir a gestão de inscrições.</p>
+      <div class="featureIcon">⚙️</div>
+      <div class="card__title">Operação de eventos</div>
+      <p class="card__text">Foco em inscrições, pagamentos e check-ins.</p>
       <div class="card__actions">
-        <a class="btn secondary" href="{% url 'management:events_list' %}">Gerir eventos</a>
+        <a class="btn secondary" href="{% url 'management:events_list' %}">Abrir operação</a>
       </div>
     </div>
   </article>
+
+  {% if can_view_reports %}
+    <article class="card card--feature">
+      <div class="card__inner">
+        <div class="featureIcon">🛠️</div>
+        <div class="card__title">Administração de eventos</div>
+        <p class="card__text">Editar e arquivar eventos, com foco estrutural.</p>
+        <div class="card__actions">
+          <a class="btn secondary" href="{% url 'management:events_admin_list' %}">Abrir administração</a>
+        </div>
+      </div>
+    </article>
+  {% endif %}
 </div>
 {% endblock %}

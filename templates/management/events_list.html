@@ -10,13 +10,15 @@
 {% block mgmt_content %}
 <div class="sectionHeader sectionHeader--spaced">
   <div>
-    <h3>Eventos disponíveis</h3>
-    <p>Escolhe um evento para abrir a gestão de inscrições e operação.</p>
+    <h3>Operação de eventos</h3>
+    <p>Escolhe um evento para abrir inscrições, pagamentos e check-ins.</p>
   </div>
 
-  {% if can_manage_registrations %}
-    <a class="btn" href="{% url 'management:create_event' %}">Criar evento</a>
-  {% endif %}
+  <div class="card__actions">
+    {% if can_view_reports %}
+      <a class="btn secondary" href="{% url 'management:events_admin_list' %}">Ir para administração</a>
+    {% endif %}
+  </div>
 </div>
 
 <div class="cards cards--dashboard">
@@ -54,7 +56,7 @@
   {% empty %}
     <div class="emptyState">
       <h3>Sem eventos disponíveis</h3>
-      <p class="muted">Ainda não existem eventos para apresentar nesta área.</p>
+      <p class="muted">Ainda não existem eventos para apresentar nesta área operacional.</p>
     </div>
   {% endfor %}
 </div>

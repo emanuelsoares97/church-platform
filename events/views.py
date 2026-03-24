@@ -23,13 +23,15 @@ def make_ticket_code(registration: Registration, idx: int) -> str:
 
 def event_list(request):
     """lista eventos ativos para inscrição pública."""
-    events = Event.objects.filter(is_active=True).order_by("date")
+    Event.archive_past_events()
+    events = Event.objects.filter(is_active=True, is_archived=False).order_by("date")
     return render(request, "events/event_list.html", {"events": events})
 
 
 def event_detail(request, slug):
     """página do evento com formulário de inscrição."""
-    event = get_object_or_404(Event, slug=slug, is_active=True)
+    Event.archive_past_events()
+    event = get_object_or_404(Event, slug=slug, is_active=True, is_archived=False)
     registration_open = event.is_registration_open()
 
     if request.method == "POST" and not registration_open:
@@ -134,7 +136,8 @@ def event_detail(request, slug):
 
 def registration_success(request, slug, public_id):
     """página de confirmação após inscrição bem-sucedida."""
-    event = get_object_or_404(Event, slug=slug, is_active=True)
+    Event.archive_past_events()
+    event = get_object_or_404(Event, slug=slug, is_active=True, is_archived=False)
 
     registration = get_object_or_404(
         Registration.objects.select_related("event").prefetch_related("participants"),

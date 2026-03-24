@@ -5,15 +5,19 @@
 <link rel="stylesheet" href="{% static 'css/management/dashboard.css' %}">
 {% endblock %}
 
-{% block mgmt_title %}Criar evento{% endblock %}
+{% block mgmt_title %}{% if is_edit %}Editar evento{% else %}Criar evento{% endif %}{% endblock %}
 
 {% block mgmt_content %}
 <section class="mgmtEventCreateHero">
   <div class="mgmtEventCreateHeroContent">
     <span class="sectionBadge">EVENTOS</span>
-    <h2>Criar novo evento</h2>
+    <h2>{% if is_edit %}Editar evento{% else %}Criar novo evento{% endif %}</h2>
     <p class="mgmtEventCreateHeroDescription">
-      Preenche os dados abaixo para criar um novo evento e abrir as inscrições com prazo definido.
+      {% if is_edit %}
+        Atualiza os dados do evento e mantém as inscrições alinhadas com a nova configuração.
+      {% else %}
+        Preenche os dados abaixo para criar um novo evento e abrir as inscrições com prazo definido.
+      {% endif %}
     </p>
   </div>
 </section>
@@ -54,8 +58,21 @@
 
     <div class="mgmtEventField mgmtEventField--upload">
       <label for="{{ form.banner_image.id_for_label }}">{{ form.banner_image.label }}</label>
+
+      {% if is_edit and event.banner_image %}
+        <div class="small">Banner atual:</div>
+        <img
+          src="{{ event.banner_image.url }}"
+          alt="Banner atual do evento"
+          style="width:100%;max-width:360px;border-radius:12px;border:1px solid rgba(255,255,255,0.12);margin-top:6px;"
+        >
+      {% endif %}
+
       {{ form.banner_image }}
       <div class="small">Imagem de destaque para o cartão e a página pública do evento.</div>
+      {% if is_edit %}
+        <div class="small">Escolhe uma nova imagem apenas se quiseres substituir o banner atual.</div>
+      {% endif %}
       {% if form.banner_image.errors %}
         <div class="formError">{{ form.banner_image.errors|join:", " }}</div>
       {% endif %}
@@ -110,7 +127,7 @@
 
     <div class="mgmtEventCreateActions">
       <a class="btn secondary" href="{% url 'management:events_list' %}">Cancelar</a>
-      <button class="btn" type="submit">Criar evento</button>
+      <button class="btn" type="submit">{% if is_edit %}Guardar alterações{% else %}Criar evento{% endif %}</button>
     </div>
   </form>
 </section>

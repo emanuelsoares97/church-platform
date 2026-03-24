@@ -1,0 +1,129 @@
+{% extends "management/base_management.html" %}
+{% load static %}
+
+{% block mgmt_styles %}
+<link rel="stylesheet" href="{% static 'css/management/events.css' %}">
+{% endblock %}
+
+{% block mgmt_title %}Administração de Eventos{% endblock %}
+
+{% block mgmt_content %}
+<div class="sectionHeader sectionHeader--spaced">
+  <div>
+    <h3>{% if show_archived %}Eventos arquivados{% else %}Eventos ativos{% endif %}</h3>
+    <p>
+      {% if show_archived %}
+        Consulta os eventos arquivados e o respetivo histórico.
+      {% else %}
+        Gere os dados estruturais dos eventos e controla o ciclo de vida.
+      {% endif %}
+    </p>
+  </div>
+
+  <div class="card__actions">
+    <a class="btn" href="{% url 'management:create_event' %}">Criar evento</a>
+
+    {% if show_archived %}
+      <a class="btn secondary" href="{% url 'management:events_admin_list' %}">Ver ativos</a>
+    {% else %}
+      <a class="btn secondary" href="{% url 'management:events_admin_list' %}?archived=1">Ver arquivados</a>
+    {% endif %}
+  </div>
+</div>
+
+{% if events %}
+  {% if show_archived %}
+    {% regroup events by date.year as events_by_year %}
+
+    {% for year_group in events_by_year %}
+      <details class="card" {% if forloop.first %}open{% endif %}>
+        <summary class="card__inner" style="cursor:pointer;list-style:none;">
+          <div class="card__actions" style="justify-content:space-between;width:100%;">
+            <strong>{{ year_group.grouper }}</strong>
+            <span class="kpi">{{ year_group.list|length }} evento{{ year_group.list|length|pluralize }}</span>
+          </div>
+        </summary>
+
+        <div class="cards cards--dashboard" style="padding: 0 20px 20px;">
+          {% for e in year_group.list %}
+            <article class="card card--feature">
+              <div class="card__inner">
+                <div class="featureIcon">🛠️</div>
+                <div class="card__title">{{ e.title }}</div>
+
+                <div class="card__meta">
+                  <span class="kpi">Inscrições: <strong>{{ e.reg_count }}</strong></span>
+                  <span class="kpi">Data: <strong>{{ e.date }}</strong></span>
+
+                  {% if e.is_active %}
+                    <span class="kpi"><strong>Ativo</strong></span>
+                  {% else %}
+                    <span class="kpi">Inativo</span>
+                  {% endif %}
+                </div>
+
+                <p class="card__text">
+                  Editar configuração do evento arquivado.
+                </p>
+
+                <div class="card__actions">
+                  <a class="btn secondary" href="{% url 'management:event_edit' e.id %}">
+                    Editar
+                  </a>
+                </div>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+      </details>
+    {% endfor %}
+  {% else %}
+    <div class="cards cards--dashboard">
+      {% for e in events %}
+        <article class="card card--feature">
+          <div class="card__inner">
+            <div class="featureIcon">🛠️</div>
+            <div class="card__title">{{ e.title }}</div>
+
+            <div class="card__meta">
+              <span class="kpi">Inscrições: <strong>{{ e.reg_count }}</strong></span>
+
+              {% if e.is_active %}
+                <span class="kpi"><strong>Ativo</strong></span>
+              {% else %}
+                <span class="kpi">Inativo</span>
+              {% endif %}
+            </div>
+
+            <p class="card__text">
+              Editar configuração do evento e gerir arquivamento.
+            </p>
+
+            <div class="card__actions">
+              <a class="btn secondary" href="{% url 'management:event_edit' e.id %}">
+                Editar
+              </a>
+
+              <form method="post" action="{% url 'management:event_archive' e.id %}">
+                {% csrf_token %}
+                <button class="btn secondary" type="submit">Arquivar</button>
+              </form>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% else %}
+  <div class="emptyState">
+    <h3>{% if show_archived %}Sem eventos arquivados{% else %}Sem eventos ativos{% endif %}</h3>
+    <p class="muted">
+      {% if show_archived %}
+        Ainda não existem eventos arquivados para apresentar nesta área.
+      {% else %}
+        Ainda não existem eventos para apresentar nesta área administrativa.
+      {% endif %}
+    </p>
+  </div>
+{% endif %}
+{% endblock %}

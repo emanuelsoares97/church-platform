@@ -56,7 +56,7 @@ class EventCreateForm(forms.ModelForm):
         widgets = {
             "title": forms.TextInput(attrs={"placeholder": "Ex.: Conferência Jovem"}),
             "description": forms.Textarea(attrs={"rows": 4, "placeholder": "Descrição opcional do evento"}),
-            "banner_image": forms.ClearableFileInput(attrs={"accept": "image/*"}),
+            "banner_image": forms.FileInput(attrs={"accept": "image/*"}),
             "date": forms.DateInput(attrs={"type": "date"}),
             "location": forms.TextInput(attrs={"placeholder": "Ex.: Auditório Principal"}),
             "price": forms.NumberInput(attrs={"min": 0, "step": "0.01"}),
