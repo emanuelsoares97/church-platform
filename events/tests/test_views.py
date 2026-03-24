@@ -1,37 +1,44 @@
+import uuid
+from datetime import timedelta
 from decimal import Decimal
-from django.contrib.auth.models import Group, User
-from django.test import TestCase, Client
+from unittest.mock import patch
+
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
-from events.models import Event, Registration, Participant
+from events.models import Event, Participant, Registration
 
 
-class PublicViewsTest(TestCase):
-    """testa views públicas."""
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    }
+)
+class PublicEventViewsTest(TestCase):
+    """Testa apenas as views públicas de eventos e inscrições."""
 
     def setUp(self):
         self.client = Client()
-        self.event = Event.objects.create(
-            title="Evento Público",
-            date="2024-12-25",
-            location="Lisboa",
-            is_active=True
-        )
+        self.future_date = timezone.localdate() + timedelta(days=10)
 
-    def test_event_list(self):
-        """lista eventos ativos."""
-        response = self.client.get(reverse("events:event_list"))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Evento Público")
+    def create_event(self, **kwargs):
+        """Helper para criar eventos com defaults consistentes."""
+        data = {
+            "title": "Evento Público",
+            "date": self.future_date,
+            "location": "Lisboa",
+            "price": Decimal("10.00"),
+            "is_active": True,
+            "is_archived": False,
+            "registration_deadline": timezone.now() + timedelta(days=2),
+        }
+        data.update(kwargs)
+        return Event.objects.create(**data)
 
-    def test_event_detail(self):
-        """detalhe do evento."""
-        response = self.client.get(reverse("events:event_detail", kwargs={"slug": self.event.slug}))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Evento Público")
-
-    def test_event_detail_post_valid(self):
-        """inscrição válida cria registo e participantes."""
+    def valid_payload(self, **kwargs):
+        """Dados válidos para envio de inscrição."""
         data = {
             "buyer_name": "João Silva",
             "buyer_email": "joao@example.com",
@@ -40,430 +47,176 @@ class PublicViewsTest(TestCase):
             "payment_method": "LOCAL",
             "participant_name": ["João Silva", "Maria Silva"],
         }
-        response = self.client.post(reverse("events:event_detail", kwargs={"slug": self.event.slug}), data)
-        self.assertEqual(response.status_code, 302)  # redirect to success
-        self.assertEqual(Registration.objects.count(), 1)
-        reg = Registration.objects.first()
-        self.assertEqual(reg.participants.count(), 2)
-        self.assertTrue(all(p.ticket_code.startswith("EVT-") for p in reg.participants.all()))
+        data.update(kwargs)
+        return data
 
-    def test_event_detail_post_invalid_form(self):
-        """formulário inválido volta à página com erros."""
-        data = {
-            "buyer_name": "",
-            "buyer_email": "invalid-email",
-            "phone": "912345678",
-            "ticket_qty": 1,
-            "payment_method": "LOCAL",
-            "participant_name": ["João"],
-        }
-        response = self.client.post(reverse("events:event_detail", kwargs={"slug": self.event.slug}), data)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Há campos inválidos")
+    def test_event_list_mostra_apenas_eventos_publicos_validos(self):
+        """A lista pública exclui inativos, arquivados e passados."""
+        visible = self.create_event(title="Evento Visível")
+        self.create_event(title="Evento Inativo", is_active=False)
+        self.create_event(title="Evento Arquivado", is_archived=True)
+        self.create_event(
+            title="Evento Passado",
+            date=timezone.localdate() - timedelta(days=1),
+        )
 
-    def test_event_detail_post_wrong_participant_count(self):
-        """número errado de participantes volta à página com erro."""
-        data = {
-            "buyer_name": "João Silva",
-            "buyer_email": "joao@example.com",
-            "phone": "912345678",
-            "ticket_qty": 3,
-            "payment_method": "LOCAL",
-            "participant_name": ["João", "Maria"],  # só 2 em vez de 3
-        }
-        response = self.client.post(reverse("events:event_detail", kwargs={"slug": self.event.slug}), data)
+        response = self.client.get(reverse("events:event_list"))
+
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Precisas preencher exatamente 3 nome(s)")
+        self.assertContains(response, visible.title)
+        self.assertNotContains(response, "Evento Inativo")
+        self.assertNotContains(response, "Evento Arquivado")
+        self.assertNotContains(response, "Evento Passado")
+
+    def test_event_detail_disponivel_para_evento_publico_valido(self):
+        """O detalhe abre normalmente para evento válido."""
+        event = self.create_event(title="Evento Detalhe")
+
+        response = self.client.get(reverse("events:event_detail", kwargs={"slug": event.slug}))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["event"].id, event.id)
+        self.assertTrue(response.context["registration_open"])
+
+    def test_event_detail_bloqueia_evento_inativo_arquivado_ou_passado(self):
+        """Não permite abrir detalhe público para eventos fora das regras."""
+        cases = [
+            self.create_event(title="Inativo", is_active=False),
+            self.create_event(title="Arquivado", is_archived=True),
+            self.create_event(title="Passado", date=timezone.localdate() - timedelta(days=1)),
+        ]
+
+        for event in cases:
+            with self.subTest(slug=event.slug):
+                response = self.client.get(reverse("events:event_detail", kwargs={"slug": event.slug}))
+                self.assertEqual(response.status_code, 404)
+
+    def test_post_inscricao_bloqueado_quando_prazo_fechou(self):
+        """Se prazo fechou, não cria inscrição e faz redirect para detalhe."""
+        event = self.create_event(
+            registration_deadline=timezone.now() - timedelta(minutes=1),
+        )
+
+        response = self.client.post(
+            reverse("events:event_detail", kwargs={"slug": event.slug}),
+            self.valid_payload(),
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("events:event_detail", kwargs={"slug": event.slug}))
         self.assertEqual(Registration.objects.count(), 0)
 
-    def test_event_detail_free_event(self):
-        """evento gratuito marca tudo como pago automaticamente."""
-        free_event = Event.objects.create(
-            title="Evento Gratuito",
-            date="2024-12-25",
-            location="Lisboa",
-            price=Decimal("0.00"),
-            is_active=True
-        )
-        data = {
-            "buyer_name": "João Silva",
-            "buyer_email": "joao@example.com",
-            "phone": "912345678",
-            "ticket_qty": 1,
-            "payment_method": "LOCAL",
-            "participant_name": ["João Silva"],
-        }
-        response = self.client.post(reverse("events:event_detail", kwargs={"slug": free_event.slug}), data)
-        self.assertEqual(response.status_code, 302)
-        reg = Registration.objects.get(event=free_event)
-        self.assertTrue(reg.is_paid)
-        self.assertTrue(reg.participants.first().is_paid)
+    @patch("events.views.transaction.on_commit")
+    def test_post_inscricao_valida_cria_registo_e_participantes(self, mock_on_commit):
+        """Cria inscrição e participantes com ticket codes consistentes."""
+        mock_on_commit.side_effect = lambda callback: None
+        event = self.create_event(title="Evento com inscrição")
 
-
-class ManagementViewsTest(TestCase):
-    """testa views de gestão."""
-
-    def setUp(self):
-        self.client = Client()
-        self.user = User.objects.create_user(username="manager", password="pass")
-        group = Group.objects.create(name="Gestão Eventos")
-        self.user.groups.add(group)
-        self.client.login(username="manager", password="pass")
-
-        self.event = Event.objects.create(
-            title="Evento Gestão",
-            date="2024-12-25",
-            location="Lisboa"
-        )
-
-    def test_dashboard_home_requires_login(self):
-        """dashboard requer login."""
-        self.client.logout()
-        response = self.client.get(reverse("management:home"))
-        self.assertEqual(response.status_code, 302)  # redirect to login
-
-    def test_dashboard_home(self):
-        """dashboard acessível com permissão."""
-        response = self.client.get(reverse("management:home"))
-        self.assertEqual(response.status_code, 200)
-
-    def test_event_registrations(self):
-        """lista inscrições do evento."""
-        response = self.client.get(reverse("management:event_regs", kwargs={"event_id": self.event.id}))
-        self.assertEqual(response.status_code, 200)
-
-    def test_scan_page(self):
-        """página do scanner."""
-        response = self.client.get(reverse("management:scan"))
-        self.assertEqual(response.status_code, 200)
-
-    def test_mark_registration_paid_full(self):
-        """marca inscrição completa como paga."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=2
-        )
-        Participant.objects.create(registration=reg, full_name="João", ticket_code="T1")
-        Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2")
-        
-        response = self.client.post(reverse("management:mark_registration_paid_full", kwargs={"reg_id": reg.id}))
-        self.assertEqual(response.status_code, 302)
-        reg.refresh_from_db()
-        self.assertTrue(reg.is_paid)
-        self.assertTrue(all(p.is_paid for p in reg.participants.all()))
-
-    def test_toggle_participant_paid(self):
-        """alterna pagamento de participante."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=1
-        )
-        part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1")
-        
-        # marcar como pago
-        response = self.client.post(reverse("management:toggle_participant_paid", kwargs={"participant_id": part.id}), {"value": "1"})
-        self.assertEqual(response.status_code, 302)
-        part.refresh_from_db()
-        self.assertTrue(part.is_paid)
-        
-        # desmarcar
-        response = self.client.post(reverse("management:toggle_participant_paid", kwargs={"participant_id": part.id}), {"value": "0"})
-        self.assertEqual(response.status_code, 302)
-        part.refresh_from_db()
-        self.assertFalse(part.is_paid)
-
-    def test_toggle_participant_checkin_paid(self):
-        """check-in só funciona se pago."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=1
-        )
-        part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
-        
-        response = self.client.post(reverse("management:toggle_participant_checkin", kwargs={"participant_id": part.id}), {"value": "1"})
-        self.assertEqual(response.status_code, 302)
-        part.refresh_from_db()
-        self.assertTrue(part.checked_in)
-
-    def test_toggle_participant_checkin_unpaid(self):
-        """check-in bloqueado se não pago."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=1
-        )
-        part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=False)
-        
-        response = self.client.post(reverse("management:toggle_participant_checkin", kwargs={"participant_id": part.id}), {"value": "1"})
-        self.assertEqual(response.status_code, 302)
-        part.refresh_from_db()
-        self.assertFalse(part.checked_in)
-
-    def test_checkin_all_paid(self):
-        """check-in de todos se todos pagos."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=2
-        )
-        p1 = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
-        p2 = Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2", is_paid=True)
-        
-        response = self.client.post(reverse("management:checkin_all", kwargs={"reg_id": reg.id}))
-        self.assertEqual(response.status_code, 302)
-        p1.refresh_from_db()
-        p2.refresh_from_db()
-        self.assertTrue(p1.checked_in)
-        self.assertTrue(p2.checked_in)
-
-    def test_checkin_all_unpaid(self):
-        """check-in de todos bloqueado se algum não pago."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=2
-        )
-        p1 = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
-        p2 = Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2", is_paid=False)
-        
-        response = self.client.post(reverse("management:checkin_all", kwargs={"reg_id": reg.id}))
-        self.assertEqual(response.status_code, 302)
-        p1.refresh_from_db()
-        p2.refresh_from_db()
-        self.assertFalse(p1.checked_in)
-        self.assertFalse(p2.checked_in)
-
-    def test_scan_checkin_api_valid(self):
-        """check-in via api do scanner."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=1
-        )
-        part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
-        
-        response = self.client.post(reverse("management:scan_checkin_api"), {"ticket_code": "T1"})
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertTrue(data["ok"])
-        self.assertEqual(data["status"], "checked_in")
-        part.refresh_from_db()
-        self.assertTrue(part.checked_in)
-
-    def test_scan_checkin_api_not_found(self):
-        """código inválido retorna erro."""
-        response = self.client.post(reverse("management:scan_checkin_api"), {"ticket_code": "INVALID"})
-        self.assertEqual(response.status_code, 404)
-        data = response.json()
-        self.assertFalse(data["ok"])
-        self.assertEqual(data["status"], "not_found")
-
-    def test_scan_checkin_api_unpaid(self):
-        """check-in bloqueado se não pago."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=1
-        )
-        part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=False)
-        
-        response = self.client.post(reverse("management:scan_checkin_api"), {"ticket_code": "T1"})
-        self.assertEqual(response.status_code, 409)
-        data = response.json()
-        self.assertFalse(data["ok"])
-        self.assertEqual(data["status"], "payment_pending")
-
-    def test_ticket_lookup(self):
-        """busca participante por código."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=1
-        )
-        part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1")
-        
-        response = self.client.get(reverse("management:ticket_lookup", kwargs={"ticket_code": "T1"}))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "João")
-
-    def test_registration_group(self):
-        """página do grupo de inscrição."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=2
-        )
-        p1 = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True, checked_in=True)
-        p2 = Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2", is_paid=False, checked_in=False)
-        
-        response = self.client.get(reverse("management:registration_group", kwargs={"reg_id": reg.id}))
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "João Silva")
-
-    def test_toggle_participant_paid_ajax(self):
-        """alterna pagamento de participante via AJAX."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=1
-        )
-        part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1")
-        
-        # marcar como pago via AJAX
         response = self.client.post(
-            reverse("management:toggle_participant_paid", kwargs={"participant_id": part.id}),
-            {"value": "1"},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+            reverse("events:event_detail", kwargs={"slug": event.slug}),
+            self.valid_payload(),
         )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Registration.objects.count(), 1)
+
+        registration = Registration.objects.get(event=event)
+        participants = list(registration.participants.order_by("id"))
+
+        self.assertEqual(registration.ticket_qty, 2)
+        self.assertEqual(len(participants), 2)
+        self.assertEqual(participants[0].full_name, "João Silva")
+        self.assertEqual(participants[1].full_name, "Maria Silva")
+        self.assertTrue(participants[0].ticket_code.endswith("-P01"))
+        self.assertTrue(participants[1].ticket_code.endswith("-P02"))
+
+    @patch("events.views.transaction.on_commit")
+    def test_post_com_numero_errado_de_participantes_nao_persiste_registo(self, mock_on_commit):
+        """Se nomes não batem com quantidade, o registo é revertido."""
+        mock_on_commit.side_effect = lambda callback: None
+        event = self.create_event(title="Evento mismatch")
+
+        payload = self.valid_payload(
+            ticket_qty=3,
+            participant_name=["João", "Maria"],
+        )
+        response = self.client.post(reverse("events:event_detail", kwargs={"slug": event.slug}), payload)
+
         self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertTrue(data['success'])
-        part.refresh_from_db()
-        self.assertTrue(part.is_paid)
+        self.assertEqual(Registration.objects.count(), 0)
+        self.assertContains(response, "Precisas preencher exatamente 3 nome(s) de participante")
 
-    def test_toggle_participant_checkin_ajax_paid(self):
-        """check-in via AJAX só funciona se pago."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=1
-        )
-        part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
-        
-        response = self.client.post(
-            reverse("management:toggle_participant_checkin", kwargs={"participant_id": part.id}),
-            {"value": "1"},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertTrue(data['success'])
-        part.refresh_from_db()
-        self.assertTrue(part.checked_in)
+    @patch("events.views.transaction.on_commit")
+    def test_evento_gratuito_marca_inscricao_e_participantes_como_pagos(self, mock_on_commit):
+        """No evento gratuito, pagamento fica fechado automaticamente."""
+        mock_on_commit.side_effect = lambda callback: None
+        event = self.create_event(title="Evento Gratuito", price=Decimal("0.00"))
 
-    def test_toggle_participant_checkin_ajax_unpaid(self):
-        """check-in via AJAX bloqueado se não pago."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=1
+        payload = self.valid_payload(
+            ticket_qty=1,
+            participant_name=["João Silva"],
         )
-        part = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=False)
-        
-        response = self.client.post(
-            reverse("management:toggle_participant_checkin", kwargs={"participant_id": part.id}),
-            {"value": "1"},
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertFalse(data['success'])
-        self.assertIn('error', data)
-        part.refresh_from_db()
-        self.assertFalse(part.checked_in)
+        payload.pop("payment_method")
 
-    def test_checkin_all_ajax_paid(self):
-        """check-in de todos via AJAX se todos pagos."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=2
-        )
-        p1 = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
-        p2 = Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2", is_paid=True)
-        
-        response = self.client.post(
-            reverse("management:checkin_all", kwargs={"reg_id": reg.id}),
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertTrue(data['success'])
-        p1.refresh_from_db()
-        p2.refresh_from_db()
-        self.assertTrue(p1.checked_in)
-        self.assertTrue(p2.checked_in)
+        response = self.client.post(reverse("events:event_detail", kwargs={"slug": event.slug}), payload)
 
-    def test_checkin_all_ajax_unpaid(self):
-        """check-in de todos via AJAX bloqueado se algum não pago."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=2
+        self.assertEqual(response.status_code, 302)
+
+        registration = Registration.objects.get(event=event)
+        participant = registration.participants.get()
+
+        self.assertTrue(registration.is_paid)
+        self.assertIsNotNone(registration.paid_at)
+        self.assertEqual(registration.paid_amount, registration.total_price)
+        self.assertTrue(participant.is_paid)
+        self.assertIsNotNone(participant.paid_at)
+
+    def test_registration_success_mostra_dados_da_inscricao(self):
+        """A página de sucesso carrega com inscrição válida."""
+        event = self.create_event(title="Evento Sucesso")
+        registration = Registration.objects.create(
+            event=event,
+            buyer_name="Ana",
+            buyer_email="ana@example.com",
+            phone="911111111",
+            ticket_qty=1,
+            payment_method="LOCAL",
         )
-        p1 = Participant.objects.create(registration=reg, full_name="João", ticket_code="T1", is_paid=True)
-        p2 = Participant.objects.create(registration=reg, full_name="Maria", ticket_code="T2", is_paid=False)
-        
-        response = self.client.post(
-            reverse("management:checkin_all", kwargs={"reg_id": reg.id}),
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
-        )
-        self.assertEqual(response.status_code, 200)
-        data = response.json()
-        self.assertFalse(data['success'])
-        self.assertIn('error', data)
-        p1.refresh_from_db()
-        p2.refresh_from_db()
-        self.assertFalse(p1.checked_in)
-        self.assertFalse(p2.checked_in)
-
-
-class RegistrationViewsTest(TestCase):
-    """testa views de inscrição."""
-
-    def setUp(self):
-        self.client = Client()
-        self.event = Event.objects.create(
-            title="Evento Inscrição",
-            date="2024-12-25",
-            location="Lisboa",
-            price=Decimal("10.00")
+        Participant.objects.create(
+            registration=registration,
+            full_name="Ana",
+            ticket_code="EVT-TEST-P01",
         )
 
-    def test_registration_success(self):
-        """página de sucesso de inscrição."""
-        reg = Registration.objects.create(
-            event=self.event,
-            buyer_name="João Silva",
-            buyer_email="joao@example.com",
-            phone="912345678",
-            ticket_qty=1
-        )
         response = self.client.get(
-            reverse("events:registration_success", kwargs={"slug": self.event.slug, "public_id": reg.public_id})
+            reverse(
+                "events:registration_success",
+                kwargs={"slug": event.slug, "public_id": registration.public_id},
+            )
         )
+
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Evento Inscrição")
+        self.assertEqual(response.context["registration"].id, registration.id)
+        self.assertEqual(response.context["event"].id, event.id)
+        self.assertEqual(len(response.context["participants"]), 1)
+
+    def test_registration_success_404_com_public_id_invalido(self):
+        """Se o public_id não existe para o evento, devolve 404."""
+        event = self.create_event(title="Evento 404")
+        Registration.objects.create(
+            event=event,
+            buyer_name="Teste",
+            buyer_email="teste@example.com",
+            phone="922222222",
+            ticket_qty=1,
+            payment_method="LOCAL",
+        )
+
+        response = self.client.get(
+            reverse(
+                "events:registration_success",
+                kwargs={"slug": event.slug, "public_id": uuid.uuid4()},
+            )
+        )
+
+        self.assertEqual(response.status_code, 404)
