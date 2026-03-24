@@ -124,7 +124,119 @@
 	margin: 0 0 8px;
 }
 
+.groupPage,
+.lookupPage {
+	display: grid;
+	gap: 14px;
+}
+
+.groupCard,
+.lookupCard {
+	padding: 18px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	background: linear-gradient(180deg, var(--card-gradient-top), var(--card-gradient-bottom));
+	box-shadow: var(--shadow);
+}
+
+.groupHeader,
+.lookupHeader {
+	display: flex;
+	justify-content: space-between;
+	gap: 14px;
+	align-items: flex-start;
+	flex-wrap: wrap;
+}
+
+.groupHeaderBadge {
+	align-self: flex-start;
+}
+
+.groupTopActions {
+	margin-top: 14px;
+}
+
+.groupBottomActions {
+	margin-top: 16px;
+}
+
+.groupTitle,
+.lookupName {
+	margin: 0;
+	font-size: 24px;
+	line-height: 1.15;
+}
+
+.groupMeta,
+.lookupMeta {
+	margin-top: 6px;
+}
+
+.table--group .table__head,
+.table--group .table__row,
+.table__row--group {
+	grid-template-columns: 1.6fr 1.1fr 1.5fr 1.5fr;
+}
+
+.groupCell {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.groupCellLabel {
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.groupActionBtn {
+	min-width: 170px;
+	justify-content: center;
+}
+
+.lookupCodeBox {
+	min-width: 190px;
+	padding: 10px 12px;
+	border-radius: 14px;
+	border: 1px solid var(--line);
+	background: rgba(255, 255, 255, 0.04);
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.lookupCodeLabel {
+	font-size: 11px;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.lookupCodeValue {
+	font-size: 16px;
+	line-height: 1.2;
+	letter-spacing: 0.01em;
+	word-break: break-word;
+}
+
+.lookupBadges {
+	margin-top: 12px;
+}
+
+.lookupActions {
+	margin-top: 14px;
+}
+
 @media (max-width: 900px) {
+	.table--group .table__head,
+	.table__row--group {
+		grid-template-columns: 1fr;
+	}
+
 	.table__head {
 		display: none;
 	}
@@ -135,6 +247,26 @@
 }
 
 @media (max-width: 560px) {
+	.groupCard,
+	.lookupCard {
+		padding: 14px;
+	}
+
+	.groupTitle,
+	.lookupName {
+		font-size: 20px;
+	}
+
+	.groupActionBtn {
+		min-width: 0;
+		width: 100%;
+	}
+
+	.lookupCodeBox {
+		width: 100%;
+		min-width: 0;
+	}
+
 	.actionsCol {
 		flex-direction: column;
 		align-items: stretch;
