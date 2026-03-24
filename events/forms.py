@@ -37,6 +37,7 @@ class EventCreateForm(forms.ModelForm):
     ticket_qty = forms.IntegerField(
         min_value=1,
         initial=1,
+        required=False,
         label="Número de bilhetes (planeamento)",
         help_text="Nao limita inscricoes automaticamente.",
     )
@@ -78,3 +79,16 @@ class EventCreateForm(forms.ModelForm):
             return image
 
         return optimize_uploaded_image(image)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        event_date = cleaned_data.get("date")
+        deadline = cleaned_data.get("registration_deadline")
+
+        if event_date and deadline and deadline.date() > event_date:
+            self.add_error(
+                "registration_deadline",
+                "O prazo de inscricao nao pode ser depois da data do evento.",
+            )
+
+        return cleaned_data

@@ -166,9 +166,3 @@ def media_or_leadership_required(view_func):
     Permite acesso a liderança e mídia.
     """
     return group_required(GROUP_LEADERSHIP, GROUP_MEDIA)(view_func)
-
-def can_manage_gallery(user):
-    """
-    Define se o utilizador pode gerir a galeria.
-    """
-    return user_in_any_group(user, [GROUP_LEADERSHIP, GROUP_MEDIA])
