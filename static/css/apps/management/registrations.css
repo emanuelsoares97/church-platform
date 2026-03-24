@@ -1,1 +1,147 @@
-/* Pending extraction of registration-specific management styles from static/css/management_v2.css */
+.filters {
+	margin-top: 18px;
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+	align-items: center;
+	padding: 14px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	background: rgba(255, 255, 255, 0.04);
+	box-shadow: var(--shadow);
+}
+
+.filters input,
+.filters select {
+	padding: 11px 12px;
+	border-radius: 14px;
+	border: 1px solid var(--line);
+	background: rgba(0, 0, 0, 0.16);
+	color: var(--text);
+	outline: none;
+}
+
+.filters input::placeholder {
+	color: var(--muted);
+}
+
+.table {
+	margin-top: 14px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	background: linear-gradient(180deg, var(--card-gradient-top), var(--card-gradient-bottom));
+	box-shadow: var(--shadow);
+	overflow: hidden;
+}
+
+.table__head,
+.table__row {
+	display: grid;
+	grid-template-columns: 2.2fr 0.7fr 2.4fr 1fr;
+	gap: 12px;
+	padding: 12px 14px;
+	align-items: start;
+}
+
+.table__head {
+	font-weight: 800;
+	border-bottom: 1px solid var(--line);
+}
+
+.table__row {
+	border-top: 1px solid var(--line-soft);
+}
+
+.participantsList {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	border: 1px solid var(--line-soft);
+	border-radius: 14px;
+	overflow: hidden;
+	background: rgba(255, 255, 255, 0.03);
+}
+
+.participantRow {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 12px;
+	border-bottom: 1px solid var(--line-soft);
+}
+
+.participantRow:last-child {
+	border-bottom: none;
+}
+
+.participantRow form {
+	margin: 0;
+}
+
+.participantRow .btn.sm {
+	width: 38px;
+	height: 34px;
+	padding: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.participantName {
+	font-weight: 700;
+	line-height: 1.2;
+}
+
+.actionsCol {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+.pagination {
+	margin-top: 14px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 10px;
+	color: var(--muted);
+	padding: 12px 14px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	background: rgba(255, 255, 255, 0.04);
+}
+
+.emptyState {
+	padding: 22px;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	background: linear-gradient(180deg, var(--card-gradient-top), var(--card-gradient-bottom));
+	box-shadow: var(--shadow);
+}
+
+.emptyState h3 {
+	margin: 0 0 8px;
+}
+
+@media (max-width: 900px) {
+	.table__head {
+		display: none;
+	}
+
+	.table__row {
+		grid-template-columns: 1fr;
+	}
+}
+
+@media (max-width: 560px) {
+	.actionsCol {
+		flex-direction: column;
+		align-items: stretch;
+	}
+
+	.actionsCol form,
+	.actionsCol .btn {
+		width: 100%;
+	}
+}

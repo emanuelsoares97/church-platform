@@ -1,1 +1,162 @@
-/* Pending migration from static/css/gallery.css: modal-related rules */
+.galleryModal {
+	display: none;
+	position: fixed;
+	z-index: 2000;
+	inset: 0;
+	background: rgba(0,0,0,0.92);
+	justify-content: center;
+	align-items: center;
+	padding: 30px;
+	overflow: hidden;
+}
+
+.galleryModalContent {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	touch-action: pan-y;
+	user-select: none;
+}
+
+.galleryCounter {
+	position: absolute;
+	top: -18px;
+	left: 50%;
+	transform: translateX(-50%);
+	background: rgba(255,255,255,0.12);
+	color: white;
+	padding: 8px 14px;
+	border-radius: 999px;
+	font-size: 0.92rem;
+	font-weight: 700;
+	backdrop-filter: blur(8px);
+	box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+	white-space: nowrap;
+}
+
+.galleryModalImage {
+	max-width: min(92vw, 1100px);
+	max-height: 82vh;
+	border-radius: 18px;
+	box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+	transition: transform 0.24s ease, opacity 0.24s ease;
+	will-change: transform, opacity;
+}
+
+.galleryTopActions {
+	position: absolute;
+	top: 18px;
+	right: 26px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	z-index: 4;
+}
+
+.galleryIconBtn {
+	width: 46px;
+	height: 46px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	background: rgba(255,255,255,0.12);
+	color: white;
+	border: none;
+	text-decoration: none;
+	backdrop-filter: blur(8px);
+	box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+	transition: background 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+}
+
+.galleryIconBtn:hover {
+	background: rgba(255,255,255,0.2);
+	transform: translateY(-1px);
+}
+
+.galleryIconBtn svg {
+	width: 21px;
+	height: 21px;
+	display: block;
+}
+
+.galleryClose {
+	font-size: 30px;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.galleryNav {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 54px;
+	height: 54px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	border-radius: 999px;
+	background: rgba(255,255,255,0.12);
+	color: white;
+	font-size: 28px;
+	cursor: pointer;
+	backdrop-filter: blur(8px);
+	transition: background 0.2s ease, transform 0.2s ease;
+	z-index: 2;
+}
+
+.galleryNav:hover {
+	background: rgba(255,255,255,0.2);
+}
+
+.galleryPrev {
+	left: 24px;
+}
+
+.galleryNext {
+	right: 24px;
+}
+
+@media (max-width: 640px) {
+	.galleryModal {
+		padding: 16px;
+	}
+
+	.galleryModalImage {
+		max-width: 100%;
+		max-height: 72vh;
+		border-radius: 14px;
+	}
+
+	.galleryNav {
+		display: none;
+	}
+
+	.galleryTopActions {
+		top: 10px;
+		right: 12px;
+		gap: 8px;
+	}
+
+	.galleryIconBtn {
+		width: 42px;
+		height: 42px;
+	}
+
+	.galleryIconBtn svg {
+		width: 19px;
+		height: 19px;
+	}
+
+	.galleryClose {
+		font-size: 28px;
+	}
+
+	.galleryCounter {
+		top: -10px;
+		font-size: 0.83rem;
+		padding: 6px 11px;
+	}
+}

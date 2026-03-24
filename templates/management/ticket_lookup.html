@@ -24,26 +24,7 @@
       </div>
     </div>
 
-    {% if participant.checked_in %}
-      <div id="lookup-status-big" class="statusBig statusBig--done">
-        ☑️ Check-in já realizado
-      </div>
 
-    {% elif participant.is_paid %}
-      <div id="lookup-status-big" class="statusBig statusBig--ok">
-        ✔ Participante pronto para entrar
-      </div>
-
-    {% elif participant.registration.event.price > 0 %}
-      <div id="lookup-status-big" class="statusBig statusBig--bad">
-        ⚠ Pagamento pendente
-      </div>
-
-    {% else %}
-      <div id="lookup-status-big" class="statusBig statusBig--neutral">
-        🎟 Entrada gratuita
-      </div>
-    {% endif %}
 
     <div class="badgesRow lookupBadges">
 
