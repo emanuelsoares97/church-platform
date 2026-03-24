@@ -5,6 +5,7 @@ import qrcode
 from django.conf import settings
 from django.contrib import messages
 from django.db import transaction
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
@@ -24,7 +25,11 @@ def make_ticket_code(registration: Registration, idx: int) -> str:
 def event_list(request):
     """lista eventos ativos para inscrição pública."""
     Event.archive_past_events()
-    events = Event.objects.filter(is_active=True, is_archived=False).order_by("date")
+    events = (
+        Event.objects.filter(is_active=True, is_archived=False)
+        .filter(Q(registration_deadline__isnull=True) | Q(registration_deadline__gte=timezone.now()))
+        .order_by("date")
+    )
     return render(request, "events/event_list.html", {"events": events})
 
 

@@ -54,12 +54,7 @@
                 <div class="card__meta">
                   <span class="kpi">Inscrições: <strong>{{ e.reg_count }}</strong></span>
                   <span class="kpi">Data: <strong>{{ e.date }}</strong></span>
-
-                  {% if e.is_active %}
-                    <span class="kpi"><strong>Ativo</strong></span>
-                  {% else %}
-                    <span class="kpi">Inativo</span>
-                  {% endif %}
+                  <span class="kpi"><strong>Arquivado</strong></span>
                 </div>
 
                 <p class="card__text">
@@ -67,9 +62,15 @@
                 </p>
 
                 <div class="card__actions">
-                  <a class="btn secondary" href="{% url 'management:event_edit' e.id %}">
+                  <a class="btn secondary" href="{% url 'management:event_edit' e.id %}?next={{ request.get_full_path|urlencode }}">
                     Editar
                   </a>
+
+                  <form method="post" action="{% url 'management:event_unarchive' e.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button class="btn secondary" type="submit">Desarquivar</button>
+                  </form>
                 </div>
               </div>
             </article>
@@ -100,12 +101,13 @@
             </p>
 
             <div class="card__actions">
-              <a class="btn secondary" href="{% url 'management:event_edit' e.id %}">
+              <a class="btn secondary" href="{% url 'management:event_edit' e.id %}?next={{ request.get_full_path|urlencode }}">
                 Editar
               </a>
 
               <form method="post" action="{% url 'management:event_archive' e.id %}">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
                 <button class="btn secondary" type="submit">Arquivar</button>
               </form>
             </div>

@@ -25,7 +25,7 @@ class EventAdminForm(forms.ModelForm):
     def clean_banner_image(self):
         image = self.cleaned_data.get("banner_image")
 
-        if not image:
+        if not image or not hasattr(image, "read"):
             return image
 
         return optimize_uploaded_image(image)
@@ -75,7 +75,7 @@ class EventCreateForm(forms.ModelForm):
     def clean_banner_image(self):
         image = self.cleaned_data.get("banner_image")
 
-        if not image:
+        if not image or not hasattr(image, "read"):
             return image
 
         return optimize_uploaded_image(image)

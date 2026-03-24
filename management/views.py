@@ -190,6 +190,7 @@ def create_event_view(request):
 def edit_event_view(request, event_id):
     """Permite editar um evento através da área de gestão."""
     event = get_object_or_404(Event, pk=event_id)
+    next_url = request.POST.get("next") or request.GET.get("next")
 
     if request.method == "POST":
         form = EventCreateForm(request.POST, request.FILES, instance=event)
@@ -197,7 +198,7 @@ def edit_event_view(request, event_id):
         if form.is_valid():
             form.save()
             messages.success(request, "Evento atualizado com sucesso.")
-            return redirect("management:events_list")
+            return redirect(next_url or "management:events_admin_list")
 
         messages.error(request, "Verifica os campos do formulário.")
     else:
@@ -210,6 +211,7 @@ def edit_event_view(request, event_id):
             "form": form,
             "is_edit": True,
             "event": event,
+            "next_url": next_url,
         },
     )
 
@@ -274,7 +276,19 @@ def archive_event(request, event_id):
     event.save(update_fields=["is_archived"])
 
     messages.success(request, "Evento arquivado com sucesso.")
-    return redirect("management:events_list")
+    return redirect(request.POST.get("next") or "management:events_admin_list")
+
+
+@leadership_required
+@require_POST
+def unarchive_event(request, event_id):
+    """Retira um evento do arquivo na área de administração."""
+    event = get_object_or_404(Event, pk=event_id)
+    event.is_archived = False
+    event.save(update_fields=["is_archived"])
+
+    messages.success(request, "Evento desarquivado com sucesso.")
+    return redirect(request.POST.get("next") or "management:events_admin_list")
 
 
 @reception_or_leadership_required
