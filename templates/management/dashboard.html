@@ -34,11 +34,8 @@
             Consultar eventos, abrir a gestão de inscrições e acompanhar a operação.
           </p>
           <div class="card__actions">
-            <a class="btn secondary" href="{% url 'management:events_list' %}">
+            <a class="btn secondary" href="{% url 'management:events_hub' %}">
               Abrir módulo
-            </a>
-            <a class="btn" href="{% url 'management:create_event' %}">
-              Criar evento
             </a>
           </div>
         </div>
@@ -88,8 +85,8 @@
             Criar novos álbuns e organizar os conteúdos visuais da comunidade.
           </p>
           <div class="card__actions">
-            <a class="btn secondary" href="{% url 'gallery:create_album' %}">
-              Criar álbum
+            <a class="btn secondary" href="{% url 'management:gallery_hub' %}">
+              Abrir módulo
             </a>
           </div>
         </div>

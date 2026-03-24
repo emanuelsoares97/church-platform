@@ -5,6 +5,10 @@ app_name = "management"
 
 urlpatterns = [
     path("", views.dashboard, name="home"),
+    path("eventos/gestao/", views.events_hub, name="events_hub"),
+    path("galeria/gestao/", views.gallery_hub, name="gallery_hub"),
+    path("galeria/albuns/", views.gallery_albums_list, name="gallery_albums_list"),
+    path("galeria/albuns/<slug:slug>/", views.management_album_detail, name="management_album_detail"),
     path("eventos/", views.events_list, name="events_list"),
     path("eventos/criar/", views.create_event_view, name="create_event"),
 

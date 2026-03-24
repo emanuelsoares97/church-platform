@@ -1,0 +1,41 @@
+{% extends "management/base_management.html" %}
+{% load static %}
+
+{% block mgmt_styles %}
+<link rel="stylesheet" href="{% static 'css/management/dashboard.css' %}">
+{% endblock %}
+
+{% block mgmt_title %}Gestão de Álbuns{% endblock %}
+
+{% block mgmt_content %}
+<div class="sectionHeader sectionHeader--spaced">
+  <div>
+    <h3>Gestão de Álbuns</h3>
+    <p>Acesso rápido para criar álbuns e gerir os álbuns existentes.</p>
+  </div>
+</div>
+
+<div class="cards cards--dashboard">
+  <article class="card card--feature">
+    <div class="card__inner">
+      <div class="featureIcon">➕</div>
+      <div class="card__title">Criar álbum</div>
+      <p class="card__text">Abrir o formulário para criar um novo álbum.</p>
+      <div class="card__actions">
+        <a class="btn" href="{% url 'gallery:create_album' %}">Criar álbum</a>
+      </div>
+    </div>
+  </article>
+
+  <article class="card card--feature">
+    <div class="card__inner">
+      <div class="featureIcon">🗂️</div>
+      <div class="card__title">Gerir álbuns existentes</div>
+      <p class="card__text">Ver a lista de álbuns e abrir os detalhes de cada um.</p>
+      <div class="card__actions">
+        <a class="btn secondary" href="{% url 'management:gallery_albums_list' %}">Gerir álbuns</a>
+      </div>
+    </div>
+  </article>
+</div>
+{% endblock %}

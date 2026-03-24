@@ -30,73 +30,11 @@
       </div>
     </section>
 
-    {% if can_manage_gallery %}
-      <section class="galleryUploadBox">
-        <div class="galleryUploadHeader">
-          <h3>Adicionar fotos</h3>
-          <p>Pode selecionar várias fotos ao mesmo tempo.</p>
-        </div>
-
-        <form method="POST" enctype="multipart/form-data" class="galleryUploadForm">
-          {% csrf_token %}
-
-          <label class="galleryFileLabel">
-            <span>Selecionar imagens</span>
-            <input type="file" name="images" multiple accept="image/*">
-          </label>
-
-          <p id="gallerySelectedCount" class="gallerySelectedCount"></p>
-
-          <button type="submit" class="btn">
-            Enviar fotos
-          </button>
-        </form>
-      </section>
-    {% endif %}
-
-    {% if images and can_manage_gallery %}
-      <section class="galleryBulkBar" id="galleryBulkBar">
-        <div class="galleryBulkInfo">
-          <strong id="galleryBulkCount">0</strong>
-          <span>selecionadas</span>
-        </div>
-
-        <div class="galleryBulkActions">
-          <button type="button" class="btn btnSecondary" id="toggleSelectionMode">
-            Selecionar fotos
-          </button>
-
-          <button type="submit" form="bulkDeleteForm" class="btn galleryBulkDeleteBtn" id="bulkDeleteBtn" disabled>
-            Eliminar selecionadas
-          </button>
-        </div>
-      </section>
-    {% endif %}
-
     {% if images %}
-      <form
-        method="POST"
-        action="{% url 'gallery:delete_selected_images' album.slug %}"
-        id="bulkDeleteForm"
-        onsubmit="return confirm('Tens a certeza que queres eliminar as fotos selecionadas?');"
-      >
-        {% csrf_token %}
-
-        <div class="galleryGrid" id="galleryGrid">
-          {% for image in images %}
-            <article class="galleryCard" data-image-id="{{ image.id }}">
-              <div class="galleryImageWrap">
-                {% if can_manage_gallery %}
-                  <label class="gallerySelectBox">
-                    <input type="checkbox" name="selected_images" value="{{ image.id }}" class="gallerySelectInput">
-                    <span class="gallerySelectIndicator">
-                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
-                      </svg>
-                    </span>
-                  </label>
-                {% endif %}
-
+      <div class="galleryGrid" id="galleryGrid">
+        {% for image in images %}
+          <article class="galleryCard" data-image-id="{{ image.id }}">
+            <div class="galleryImageWrap">
                 <img
                   src="{{ image.image.url }}"
                   data-full="{{ image.image.url }}"
@@ -108,11 +46,10 @@
                 <div class="galleryOverlay">
                   <span>Ver foto</span>
                 </div>
-              </div>
-            </article>
-          {% endfor %}
-        </div>
-      </form>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
     {% else %}
       <div class="emptyCard galleryEmptyCard">
         <h3>Este álbum ainda não tem fotos</h3>

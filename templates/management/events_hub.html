@@ -1,0 +1,41 @@
+{% extends "management/base_management.html" %}
+{% load static %}
+
+{% block mgmt_styles %}
+<link rel="stylesheet" href="{% static 'css/management/dashboard.css' %}">
+{% endblock %}
+
+{% block mgmt_title %}Gestão de Eventos{% endblock %}
+
+{% block mgmt_content %}
+<div class="sectionHeader sectionHeader--spaced">
+  <div>
+    <h3>Gestão de Eventos</h3>
+    <p>Acesso rápido para criar eventos e gerir os eventos existentes.</p>
+  </div>
+</div>
+
+<div class="cards cards--dashboard">
+  <article class="card card--feature">
+    <div class="card__inner">
+      <div class="featureIcon">➕</div>
+      <div class="card__title">Criar evento</div>
+      <p class="card__text">Abrir o formulário para criar um novo evento.</p>
+      <div class="card__actions">
+        <a class="btn" href="{% url 'management:create_event' %}">Criar evento</a>
+      </div>
+    </div>
+  </article>
+
+  <article class="card card--feature">
+    <div class="card__inner">
+      <div class="featureIcon">📋</div>
+      <div class="card__title">Gerir eventos existentes</div>
+      <p class="card__text">Ver a lista de eventos e abrir a gestão de inscrições.</p>
+      <div class="card__actions">
+        <a class="btn secondary" href="{% url 'management:events_list' %}">Gerir eventos</a>
+      </div>
+    </div>
+  </article>
+</div>
+{% endblock %}

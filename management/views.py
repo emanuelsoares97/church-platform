@@ -10,9 +10,11 @@ from django.views.decorators.http import require_POST
 
 from events.forms import EventCreateForm
 from events.models import Event, Participant, Registration
+from gallery.models import GalleryAlbum, GalleryImage
 from management.permissions import (
     leadership_required,
     management_required,
+    media_or_leadership_required,
     reception_or_leadership_required,
 )
 
@@ -24,6 +26,18 @@ from openpyxl.styles import Font
 def dashboard(request):
     """home da gestão (hub principal)."""
     return render(request, "management/dashboard.html")
+
+
+@reception_or_leadership_required
+def events_hub(request):
+    """Página intermédia para ações de gestão de eventos."""
+    return render(request, "management/events_hub.html")
+
+
+@media_or_leadership_required
+def gallery_hub(request):
+    """Página intermédia para ações de gestão da galeria."""
+    return render(request, "management/gallery_hub.html")
 
 
 def build_event_kpis(event):
@@ -51,7 +65,7 @@ def build_event_kpis(event):
     }
 
 
-@management_required
+@reception_or_leadership_required
 def events_list(request):
     """lista de eventos para gestão."""
     events = (
@@ -60,6 +74,73 @@ def events_list(request):
         .order_by("-id")
     )
     return render(request, "management/events_list.html", {"events": events})
+
+
+@media_or_leadership_required
+def gallery_albums_list(request):
+    """lista de álbuns para gestão (acesso protegido)."""
+    now = timezone.now()
+
+    albums = GalleryAlbum.objects.filter(
+        is_active=True,
+    ).filter(
+        Q(expires_at__isnull=True) | Q(expires_at__gt=now)
+    ).order_by("-album_date", "-created_at")
+
+    return render(
+        request,
+        "gallery/album_list.html",
+        {
+            "albums": albums,
+            "detail_url_name": "management:management_album_detail",
+        },
+    )
+
+
+@media_or_leadership_required
+def management_album_detail(request, slug):
+    """Mostra o detalhe de um álbum em contexto de gestão e permite upload de fotos."""
+    now = timezone.now()
+
+    album = get_object_or_404(
+        GalleryAlbum,
+        slug=slug,
+        is_active=True,
+    )
+
+    if album.is_expired():
+        messages.error(request, "Este álbum já não está disponível.")
+        return redirect("management:gallery_albums_list")
+
+    images = album.images.filter(
+        Q(expires_at__isnull=True) | Q(expires_at__gt=now)
+    ).order_by("-uploaded_at")
+
+    if request.method == "POST" and "images" in request.FILES:
+        uploaded_files = request.FILES.getlist("images")
+
+        if not uploaded_files:
+            messages.error(request, "Seleciona pelo menos uma imagem.")
+            return redirect("management:management_album_detail", slug=album.slug)
+
+        for file in uploaded_files:
+            GalleryImage.objects.create(
+                album=album,
+                image=file,
+                uploaded_by=request.user,
+            )
+
+        messages.success(request, "Fotos adicionadas com sucesso.")
+        return redirect("management:management_album_detail", slug=album.slug)
+
+    return render(
+        request,
+        "management/album_management_detail.html",
+        {
+            "album": album,
+            "images": images,
+        },
+    )
 
 
 @reception_or_leadership_required

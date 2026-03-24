@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from management.permissions import can_manage_gallery, media_or_leadership_required
+from management.permissions import media_or_leadership_required
 
 from .forms import GalleryAlbumForm
 from .models import GalleryAlbum, GalleryImage
@@ -25,7 +25,10 @@ def album_list(request):
     return render(
         request,
         "gallery/album_list.html",
-        {"albums": albums},
+        {
+            "albums": albums,
+            "detail_url_name": "gallery:album_detail",
+        },
     )
 
 
@@ -59,8 +62,7 @@ def create_album(request):
 
 def album_detail(request, slug):
     """
-    Mostra o detalhe de um álbum e permite upload de múltiplas imagens
-    apenas a utilizadores com permissão de gestão da galeria.
+    Mostra o detalhe público de um álbum apenas em modo de visualização.
     """
     now = timezone.now()
 
@@ -77,27 +79,6 @@ def album_detail(request, slug):
     images = album.images.filter(
         Q(expires_at__isnull=True) | Q(expires_at__gt=now)
     ).order_by("-uploaded_at")
-
-    if request.method == "POST" and "images" in request.FILES:
-        if not can_manage_gallery(request.user):
-            messages.error(request, "Não tens permissão para adicionar fotos.")
-            return redirect("gallery:album_detail", slug=album.slug)
-
-        uploaded_files = request.FILES.getlist("images")
-
-        if not uploaded_files:
-            messages.error(request, "Seleciona pelo menos uma imagem.")
-            return redirect("gallery:album_detail", slug=album.slug)
-
-        for file in uploaded_files:
-            GalleryImage.objects.create(
-                album=album,
-                image=file,
-                uploaded_by=request.user,
-            )
-
-        messages.success(request, "Fotos adicionadas com sucesso.")
-        return redirect("gallery:album_detail", slug=album.slug)
 
     return render(
         request,

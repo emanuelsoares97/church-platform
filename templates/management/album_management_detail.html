@@ -1,0 +1,153 @@
+{% extends "management/base_management.html" %}
+{% load static %}
+
+{% block mgmt_styles %}
+<link rel="stylesheet" href="{% static 'css/gallery.css' %}">
+{% endblock %}
+
+{% block mgmt_title %}Gestão de Álbum{% endblock %}
+
+{% block mgmt_content %}
+<section class="galleryHero">
+  <div class="galleryHeroContent">
+    <span class="sectionBadge">GESTÃO DE ÁLBUM</span>
+    <h1>{{ album.title }}</h1>
+
+    {% if album.album_date %}
+      <p class="galleryHeroDate">{{ album.album_date }}</p>
+    {% endif %}
+
+    {% if album.description %}
+      <p class="galleryHeroDescription">{{ album.description }}</p>
+    {% else %}
+      <p class="galleryHeroDescription">
+        Um registo especial de momentos vividos pela nossa comunidade.
+      </p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="galleryUploadBox">
+  <div class="galleryUploadHeader">
+    <h3>Adicionar fotos</h3>
+    <p>Pode selecionar várias fotos ao mesmo tempo.</p>
+  </div>
+
+  <form method="POST" enctype="multipart/form-data" class="galleryUploadForm">
+    {% csrf_token %}
+
+    <label class="galleryFileLabel">
+      <span>Selecionar imagens</span>
+      <input type="file" name="images" multiple accept="image/*">
+    </label>
+
+    <p id="gallerySelectedCount" class="gallerySelectedCount"></p>
+
+    <button type="submit" class="btn">
+      Enviar fotos
+    </button>
+  </form>
+</section>
+
+{% if images %}
+  <section class="galleryBulkBar" id="galleryBulkBar">
+    <div class="galleryBulkInfo">
+      <strong id="galleryBulkCount">0</strong>
+      <span>selecionadas</span>
+    </div>
+
+    <div class="galleryBulkActions">
+      <button type="button" class="btn btnSecondary" id="toggleSelectionMode">
+        Selecionar fotos
+      </button>
+
+      <button type="submit" form="bulkDeleteForm" class="btn galleryBulkDeleteBtn" id="bulkDeleteBtn" disabled>
+        Eliminar selecionadas
+      </button>
+    </div>
+  </section>
+{% endif %}
+
+{% if images %}
+  <form
+    method="POST"
+    action="{% url 'gallery:delete_selected_images' album.slug %}"
+    id="bulkDeleteForm"
+    onsubmit="return confirm('Tens a certeza que queres eliminar as fotos selecionadas?');"
+  >
+    {% csrf_token %}
+
+    <div class="galleryGrid" id="galleryGrid">
+      {% for image in images %}
+        <article class="galleryCard" data-image-id="{{ image.id }}">
+          <div class="galleryImageWrap">
+            <label class="gallerySelectBox">
+              <input type="checkbox" name="selected_images" value="{{ image.id }}" class="gallerySelectInput">
+              <span class="gallerySelectIndicator">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+              </span>
+            </label>
+
+            <img
+              src="{{ image.image.url }}"
+              data-full="{{ image.image.url }}"
+              alt="{{ album.title }}"
+              class="galleryImage"
+              loading="lazy"
+            >
+
+            <div class="galleryOverlay">
+              <span>Ver foto</span>
+            </div>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  </form>
+{% else %}
+  <div class="emptyCard galleryEmptyCard">
+    <h3>Este álbum ainda não tem fotos</h3>
+    <p>Quando forem adicionadas imagens, vão aparecer aqui.</p>
+  </div>
+{% endif %}
+
+<div id="galleryModal" class="galleryModal">
+  <div class="galleryTopActions">
+    <a id="galleryDownloadBtn" class="galleryIconBtn" aria-label="Descarregar imagem">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 4v10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M8 10l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M5 19h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+      </svg>
+    </a>
+
+    <button type="button" class="galleryIconBtn galleryClose" aria-label="Fechar">
+      &times;
+    </button>
+  </div>
+
+  <button type="button" class="galleryNav galleryPrev" aria-label="Imagem anterior">
+    &#10094;
+  </button>
+
+  <div class="galleryModalContent">
+    <div class="galleryCounter" id="galleryCounter">1 / 1</div>
+
+    <img
+      class="galleryModalImage"
+      id="galleryModalImage"
+      alt="Imagem ampliada da galeria"
+    >
+  </div>
+
+  <button type="button" class="galleryNav galleryNext" aria-label="Próxima imagem">
+    &#10095;
+  </button>
+</div>
+{% endblock %}
+
+{% block mgmt_extra_js %}
+<script src="{% static 'js/gallery.js' %}"></script>
+{% endblock %}
