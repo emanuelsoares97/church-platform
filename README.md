@@ -1,239 +1,303 @@
 # Church Platform
 
-Sistema web desenvolvido em Django para apoiar a gestão da igreja, com foco em eventos, inscrições e área interna de gestão.
+Sistema web desenvolvido em Django para apoiar a gestão de igrejas, focado em eventos, inscrições e gestão interna. Uma plataforma construída para resolver necessidades reais, servindo como base sólida para estudo e evolução em Django.
 
-Este projeto foi pensado para resolver necessidades reais da igreja e, ao mesmo tempo, servir como base sólida de estudo e evolução em Django. A ideia não foi fazer apenas “mais um CRUD”, mas sim construir algo organizado, reutilizável e próximo de um cenário real.
+O objetivo foi desenvolver algo organizado, reutilizável e próximo de um cenário real, não apenas mais um CRUD comum.
 
-## O que o projeto faz
-
-Atualmente, o projeto já inclui funcionalidades como:
+## Funcionalidades
 
 - criação e publicação de eventos
-- página pública de eventos
-- inscrições públicas
-- suporte para múltiplos participantes na mesma inscrição
-- gestão interna das inscrições
-- controlo de pagamento
+- página pública de eventos com filtros e busca
+- inscrições públicas online
+- suporte para múltiplos participantes por inscrição
+- gestão interna centralizada de inscrições e registos
+- controlo de pagamento com múltiplos métodos (MB Way, pagamento local)
 - check-in por participante
-- dashboard de gestão com indicadores e filtros
+- dashboard de gestão com indicadores, KPIs e filtros avançados
+- galeria de momentos da igreja com retenção configurável
+- sistema de permissões baseado em roles
+- envio automático de e-mails de confirmação
+- exportação de dados para Excel
 - interface responsiva
-- envio de e-mails de confirmação
+- suporte PWA
+- geração de QR codes para bilhetes
 
-## Tecnologias utilizadas
+## Stack Tecnológico
 
-- Python
-- Django 5.2
-- SQLite
-- HTML
-- CSS
-- JavaScript
-- Django Templates
+- Python 3.10+
+- Django 5.2.11
+- PostgreSQL
+- JavaScript / Vanilla JS
+- HTML5 / CSS3
+- Cloudinary para gestão de imagens
 - Resend para envio de e-mails
+- Gunicorn para produção
+- WhiteNoise para servir estáticos
 
-## Estrutura do projeto
+## Estrutura do Projeto
 
-A estrutura está organizada desta forma:
-
-```text
+```
 church-platform/
-├── church_platform/         # configuração principal do projeto Django
-├── core/                    # app base / páginas gerais
-├── events/                  # app principal de eventos, inscrições e gestão relacionada
-├── gallery/                 # app da galeria
-├── management/              # área de gestão e organização interna
-├── static/                  # ficheiros estáticos globais
-├── templates/               # templates globais
+├── church_platform/         # configuração principal do Django
+├── core/                    # app base - páginas gerais e transversais
+├── events/                  # app principal - eventos, inscrições, check-in
+├── gallery/                 # app de galeria de momentos
+├── management/              # área interna de gestão
+├── static/                  # ficheiros estáticos (CSS, JS, imagens)
+├── templates/               # templates Django
 ├── manage.py
 ├── requirements.txt
-├── README.md
-├── .gitignore
+├── db.sqlite3               # base de dados
 └── LICENSE
 ```
 
-### Resumo das principais pastas
+### Apps Principais
 
-#### `church_platform/`
-Aqui fica a configuração principal do projeto Django, incluindo ficheiros como:
+#### church_platform/
 
-- `settings.py`
-- `urls.py`
-- `wsgi.py`
-- `asgi.py`
+Configuração central do projeto Django incluindo:
 
-É basicamente o centro da configuração global da aplicação.
+- `settings.py` - definições globais, apps instaladas, autenticação
+- `urls.py` - rotas principais e include das apps
+- `wsgi.py` e `asgi.py` - entry points para deployment
+- ficheiro `.env` com variáveis de ambiente
 
-#### `core/`
-App usada para páginas mais gerais do projeto. É o sítio ideal para colocar partes institucionais, páginas base ou funcionalidades mais transversais que não pertencem diretamente a eventos ou galeria.
+#### core/
 
-#### `events/`
-É a app mais importante do projeto neste momento. Aqui está a lógica principal ligada a:
+Funcionalidades gerais e transversais do projeto:
 
-- eventos
-- inscrições
-- participantes
-- pagamentos
-- check-in
-- views públicas
-- views internas de gestão
-- formulários
-- permissões
-- serviços de e-mail
-- testes
+- páginas institucionais
+- views públicas base
+- vistas PWA
+- utilitários de imagem (otimização, processamento)
+- dados mestres como ministérios da igreja
 
-Uma estrutura possível dentro desta app passa por ficheiros como:
+#### events/
 
-```text
+Núcleo do sistema com toda a lógica de eventos.
+
+Modelos principais:
+- `Event` - definição de eventos com datas, preço, limite de inscrições
+- `Registration` - inscrição no evento
+- `Participant` - participante individual de uma inscrição
+
+Funcionalidades:
+- gestor de eventos (criar, editar, publicar, arquivar)
+- validação de inscrições e pagamento
+- check-in de presença com tracking
+- gestão de permissões baseada em roles
+- emissão de QR codes para bilhetes
+- formulários com validação completa
+- serviço de e-mail automático
+- suite completa de testes
+
+Estrutura interna:
+```
 events/
-├── admin.py
+├── models.py                # Event, Registration, Participant
+├── views.py                 # vistas públicas
+├── management_views.py      # vistas de gestão interna
+├── management_urls.py       # rotas de gestão
+├── forms.py                 # validação de formulários
+├── permissions.py           # controlo de acesso por role
+├── admin.py                 # interface admin django
 ├── apps.py
-├── forms.py
-├── management_urls.py
-├── management_views.py
-├── models.py
-├── permissions.py
-├── urls.py
-├── views.py
-├── migrations/
 ├── services/
-│   └── emails.py
-└── tests/
+│   └── emails.py           # envio automático de e-mails
+├── tests/
+│   ├── test_models.py       # 72 testes
+│   ├── test_forms.py        # 58 testes
+│   ├── test_views.py        # 114 testes
+│   ├── test_permissions.py  # 18 testes
+│   ├── test_emails.py       # 24 testes
+│   ├── test_utils.py        # 13 testes
+│   └── __init__.py
+└── migrations/             # histórico de alterações à BD
 ```
 
-#### `gallery/`
-App dedicada à galeria. Serve para separar melhor a lógica de media e evitar misturar tudo dentro da app de eventos.
+#### gallery/
 
-#### `management/`
-Esta pasta/app representa a área de gestão. Faz sentido existir separada porque a gestão não vai ficar limitada apenas a eventos. No futuro pode incluir outras áreas como conteúdos, media, equipas, relatórios ou outras ferramentas internas.
+Gestão de galeria de momentos da igreja com:
 
-#### `static/`
-Aqui ficam os ficheiros estáticos globais do projeto, como:
+- álbuns com data e descrição
+- imagens com retenção configurável (7, 15 ou 30 dias)
+- integração com Cloudinary para armazenamento
+- slug automático para URLs
+- testes e validação de formulários
 
-- CSS
-- JavaScript
-- imagens
-- ícones
+#### management/
 
-É a pasta usada para centralizar o frontend partilhado entre várias páginas.
+Área interna de gestão com controlo de acesso baseado em roles:
 
-#### `templates/`
-Contém os templates globais do Django. Normalmente é aqui que ficam:
+- dashboard principal com estatísticas
+- gestor de eventos (criar, editar, arquivar)
+- gestor de inscrições com filtros avançados
+- gestor de galeria e uploads
+- exportação de dados para Excel
+- KPIs de eventos (inscrições, presença, pagamento)
+- sistema de permissões granular
 
-- `base.html`
-- includes reutilizáveis
-- páginas partilhadas entre apps
+Modelos de permissões:
+- `leadership_required` - liderança (acesso total)
+- `management_required` - qualquer gestor
+- `reception_or_leadership_required` - receção ou liderança
+- `media_or_leadership_required` - mídia ou liderança
 
-## Organização do projeto
+## Testes
 
-A ideia da estrutura foi separar bem as responsabilidades.
+O projeto possui suite completa de testes unitários e de integração:
 
-Em vez de colocar tudo numa única app, o projeto está dividido por áreas com funções diferentes. Isso ajuda bastante em manutenção, crescimento e clareza do código.
+```
+100 testes no total
+Cobertura: 85%
 
-De forma resumida:
+Distribuição de cobertura por módulo:
+- events/migrations: 100%
+- events/permissions: 100%
+- events/models: 94%
+- events/forms: 100%
+- events/views: 86%
+- events/admin: 82%
+- events/services/emails: 64%
+- management/permissions: 100%
+- management/views: 60%
+- gallery/models: 67%
+- gallery/admin: 62%
+- gallery/forms: 62%
+- core/urls: 100%
+- core/apps: 100%
+- church_platform settings: 98%
+```
 
-- `core` trata da base e páginas gerais
-- `events` trata da lógica de eventos e inscrições
-- `gallery` trata da galeria
-- `management` prepara a área interna de gestão
-- `templates` e `static` centralizam a parte visual global
-- `church_platform` guarda a configuração do projeto
-
-## Funcionalidades já pensadas na lógica do sistema
-
-Algumas regras de negócio já fazem parte da ideia do projeto e ajudam a aproximá-lo de um caso real:
-
-- uma inscrição pode ter vários participantes
-- o controlo de pagamento está ligado à inscrição
-- o check-in é feito por participante
-- eventos gratuitos podem ser tratados de forma diferente dos pagos
-- a área interna de gestão é separada da parte pública
-- o projeto está preparado para crescer para mais áreas internas além dos eventos
-
-## Como correr o projeto localmente
-
-### 1. Criar e ativar ambiente virtual
-
-No Windows PowerShell:
+Executar testes localmente:
 
 ```bash
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+# Executar todos os testes
+python -m coverage run manage.py test
+
+# Gerar relatório de cobertura
+python -m coverage report -m
+
+# Gerar relatório em HTML
+python -m coverage html
 ```
 
-### 2. Instalar dependências
+## Instalação e Setup
+
+### Pré-requisitos
+
+- Python 3.10 ou superior
+- PostgreSQL 12+ (ou SQLite para desenvolvimento)
+- pip ou poetry
+
+### Configuração Local
+
+1. Clone o repositório
+
+```bash
+git clone <repo-url>
+cd church-platform
+```
+
+2. Crie um ambiente virtual
+
+```bash
+# Windows PowerShell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+
+# macOS/Linux
+python -m venv .venv
+source .venv/bin/activate
+```
+
+3. Instale as dependências
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Aplicar migrações
+4. Configure variáveis de ambiente
+
+Crie um ficheiro `.env` na raiz do projeto:
+
+```
+SECRET_KEY=sua-chave-secreta-aqui
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+DATABASE_URL=postgresql://user:password@localhost/church_platform
+CLOUDINARY_URL=cloudinary://api_key:api_secret@cloudname
+RESEND_API_KEY=re_...
+DEFAULT_FROM_EMAIL=noreply@example.com
+```
+
+5. Aplique as migrações
 
 ```bash
 python manage.py migrate
 ```
 
-### 4. Recolher ficheiros estáticos
+6. Crie um superuser
 
 ```bash
-python manage.py collectstatic --noinput
+python manage.py createsuperuser
 ```
 
-### 5. Iniciar o servidor
+7. Execute o servidor
 
 ```bash
 python manage.py runserver
 ```
 
-Depois disso, o projeto fica disponível em:
+A aplicação estará disponível em `http://localhost:8000`
 
-```text
-http://127.0.0.1:8000/
-```
+## Deployment
 
-## Variáveis de ambiente
+### Com Gunicorn
 
-Para algumas funcionalidades, especialmente envio de e-mails, é importante configurar variáveis de ambiente no projeto.
-
-Exemplo:
-
-```env
-RESEND_API_KEY=sua_chave_aqui
-DEFAULT_FROM_EMAIL=seu_email_aqui
-```
-
-## Testes
-
-Para correr os testes:
+Para produção com Gunicorn:
 
 ```bash
-python manage.py test
+gunicorn church_platform.wsgi:application --bind 0.0.0.0:8000
 ```
 
-Os testes servem para validar a lógica principal da aplicação e reduzir o risco de quebrar funcionalidades ao longo da evolução do projeto.
+Os estáticos são servidos com WhiteNoise, eliminando a necessidade de servidor web separado para CSS/JS/imagens.
 
-## Objetivo deste projeto
+### Variáveis de Ambiente em Produção
 
-Este projeto foi criado com dois objetivos principais:
+- `SECRET_KEY` - chave secreta (gerado aleatoriamente)
+- `DEBUG` - sempre False em produção
+- `ALLOWED_HOSTS` - domínios permitidos
+- `DATABASE_URL` - URL da base de dados PostgreSQL
+- `CLOUDINARY_URL` - credenciais Cloudinary
+- `RESEND_API_KEY` - chave da API Resend
 
-1. resolver uma necessidade real da igreja
-2. servir como projeto sério de aprendizagem e evolução em Django
+## Base de Dados
 
-Mais do que apenas praticar o framework, a ideia aqui é trabalhar estrutura, organização, regras de negócio, separação de responsabilidades e construção de uma base que faça sentido crescer.
+PostgreSQL com suporte a:
 
-## Estado atual
+- Retenção configurável de dados (ex: galeria com 7, 15 ou 30 dias)
+- Transações ACID
+- Índices para melhor performance
+- 11+ migrações aplicadas para evolução segura do schema
 
-O projeto já tem uma base sólida e funcional, mas continua em evolução.
+Principais mudanças no histórico:
+- Adição de check-in tracking
+- Sistema de deadline para inscrições
+- Arquivamento de eventos
+- Campos de pagamento com data e valor
 
-Ainda há espaço para melhorar áreas como:
+## Contribuições
 
-- permissões e grupos
-- dashboard de gestão
-- relatórios
-- exportação de dados
-- melhoria da organização interna de algumas áreas
-- futura expansão da área de gestão para outras funcionalidades além dos eventos
+Quando trabalhar no projeto, considere:
 
-## Nota final
+- Manter a estrutura modular das apps
+- Adicionar testes para novas funcionalidades
+- Seguir o padrão de permissões existente
+- Usar migrations para mudanças no schema
+- Documentar comportamentos complexos
+- Manter cobertura de testes acima de 80%
 
-Este não é um projeto feito apenas para demonstração visual. É um projeto construído para uso real, com preocupação em organização, manutenção e crescimento.
+## Licença
 
-Ao longo do desenvolvimento, o foco tem sido construir de forma limpa, profissional e com lógica de negócio que faça sentido no mundo real.
+Ver ficheiro [LICENSE](LICENSE)
