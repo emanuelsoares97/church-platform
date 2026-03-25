@@ -68,6 +68,18 @@ class PublicEventViewsTest(TestCase):
         self.assertNotContains(response, "Evento Arquivado")
         self.assertNotContains(response, "Evento Passado")
 
+    def test_event_list_mantem_evento_futuro_mesmo_com_inscricoes_encerradas(self):
+        """Evento futuro continua visível mesmo com prazo de inscrição fechado."""
+        event = self.create_event(
+            title="Evento Futuro Com Prazo Fechado",
+            registration_deadline=timezone.now() - timedelta(minutes=1),
+        )
+
+        response = self.client.get(reverse("events:event_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, event.title)
+
     def test_event_detail_disponivel_para_evento_publico_valido(self):
         """O detalhe abre normalmente para evento válido."""
         event = self.create_event(title="Evento Detalhe")
@@ -90,6 +102,18 @@ class PublicEventViewsTest(TestCase):
             with self.subTest(slug=event.slug):
                 response = self.client.get(reverse("events:event_detail", kwargs={"slug": event.slug}))
                 self.assertEqual(response.status_code, 404)
+
+    def test_event_detail_mostra_evento_com_inscricoes_fechadas(self):
+        """O detalhe continua acessível, mas com inscrições encerradas."""
+        event = self.create_event(
+            registration_deadline=timezone.now() - timedelta(minutes=1),
+        )
+
+        response = self.client.get(reverse("events:event_detail", kwargs={"slug": event.slug}))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["event"].id, event.id)
+        self.assertFalse(response.context["registration_open"])
 
     def test_post_inscricao_bloqueado_quando_prazo_fechou(self):
         """Se prazo fechou, não cria inscrição e faz redirect para detalhe."""
