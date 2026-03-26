@@ -139,3 +139,50 @@
     padding: 22px;
   }
 }
+
+
+/* ─── Bloco de pastor/liderança com foto ─── */
+
+.pastorSection {
+  display: grid;
+  grid-template-columns: 0.55fr 1.45fr;
+  gap: 2.5rem;
+  align-items: center;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.pastorPhotoCard {
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-strong);
+  max-height: 340px;
+}
+
+.pastorPhotoCard img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pastorInfo h3 {
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+}
+
+.pastorInfo p {
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+  .pastorSection {
+    grid-template-columns: 1fr;
+    max-width: 460px;
+  }
+
+  .pastorPhotoCard {
+    max-height: 280px;
+  }
+}

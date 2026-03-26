@@ -23,5 +23,15 @@ def ministerios(request):
     }
     return render(request, "core/ministries.html", context)
 
+
+def ministry_kids(request):
+    """página pública do ministério Kids."""
+    return render(request, "core/ministries_kids.html")
+
+
+def ministry_young(request):
+    """página pública do ministério Jovens."""
+    return render(request, "core/ministries_young.html")
+
 def contacts(request):
     return render(request, "core/contacts.html")

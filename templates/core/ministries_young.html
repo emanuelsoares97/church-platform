@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ministério Jovens | Comunidade Cristã Conexão{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/pages/ministerios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="heroSection">
+  <div class="container heroGrid">
+    <div class="heroContent">
+      <span class="sectionBadge">JOVENS</span>
+
+      <h1>
+        Uma celebração para a geração que cresce em Deus
+      </h1>
+
+      <p>
+        O ministério Jovens é um espaço de celebração, comunhão e propósito para
+        pessoas entre os 13 e os 30 anos. Um lugar onde a fé é vivida com
+        genuinidade e os relacionamentos são construídos com intenção.
+      </p>
+
+      <div class="heroActions">
+        <a href="#lideranca" class="btn btnPrimary">Conhecer a liderança</a>
+        <a href="#contactos" class="btn btnSecondary">Saber mais</a>
+      </div>
+    </div>
+
+    <aside class="heroSideCard">
+      <h3>Próxima celebração</h3>
+      <p class="heroSideCard__highlight">Último sábado do mês</p>
+      <p>
+        Uma vez por mês, reunimo-nos para celebrar, adorar e crescer juntos em Deus.
+      </p>
+
+      <div class="heroSideCard__box">
+        <p>
+          <strong>Horário</strong><br>
+          18h30<br>
+          Almada, Portugal
+        </p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="sectionBlock">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">O QUE É</span>
+      <h2>Uma celebração com identidade</h2>
+      <p class="sectionText">
+        Mais do que um encontro mensal, o Jovens é um momento criado especificamente
+        para esta geração caminhar junta em fé, comunhão e propósito.
+      </p>
+    </div>
+
+    <div class="cardGrid">
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Celebração</h3>
+        <p class="infoCardText">
+          Louvor, palavra e comunhão num ambiente criado para a geração jovem
+          encontrar Deus de forma genuína e sem barreiras.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Comunhão</h3>
+        <p class="infoCardText">
+          Relacionamentos reais, crescimento conjunto e amizades que vão além do
+          encontro mensal e acompanham a caminhada de cada um.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Propósito</h3>
+        <p class="infoCardText">
+          Um espaço para descobrir identidade, vocação e o chamado de Deus para
+          esta fase da vida, com clareza e encorajamento.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">PARTICIPAÇÃO</span>
+      <h2>Para quem é e quando acontece</h2>
+      <p class="sectionText">
+        O Jovens está aberto a todos entre os 13 e os 30 anos. Vem como és.
+      </p>
+    </div>
+
+    <div class="timeGrid">
+      <div class="timeCard">
+        <strong>Quem pode vir</strong>
+        <span>Dos 13 aos 30 anos</span>
+      </div>
+
+      <div class="timeCard">
+        <strong>Quando</strong>
+        <span>Último sábado de cada mês</span>
+      </div>
+
+      <div class="timeCard">
+        <strong>Horário</strong>
+        <span>18h30</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock" id="lideranca">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">LIDERANÇA</span>
+      <h2>Os pastores do Jovens</h2>
+      <p class="sectionText">
+        O ministério Jovens é liderado com dedicação, proximidade e compromisso
+        com o crescimento de cada pessoa.
+      </p>
+    </div>
+
+    <div class="pastorSection">
+      <div class="pastorPhotoCard">
+        <img src="{% static 'img/ministries/ritsoninaia.png' %}" alt="Pr. Ritson e Pra. Inaia">
+      </div>
+
+      <div class="pastorInfo">
+        <h3>Pr. Ritson &amp; Pra. Inaia</h3>
+        <p>
+          Os pastores do ministério Jovens servem esta geração com dedicação,
+          cuidado e proximidade, acompanhando cada pessoa com intenção e presença.
+        </p>
+        <p>
+          Com comprometimento e sensibilidade, cuidam das relações, do discipulado
+          e da caminhada de cada jovem que integra o ministério.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock">
+  <div class="container">
+    <div class="ctaBox">
+      <h2>Aparece no próximo sábado</h2>
+      <p>
+        Não precisas de saber tudo antes de vir. Aparece, conhece pessoas
+        e descobre o que Deus tem para ti nesta fase da vida.
+      </p>
+      <a href="{% url 'core:contacts' %}" class="btn btnPrimary">Falar connosco</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

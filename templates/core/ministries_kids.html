@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ministério Kids | Comunidade Cristã Conexão{% endblock %}
+
+{% block extra_head %}
+  <link rel="stylesheet" href="{% static 'css/pages/ministerios.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="heroSection">
+  <div class="container heroGrid">
+    <div class="heroContent">
+      <span class="sectionBadge">KIDS</span>
+
+      <h1>
+        Um lugar para as crianças crescerem na fé
+      </h1>
+
+      <p>
+        O ministério Kids acompanha as crianças durante as celebrações da nossa
+        igreja, num ambiente seguro e adaptado à idade, com ensino bíblico e
+        actividades que tornam a fé concreta e acessível desde cedo.
+      </p>
+
+      <div class="heroActions">
+        <a href="#grupos" class="btn btnPrimary">Ver os grupos</a>
+        <a href="#contactos" class="btn btnSecondary">Falar connosco</a>
+      </div>
+    </div>
+
+    <aside class="heroSideCard">
+      <h3>Durante as celebrações</h3>
+      <p class="heroSideCard__highlight">Domingo · 18:00</p>
+      <p>
+        O Kids acontece em simultâneo com a celebração da igreja, para que toda
+        a família possa participar ao mesmo tempo.
+      </p>
+
+      <div class="heroSideCard__box">
+        <p>
+          <strong>Local</strong><br>
+          Rua Luís de Queiroz, nº 26<br>
+          Almada, Portugal
+        </p>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<section class="sectionBlock">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">VISÃO</span>
+      <h2>Cuidar, ensinar e acompanhar</h2>
+      <p class="sectionText">
+        Mais do que actividades, o Kids é um espaço onde as crianças são amadas,
+        ensinadas e acompanhadas por pessoas que se importam com o seu crescimento.
+      </p>
+    </div>
+
+    <div class="cardGrid">
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Ensino bíblico</h3>
+        <p class="infoCardText">
+          Histórias, lições e fundamentos da fé apresentados de forma clara e adaptada
+          a cada faixa etária, para que a Palavra seja compreendida desde cedo.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Actividades</h3>
+        <p class="infoCardText">
+          Momentos de participação, criatividade e expressão que ajudam as crianças
+          a viver o que aprendem, de forma envolvente e adequada à sua fase.
+        </p>
+      </article>
+
+      <article class="infoCard">
+        <h3 class="infoCardTitle">Acompanhamento</h3>
+        <p class="infoCardText">
+          Cada grupo tem líderes dedicados que cuidam, orientam e caminham com
+          as crianças ao longo do tempo, com atenção e disponibilidade.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock" id="grupos">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">GRUPOS</span>
+      <h2>Três grupos por faixas etárias</h2>
+      <p class="sectionText">
+        O ministério está organizado por faixas etárias para que cada criança
+        seja acompanhada de forma adequada à sua fase de desenvolvimento.
+      </p>
+    </div>
+
+    <div class="cardGrid">
+      <article class="grupoCard">
+        <span class="grupoCard__age">1 — 6 anos</span>
+        <h3>Kids 1</h3>
+        <p>
+          Para os mais pequenos, com histórias ilustradas, canções e actividades
+          adaptadas à forma como aprendem, brincam e exploram o mundo à volta.
+        </p>
+      </article>
+
+      <article class="grupoCard">
+        <span class="grupoCard__age">7 — 10 anos</span>
+        <h3>Kids 2</h3>
+        <p>
+          Uma fase de descoberta e maior compreensão, com ensino mais estruturado,
+          participação activa e bases sólidas na Palavra de Deus.
+        </p>
+      </article>
+
+      <article class="grupoCard">
+        <span class="grupoCard__age">10 — 12 anos</span>
+        <h3>Kids 3</h3>
+        <p>
+          Um espaço de crescimento e identidade cristã, preparando os jovens para
+          os próximos passos na fé com consciência e propósito.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock">
+  <div class="container">
+    <div class="sectionTitle">
+      <span class="sectionBadge">LIDERANÇA</span>
+      <h2>Quem acompanha o Kids</h2>
+      <p class="sectionText">
+        O ministério Kids é liderado por uma equipa comprometida com o crescimento
+        espiritual e o bem-estar de cada criança.
+      </p>
+    </div>
+
+    <div class="lideresBlock">
+      <p>
+        Com cuidado, dedicação e amor pelo que fazem, os nossos líderes estão
+        presentes em cada celebração para receber e acompanhar as crianças.
+      </p>
+      <div class="liderNomes">
+        <span class="liderNome">Samuel Gomes</span>
+        <span class="liderNome">Tânia Gomes</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sectionBlock">
+  <div class="container">
+    <div class="ctaBox">
+      <h2>A tua família é bem-vinda</h2>
+      <p>
+        As crianças têm um lugar reservado cá para elas. Vem com a tua família
+        e descobre um espaço onde os mais pequenos também podem crescer em Deus.
+      </p>
+      <a href="{% url 'core:contacts' %}" class="btn btnPrimary">Falar connosco</a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
