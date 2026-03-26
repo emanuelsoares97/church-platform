@@ -417,7 +417,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // Handler para mostrar loading durante upload de fotos
   if (uploadForm && uploadBtn) {
     uploadForm.addEventListener("submit", (e) => {
-      const hasImages = fileInput && fileInput.files && fileInput.files.length > 0
+      const totalFiles = fileInput && fileInput.files ? fileInput.files.length : 0
+      const hasImages = totalFiles > 0
+
+      // Evita submissões duplicadas enquanto o upload está em curso.
+      if (uploadBtn.dataset.submitting === "1") {
+        e.preventDefault()
+        return
+      }
 
       if (!hasImages) {
         e.preventDefault()
@@ -426,6 +433,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Desabilitar botão
       uploadBtn.disabled = true
+      uploadBtn.dataset.submitting = "1"
       uploadBtn.style.opacity = "0.6"
       uploadBtn.style.cursor = "not-allowed"
 
@@ -433,6 +441,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const originalText = uploadBtn.textContent
 
       // Mostrar spinner + texto
+      const loadingText = totalFiles === 1 ? "A carregar foto..." : "A carregar fotos..."
       uploadBtn.innerHTML = `
         <span style="display: inline-flex; align-items: center; gap: 8px;">
           <span class="spinner" style="
@@ -444,20 +453,18 @@ document.addEventListener("DOMContentLoaded", () => {
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
           "></span>
-          A carregar...
+          ${loadingText}
         </span>
       `
 
       // Se o formulário não submeter num timeout razoável, reabilitar
-      const timeoutId = setTimeout(() => {
+      setTimeout(() => {
         uploadBtn.disabled = false
+        uploadBtn.dataset.submitting = "0"
         uploadBtn.style.opacity = "1"
         uploadBtn.style.cursor = "pointer"
         uploadBtn.textContent = originalText
       }, 30000) // 30 segundos
-
-      // Limpar timeout se o formulário submeter realmente
-      uploadForm.addEventListener("submit", () => clearTimeout(timeoutId), { once: true })
     })
   }
 })

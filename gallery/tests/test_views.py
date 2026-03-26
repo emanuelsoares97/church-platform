@@ -150,7 +150,6 @@ class GalleryViewsTest(TestCase):
             "title": "Novo Album",
             "description": "Descricao",
             "retention_days": 30,
-            "is_active": True,
         }
 
         response = self.client.post(reverse("gallery:create_album"), payload)
@@ -159,7 +158,26 @@ class GalleryViewsTest(TestCase):
         album = GalleryAlbum.objects.get(title="Novo Album")
         self.assertEqual(album.created_by, self.media_user)
         self.assertTrue(album.is_active)
-        self.assertEqual(response.url, reverse("gallery:album_detail", kwargs={"slug": album.slug}))
+        self.assertEqual(
+            response.url,
+            reverse("management:management_album_detail", kwargs={"slug": album.slug}),
+        )
+
+    def test_edit_album_redireciona_para_gestao(self):
+        self.client.login(username="media", password="pass123")
+        album = GalleryAlbum.objects.create(
+            title="Album Edit Redirect",
+            created_by=self.media_user,
+            expires_at=timezone.now() + timedelta(days=1),
+        )
+
+        response = self.client.get(reverse("gallery:edit_album", kwargs={"slug": album.slug}))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            response.url,
+            reverse("management:gallery_album_edit", kwargs={"slug": album.slug}),
+        )
 
     def test_create_album_post_invalido_retorna_mesma_pagina(self):
         self.client.login(username="media", password="pass123")

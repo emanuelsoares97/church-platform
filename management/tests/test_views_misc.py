@@ -239,6 +239,38 @@ class ManagementHubAndGalleryViewsTest(ManagementViewsBaseTest):
         album.refresh_from_db()
         self.assertTrue(album.is_active)
 
+    def test_edit_gallery_album_get_carrega_form(self):
+        self.client.login(username="media", password="pass123")
+        album = self.create_album(title="Album Editar")
+
+        response = self.client.get(
+            reverse("management:gallery_album_edit", kwargs={"slug": album.slug})
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("form", response.context)
+        self.assertContains(response, "Editar álbum")
+
+    def test_edit_gallery_album_post_atualiza_album(self):
+        self.client.login(username="media", password="pass123")
+        album = self.create_album(title="Album Antigo", description="Antes")
+
+        response = self.client.post(
+            reverse("management:gallery_album_edit", kwargs={"slug": album.slug}),
+            {
+                "title": "Album Novo",
+                "description": "Depois",
+                "album_date": timezone.localdate().isoformat(),
+                "retention_days": GalleryAlbum.RETENTION_ALWAYS,
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        album.refresh_from_db()
+        self.assertEqual(album.title, "Album Novo")
+        self.assertEqual(album.description, "Depois")
+        self.assertEqual(album.retention_days, GalleryAlbum.RETENTION_ALWAYS)
+
     @patch("management.views.destroy")
     def test_delete_gallery_album(self, mock_destroy):
         self.client.login(username="media", password="pass123")

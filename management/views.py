@@ -1,3 +1,4 @@
+import logging
 from decimal import Decimal
 
 from cloudinary.uploader import destroy
@@ -11,6 +12,7 @@ from django.views.decorators.http import require_POST
 
 from events.forms import EventCreateForm
 from events.models import Event, Participant, Registration
+from gallery.forms import GalleryAlbumForm
 from gallery.models import GalleryAlbum, GalleryImage
 from management.permissions import (
     leadership_required,
@@ -29,6 +31,9 @@ from management.services.registration_ops import (
     toggle_participant_checkin as service_toggle_participant_checkin,
     toggle_participant_paid as service_toggle_participant_paid,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 @management_required
@@ -168,8 +173,6 @@ def management_album_detail(request, slug):
 @media_or_leadership_required
 def edit_gallery_album(request, slug):
     """Edita os campos de um álbum da galeria (título, descrição, data, retenção)."""
-    from gallery.forms import GalleryAlbumForm
-    
     album = get_object_or_404(GalleryAlbum, slug=slug)
 
     if request.method == "POST":
@@ -229,9 +232,17 @@ def delete_gallery_album(request, slug):
         if public_id:
             try:
                 destroy(public_id, invalidate=True, resource_type="image")
-            except Exception:
+            except Exception as error:
                 # Mantemos a eliminação do álbum mesmo se um ficheiro remoto falhar.
-                pass
+                logger.warning(
+                    "Falha ao eliminar imagem no Cloudinary durante eliminação do álbum",
+                    extra={
+                        "album_id": album.id,
+                        "album_slug": album.slug,
+                        "public_id": public_id,
+                        "error": str(error),
+                    },
+                )
 
     album.delete()
     messages.success(request, "Álbum eliminado com sucesso.")

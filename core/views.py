@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from django.shortcuts import render
 from events.models import Event
 from core.data.ministries import MINISTRIES
@@ -35,3 +36,8 @@ def ministry_young(request):
 
 def contacts(request):
     return render(request, "core/contacts.html")
+
+
+def healthcheck(request):
+    """Endpoint simples para verificação de saúde da aplicação."""
+    return JsonResponse({"status": "ok"})
