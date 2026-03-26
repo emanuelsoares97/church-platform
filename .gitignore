@@ -1,16 +1,32 @@
+# Python
 .venv/
 __pycache__/
 *.pyc
+*.pyo
+*.egg-info/
+dist/
+pip-log.txt
+
+# Ambiente
 .env
+
+# Django
 db.sqlite3
 staticfiles/
-.DS_Store
-
 media/
 
-tmp_emails/
-staticfiles/
-paletacores
-
+# Testes e cobertura
 .coverage
 htmlcov/
+.pytest_cache/
+
+# Logs
+*.log
+
+# Sistema operativo
+.DS_Store
+
+# Ficheiros temporários do projecto
+tmp_emails/
+tmp_*.py
+paletacores
