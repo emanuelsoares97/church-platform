@@ -1,0 +1,86 @@
+{% extends "management/base_management.html" %}
+{% load static %}
+
+{% block mgmt_styles %}
+<link rel="stylesheet" href="{% static 'css/management/dashboard.css' %}">
+{% endblock %}
+
+{% block mgmt_title %}Álbuns da Galeria{% endblock %}
+
+{% block mgmt_content %}
+<div class="sectionHeader sectionHeader--spaced">
+  <div>
+    <h3>Álbuns da Galeria</h3>
+    <p>Gerir estado de visibilidade pública e eliminação de álbuns.</p>
+  </div>
+</div>
+
+<div class="mgmtHeader__actions" style="margin-bottom: 16px;">
+  <a class="btn {% if state == 'todos' %}{% else %}secondary{% endif %}" href="{% url 'management:gallery_albums_list' %}?estado=todos">Todos</a>
+  <a class="btn {% if state == 'ativos' %}{% else %}secondary{% endif %}" href="{% url 'management:gallery_albums_list' %}?estado=ativos">Ativos</a>
+  <a class="btn {% if state == 'desativados' %}{% else %}secondary{% endif %}" href="{% url 'management:gallery_albums_list' %}?estado=desativados">Desativados</a>
+  <a class="btn {% if state == 'expirados' %}{% else %}secondary{% endif %}" href="{% url 'management:gallery_albums_list' %}?estado=expirados">Expirados</a>
+</div>
+
+{% if albums %}
+  <div class="cards cards--dashboard">
+    {% for album in albums %}
+      <article class="card">
+        <div class="card__inner">
+          <div class="card__title">{{ album.title }}</div>
+          <div class="card__meta">
+            {% if album.album_date %}<span>📅 {{ album.album_date }}</span>{% endif %}
+            <span>📷 {{ album.image_count }} foto{{ album.image_count|pluralize }}</span>
+            <span>
+              {% if album.lifecycle_state == 'ativo' %}
+                <span class="badge badge--ok">Ativo</span>
+              {% elif album.lifecycle_state == 'desativado' %}
+                <span class="badge">Desativado</span>
+              {% else %}
+                <span class="badge badge--warn">Expirado</span>
+              {% endif %}
+            </span>
+          </div>
+
+          {% if album.description %}
+            <p class="card__text">{{ album.description }}</p>
+          {% else %}
+            <p class="card__text">Álbum sem descrição.</p>
+          {% endif %}
+
+          <div class="card__actions">
+            <a class="btn secondary" href="{% url 'management:management_album_detail' album.slug %}">Abrir</a>
+
+            <a class="btn secondary" href="{% url 'management:gallery_album_edit' album.slug %}">Editar</a>
+
+            {% if album.is_active %}
+              <form method="post" action="{% url 'management:gallery_album_deactivate' album.slug %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{% url 'management:gallery_albums_list' %}?estado={{ state }}">
+                <button type="submit" class="btn secondary">Desativar</button>
+              </form>
+            {% else %}
+              <form method="post" action="{% url 'management:gallery_album_activate' album.slug %}">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{% url 'management:gallery_albums_list' %}?estado={{ state }}">
+                <button type="submit" class="btn">Ativar</button>
+              </form>
+            {% endif %}
+
+            <form method="post" action="{% url 'management:gallery_album_delete' album.slug %}" onsubmit="return confirm('Tens a certeza que queres eliminar este álbum? Esta ação é irreversível.');">
+              {% csrf_token %}
+              <input type="hidden" name="next" value="{% url 'management:gallery_albums_list' %}?estado={{ state }}">
+              <button type="submit" class="btn secondary">Eliminar</button>
+            </form>
+          </div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="emptyState">
+    <h3>Sem álbuns para este filtro</h3>
+    <p>Altera o filtro ou cria um novo álbum para começar.</p>
+  </div>
+{% endif %}
+{% endblock %}

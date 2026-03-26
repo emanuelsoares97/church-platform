@@ -27,6 +27,11 @@
   </div>
 </section>
 
+<div class="mgmtHeader__actions" style="margin-bottom: 24px;">
+  <a href="{% url 'management:gallery_albums_list' %}" class="btn secondary">← Voltar à lista</a>
+  <a href="{% url 'management:gallery_album_edit' album.slug %}" class="btn secondary">✏️ Editar detalhes</a>
+</div>
+
 <section class="galleryUploadBox">
   <div class="galleryUploadHeader">
     <h3>Adicionar fotos</h3>
@@ -43,7 +48,7 @@
 
     <p id="gallerySelectedCount" class="gallerySelectedCount"></p>
 
-    <button type="submit" class="btn">
+    <button type="submit" id="uploadPhotosBtn" class="btn">
       Enviar fotos
     </button>
   </form>

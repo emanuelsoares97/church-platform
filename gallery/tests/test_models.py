@@ -68,6 +68,28 @@ class GalleryAlbumModelTest(TestCase):
 
         self.assertFalse(album.is_expired())
 
+    def test_is_expired_false_quando_sempre_disponivel(self):
+        album = GalleryAlbum.objects.create(
+            title="Album Sempre",
+            retention_days=GalleryAlbum.RETENTION_ALWAYS,
+            created_by=self.user,
+        )
+
+        self.assertIsNone(album.expires_at)
+        self.assertFalse(album.is_expired())
+
+    def test_is_publicly_available_respeita_estado_e_expiracao(self):
+        album = GalleryAlbum.objects.create(
+            title="Album Publico",
+            is_active=True,
+            expires_at=timezone.now() + timedelta(hours=1),
+            created_by=self.user,
+        )
+        self.assertTrue(album.is_publicly_available())
+
+        album.is_active = False
+        self.assertFalse(album.is_publicly_available())
+
     def test_image_count_retorna_total_de_imagens(self):
         album = GalleryAlbum.objects.create(title="Album com Fotos", created_by=self.user)
         GalleryImage.objects.create(album=album, image="church-platform/gallery/f1.jpg", uploaded_by=self.user)

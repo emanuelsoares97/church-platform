@@ -58,6 +58,19 @@ class GalleryViewsTest(TestCase):
         self.assertNotContains(response, "Expirado")
         self.assertEqual(response.context["detail_url_name"], "gallery:album_detail")
 
+    def test_album_list_mostra_album_sempre_disponivel(self):
+        always = GalleryAlbum.objects.create(
+            title="Sempre Disponivel",
+            is_active=True,
+            retention_days=GalleryAlbum.RETENTION_ALWAYS,
+            expires_at=None,
+        )
+
+        response = self.client.get(reverse("gallery:album_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, always.title)
+
     def test_album_detail_404_para_album_inativo(self):
         album = GalleryAlbum.objects.create(
             title="Album Inativo",

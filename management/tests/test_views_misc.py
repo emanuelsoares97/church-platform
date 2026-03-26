@@ -142,8 +142,8 @@ class ManagementHubAndGalleryViewsTest(ManagementViewsBaseTest):
     def test_gallery_albums_list_filtra_ativos_e_nao_expirados(self):
         self.client.login(username="media", password="pass123")
         visible = self.create_album(title="Album Visivel")
-        self.create_album(title="Album Inativo", is_active=False)
-        self.create_album(
+        inactive = self.create_album(title="Album Inativo", is_active=False)
+        expired = self.create_album(
             title="Album Expirado",
             expires_at=timezone.now() - timedelta(minutes=1),
         )
@@ -152,12 +152,34 @@ class ManagementHubAndGalleryViewsTest(ManagementViewsBaseTest):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, visible.title)
-        self.assertNotContains(response, "Album Inativo")
-        self.assertNotContains(response, "Album Expirado")
-        self.assertEqual(
-            response.context["detail_url_name"],
-            "management:management_album_detail",
+        self.assertContains(response, inactive.title)
+        self.assertContains(response, expired.title)
+
+    def test_gallery_albums_list_filtra_desativados(self):
+        self.client.login(username="media", password="pass123")
+        self.create_album(title="Album Ativo", is_active=True)
+        inactive = self.create_album(title="Album Inativo", is_active=False)
+
+        response = self.client.get(reverse("management:gallery_albums_list"), {"estado": "desativados"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, inactive.title)
+        self.assertNotContains(response, "Album Ativo")
+
+    def test_gallery_albums_list_filtra_expirados(self):
+        self.client.login(username="media", password="pass123")
+        self.create_album(title="Album Ativo", is_active=True, expires_at=timezone.now() + timedelta(days=1))
+        expired = self.create_album(
+            title="Album Expirado",
+            is_active=True,
+            expires_at=timezone.now() - timedelta(minutes=1),
         )
+
+        response = self.client.get(reverse("management:gallery_albums_list"), {"estado": "expirados"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, expired.title)
+        self.assertNotContains(response, "Album Ativo")
 
     def test_management_album_detail_redireciona_quando_album_expirou(self):
         self.client.login(username="media", password="pass123")
@@ -170,8 +192,7 @@ class ManagementHubAndGalleryViewsTest(ManagementViewsBaseTest):
             reverse("management:management_album_detail", kwargs={"slug": album.slug})
         )
 
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, reverse("management:gallery_albums_list"))
+        self.assertEqual(response.status_code, 200)
 
     def test_management_album_detail_get_filtra_imagens_expiradas(self):
         self.client.login(username="media", password="pass123")
@@ -195,8 +216,44 @@ class ManagementHubAndGalleryViewsTest(ManagementViewsBaseTest):
 
         self.assertEqual(response.status_code, 200)
         images = list(response.context["images"])
-        self.assertEqual(len(images), 1)
-        self.assertEqual(images[0].id, keep.id)
+        self.assertEqual(len(images), 2)
+        self.assertIn(keep.id, [image.id for image in images])
+
+    def test_deactivate_gallery_album(self):
+        self.client.login(username="media", password="pass123")
+        album = self.create_album(title="Album Toggle", is_active=True)
+
+        response = self.client.post(reverse("management:gallery_album_deactivate", kwargs={"slug": album.slug}))
+
+        self.assertEqual(response.status_code, 302)
+        album.refresh_from_db()
+        self.assertFalse(album.is_active)
+
+    def test_activate_gallery_album(self):
+        self.client.login(username="media", password="pass123")
+        album = self.create_album(title="Album Toggle", is_active=False)
+
+        response = self.client.post(reverse("management:gallery_album_activate", kwargs={"slug": album.slug}))
+
+        self.assertEqual(response.status_code, 302)
+        album.refresh_from_db()
+        self.assertTrue(album.is_active)
+
+    @patch("management.views.destroy")
+    def test_delete_gallery_album(self, mock_destroy):
+        self.client.login(username="media", password="pass123")
+        album = self.create_album(title="Album Delete")
+        GalleryImage.objects.create(
+            album=album,
+            image="church-platform/gallery/delete.jpg",
+            uploaded_by=self.media_user,
+        )
+
+        response = self.client.post(reverse("management:gallery_album_delete", kwargs={"slug": album.slug}))
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(GalleryAlbum.objects.filter(id=album.id).exists())
+        self.assertEqual(mock_destroy.call_count, 1)
 
     @patch("management.views.GalleryImage.objects.create")
     def test_management_album_detail_post_adiciona_imagens(self, mock_create):

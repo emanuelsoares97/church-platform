@@ -16,8 +16,17 @@ class GalleryAlbumForm(forms.ModelForm):
             "description",
             "album_date",
             "retention_days",
-            "is_active",
         ]
+        labels = {
+            "retention_days": "Disponibilidade pública",
+        }
+        help_texts = {
+            "retention_days": (
+                "Escolha durante quanto tempo o álbum fica visível no público. "
+                "A opção 'Sempre disponível' só deixa de estar pública se desativar "
+                "ou eliminar manualmente."
+            ),
+        }
         widgets = {
             "title": forms.TextInput(attrs={"placeholder": "Ex.: Culto Domingo"}),
             "description": forms.Textarea(attrs={"rows": 4, "placeholder": "Descrição opcional do álbum"}),

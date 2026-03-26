@@ -14,7 +14,10 @@ class GalleryAlbum(models.Model):
     Cada álbum pode ter um prazo de expiração configurável.
     """
 
+    RETENTION_ALWAYS = 0
+
     RETENTION_CHOICES = (
+        (RETENTION_ALWAYS, "Sempre disponível"),
         (7, "7 dias"),
         (15, "15 dias"),
         (30, "30 dias"),
@@ -73,7 +76,10 @@ class GalleryAlbum(models.Model):
 
             self.slug = slug
 
-        if not self.expires_at:
+        if self.retention_days == self.RETENTION_ALWAYS:
+            # Álbuns sempre disponíveis não expiram automaticamente.
+            self.expires_at = None
+        elif not self.expires_at:
             self.expires_at = timezone.now() + timedelta(days=self.retention_days)
 
         super().save(*args, **kwargs)
@@ -83,6 +89,22 @@ class GalleryAlbum(models.Model):
         Indica se o álbum já expirou.
         """
         return timezone.now() >= self.expires_at if self.expires_at else False
+
+    def is_publicly_available(self):
+        """
+        Indica se o álbum deve aparecer na área pública.
+        """
+        return self.is_active and not self.is_expired()
+
+    def lifecycle_state(self):
+        """
+        Retorna o estado funcional do álbum para gestão.
+        """
+        if not self.is_active:
+            return "desativado"
+        if self.is_expired():
+            return "expirado"
+        return "ativo"
 
     def image_count(self):
         """

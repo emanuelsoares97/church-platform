@@ -16,9 +16,7 @@ def album_list(request):
     """
     now = timezone.now()
 
-    albums = GalleryAlbum.objects.filter(
-        is_active=True,
-    ).filter(
+    albums = GalleryAlbum.objects.filter(is_active=True).filter(
         Q(expires_at__isnull=True) | Q(expires_at__gt=now)
     ).order_by("-album_date", "-created_at")
 
@@ -36,6 +34,7 @@ def album_list(request):
 def create_album(request):
     """
     Permite criar um novo álbum da galeria sem usar o admin.
+    Após criação, redireciona para a gestão.
     """
     if request.method == "POST":
         form = GalleryAlbumForm(request.POST)
@@ -43,11 +42,10 @@ def create_album(request):
         if form.is_valid():
             album = form.save(commit=False)
             album.created_by = request.user
-            album.is_active = True
             album.save()
 
             messages.success(request, "Álbum criado com sucesso.")
-            return redirect("gallery:album_detail", slug=album.slug)
+            return redirect("management:management_album_detail", slug=album.slug)
 
         messages.error(request, "Verifica os campos do formulário.")
     else:
@@ -58,6 +56,14 @@ def create_album(request):
         "gallery/create_album.html",
         {"form": form},
     )
+
+
+@media_or_leadership_required
+def edit_album(request, slug):
+    """
+    Redireciona para a view de edição na gestão.
+    """
+    return redirect("management:gallery_album_edit", slug=slug)
 
 
 def album_detail(request, slug):
@@ -72,7 +78,7 @@ def album_detail(request, slug):
         is_active=True,
     )
 
-    if album.is_expired():
+    if not album.is_publicly_available():
         messages.error(request, "Este álbum já não está disponível.")
         return redirect("gallery:album_list")
 
@@ -122,7 +128,7 @@ def delete_selected_images(request, slug):
     """
     Elimina várias imagens selecionadas do álbum.
     """
-    album = get_object_or_404(GalleryAlbum, slug=slug, is_active=True)
+    album = get_object_or_404(GalleryAlbum, slug=slug)
 
     if request.method != "POST":
         messages.error(request, "Pedido inválido.")

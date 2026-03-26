@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const bulkCount = document.getElementById("galleryBulkCount")
   const galleryCards = document.querySelectorAll(".galleryCard")
   const selectInputs = document.querySelectorAll(".gallerySelectInput")
+  const uploadForm = document.querySelector(".galleryUploadForm")
+  const uploadBtn = document.getElementById("uploadPhotosBtn")
 
   let currentIndex = 0
   let touchStartX = 0
@@ -411,4 +413,60 @@ document.addEventListener("DOMContentLoaded", () => {
 
   updateSelectedCount()
   updateBulkSelectionState()
+
+  // Handler para mostrar loading durante upload de fotos
+  if (uploadForm && uploadBtn) {
+    uploadForm.addEventListener("submit", (e) => {
+      const hasImages = fileInput && fileInput.files && fileInput.files.length > 0
+
+      if (!hasImages) {
+        e.preventDefault()
+        return
+      }
+
+      // Desabilitar botão
+      uploadBtn.disabled = true
+      uploadBtn.style.opacity = "0.6"
+      uploadBtn.style.cursor = "not-allowed"
+
+      // Guardar texto original
+      const originalText = uploadBtn.textContent
+
+      // Mostrar spinner + texto
+      uploadBtn.innerHTML = `
+        <span style="display: inline-flex; align-items: center; gap: 8px;">
+          <span class="spinner" style="
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+          "></span>
+          A carregar...
+        </span>
+      `
+
+      // Se o formulário não submeter num timeout razoável, reabilitar
+      const timeoutId = setTimeout(() => {
+        uploadBtn.disabled = false
+        uploadBtn.style.opacity = "1"
+        uploadBtn.style.cursor = "pointer"
+        uploadBtn.textContent = originalText
+      }, 30000) // 30 segundos
+
+      // Limpar timeout se o formulário submeter realmente
+      uploadForm.addEventListener("submit", () => clearTimeout(timeoutId), { once: true })
+    })
+  }
 })
+
+// Animação de spinner
+const style = document.createElement("style")
+style.textContent = `
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+`
+document.head.appendChild(style)

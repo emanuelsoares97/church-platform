@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Criar álbum • Galeria{% endblock %}
+{% block title %}Editar álbum • Galeria{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/gallery.css' %}">
@@ -12,10 +12,10 @@
   <div class="container">
     <section class="galleryHero">
       <div class="galleryHeroContent">
-        <span class="sectionBadge">GALERIA</span>
-        <h1>Criar novo álbum</h1>
+        <span class="sectionBadge">GESTÃO · GALERIA</span>
+        <h1>Editar álbum</h1>
         <p class="galleryHeroDescription">
-          Cria um novo álbum para guardar fotos de celebrações, reuniões e momentos especiais da igreja.
+          Atualiza os detalhes do álbum: título, descrição, data e opções de disponibilidade pública.
         </p>
       </div>
     </section>
@@ -62,12 +62,12 @@
         </div>
 
         <div class="galleryCreateActions">
-          <a href="{% url 'gallery:album_list' %}" class="btn btnSecondary">
+          <a href="{% url 'management:management_album_detail' album.slug %}" class="btn btnSecondary">
             Cancelar
           </a>
 
           <button type="submit" class="btn">
-            Criar álbum
+            Guardar alterações
           </button>
         </div>
       </form>
