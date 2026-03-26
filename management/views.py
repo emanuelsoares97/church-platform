@@ -20,6 +20,14 @@ from management.permissions import (
 
 from openpyxl import Workbook
 from openpyxl.styles import Font
+from management.services.registration_ops import (
+    BulkCheckinNotAllowed,
+    ParticipantCheckinNotAllowed,
+    checkin_all as service_checkin_all,
+    mark_registration_paid_full as service_mark_registration_paid_full,
+    toggle_participant_checkin as service_toggle_participant_checkin,
+    toggle_participant_paid as service_toggle_participant_paid,
+)
 
 
 @management_required
@@ -318,14 +326,7 @@ def unarchive_event(request, event_id):
 def mark_registration_paid_full(request, reg_id):
     """marca toda a inscrição como paga (todos os participantes)."""
     reg = get_object_or_404(Registration.objects.select_related("event"), pk=reg_id)
-    now = timezone.now()
-
-    reg.paid_amount = reg.total_price
-    reg.is_paid = True
-    reg.paid_at = now
-    reg.save(update_fields=["paid_amount", "is_paid", "paid_at"])
-
-    Participant.objects.filter(registration=reg).update(is_paid=True, paid_at=now)
+    result = service_mark_registration_paid_full(reg)
 
     is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
 
@@ -337,7 +338,7 @@ def mark_registration_paid_full(request, reg_id):
             {
                 "success": True,
                 "message": "Pagamento total confirmado",
-                "kpis": build_event_kpis(reg.event),
+                "kpis": build_event_kpis(result.event),
             }
         )
 
@@ -352,26 +353,11 @@ def toggle_participant_paid(request, participant_id):
         Participant.objects.select_related("registration__event"),
         pk=participant_id,
     )
-    reg = p.registration
-    event = reg.event
-    price = event.price or Decimal("0.00")
-    now = timezone.now()
-
     new_value = request.POST.get("value") == "1"
-
-    p.mark_paid(new_value)
-    p.save(update_fields=["is_paid", "paid_at"])
-
-    if price > 0:
-        if new_value:
-            reg.paid_amount = min(reg.total_price, reg.paid_amount + price)
-        else:
-            reg.paid_amount = max(Decimal("0.00"), reg.paid_amount - price)
-
-    all_paid = not Participant.objects.filter(registration=reg, is_paid=False).exists()
-    reg.is_paid = all_paid
-    reg.paid_at = now if all_paid else None
-    reg.save(update_fields=["paid_amount", "is_paid", "paid_at"])
+    result = service_toggle_participant_paid(p, new_value=new_value)
+    reg = result.registration
+    event = result.event
+    participant = result.participant
 
     is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
 
@@ -385,9 +371,9 @@ def toggle_participant_paid(request, participant_id):
                 "message": "Pagamento atualizado",
                 "kpis": build_event_kpis(event),
                 "participant": {
-                    "id": p.id,
-                    "is_paid": p.is_paid,
-                    "checked_in": p.checked_in,
+                    "id": participant.id,
+                    "is_paid": participant.is_paid,
+                    "checked_in": participant.checked_in,
                 },
                 "registration": {
                     "id": reg.id,
@@ -412,7 +398,12 @@ def toggle_participant_checkin(request, participant_id):
 
     is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
 
-    if not p.is_paid and event.price > 0:
+    new_value = request.POST.get("value") == "1"
+
+    try:
+        result = service_toggle_participant_checkin(p, new_value=new_value)
+        participant = result.participant
+    except ParticipantCheckinNotAllowed:
         if not is_ajax:
             messages.error(request, "Não é possível fazer check-in sem pagamento confirmado")
 
@@ -428,10 +419,6 @@ def toggle_participant_checkin(request, participant_id):
 
         return redirect(request.POST.get("next") or "management:home")
 
-    new_value = request.POST.get("value") == "1"
-    p.mark_checked_in(new_value)
-    p.save(update_fields=["checked_in", "checked_in_at"])
-
     if not is_ajax:
         messages.success(request, "Check-in atualizado")
 
@@ -442,9 +429,9 @@ def toggle_participant_checkin(request, participant_id):
                 "message": "Check-in atualizado",
                 "kpis": build_event_kpis(event),
                 "participant": {
-                    "id": p.id,
-                    "is_paid": p.is_paid,
-                    "checked_in": p.checked_in,
+                    "id": participant.id,
+                    "is_paid": participant.is_paid,
+                    "checked_in": participant.checked_in,
                 },
             }
         )
@@ -460,10 +447,13 @@ def checkin_all(request, reg_id):
         Registration.objects.prefetch_related("participants").select_related("event"),
         pk=reg_id,
     )
+    event = reg.event
 
     is_ajax = request.META.get("HTTP_X_REQUESTED_WITH") == "XMLHttpRequest"
 
-    if reg.event.price > 0 and reg.participants.filter(is_paid=False).exists():
+    try:
+        service_checkin_all(reg)
+    except BulkCheckinNotAllowed:
         if not is_ajax:
             messages.error(request, "Ainda existem participantes por pagar")
 
@@ -472,20 +462,12 @@ def checkin_all(request, reg_id):
                 {
                     "success": False,
                     "error": "Ainda existem participantes por pagar",
-                    "kpis": build_event_kpis(reg.event),
+                    "kpis": build_event_kpis(event),
                 },
                 status=400,
             )
 
         return redirect(request.POST.get("next") or "management:home")
-
-    now = timezone.now()
-
-    for p in reg.participants.all():
-        if not p.checked_in:
-            p.checked_in = True
-            p.checked_in_at = now
-            p.save(update_fields=["checked_in", "checked_in_at"])
 
     if not is_ajax:
         messages.success(request, "Check-in de todos os participantes registado")
@@ -495,7 +477,7 @@ def checkin_all(request, reg_id):
             {
                 "success": True,
                 "message": "Check-in de todos os participantes registado",
-                "kpis": build_event_kpis(reg.event),
+                "kpis": build_event_kpis(event),
             }
         )
 

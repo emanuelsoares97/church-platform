@@ -3,7 +3,6 @@ Django settings for church_platform project.
 """
 
 from pathlib import Path
-import os
 
 import cloudinary
 import dj_database_url
@@ -181,14 +180,29 @@ DEFAULT_FROM_EMAIL = config(
 )
 
 
-# backend de email do django
-# este backend não é usado no envio via resend
-# fica apenas para testes locais ou outros usos futuros
-if DEBUG:
-    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+# backend de email do django (separado do envio via resend)
+# - desenvolvimento/testes: filebased por defeito
+# - produção: smtp por defeito (preparado para provider real)
+EMAIL_BACKEND = config(
+    "EMAIL_BACKEND",
+    default=(
+        "django.core.mail.backends.filebased.EmailBackend"
+        if DEBUG
+        else "django.core.mail.backends.smtp.EmailBackend"
+    ),
+)
+
+if EMAIL_BACKEND == "django.core.mail.backends.filebased.EmailBackend":
     EMAIL_FILE_PATH = BASE_DIR / "tmp_emails"
-else:
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+# parâmetros smtp (usados quando EMAIL_BACKEND for smtp)
+EMAIL_HOST = config("EMAIL_HOST", default="localhost")
+EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+EMAIL_USE_SSL = config("EMAIL_USE_SSL", default=False, cast=bool)
+EMAIL_TIMEOUT = config("EMAIL_TIMEOUT", default=20, cast=int)
 
 
 # segurança mínima para produção

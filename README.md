@@ -145,41 +145,31 @@ Modelos de permissões:
 
 ## Testes
 
-O projeto possui suite completa de testes unitários e de integração:
-
-```
-100 testes no total
-Cobertura: 85%
-
-Distribuição de cobertura por módulo:
-- events/migrations: 100%
-- events/permissions: 100%
-- events/models: 94%
-- events/forms: 100%
-- events/views: 86%
-- events/admin: 82%
-- events/services/emails: 64%
-- management/permissions: 100%
-- management/views: 60%
-- gallery/models: 67%
-- gallery/admin: 62%
-- gallery/forms: 62%
-- core/urls: 100%
-- core/apps: 100%
-- church_platform settings: 98%
-```
+O projeto inclui testes unitários e de integração para os principais fluxos.
 
 Executar testes localmente:
 
 ```bash
 # Executar todos os testes
-python -m coverage run manage.py test
+python manage.py test
 
-# Gerar relatório de cobertura
+# Cobertura (usa .coveragerc para focar apenas no código da aplicação)
+python -m coverage erase
+python -m coverage run manage.py test
 python -m coverage report -m
 
 # Gerar relatório em HTML
 python -m coverage html
+```
+
+Notas:
+
+- O ficheiro `.coveragerc` exclui `tests`, `migrations` e `manage.py` para evitar métricas enganadoras.
+- Para medições pontuais por app, podes usar `--source`, por exemplo:
+
+```bash
+python -m coverage run --source=management manage.py test management.tests
+python -m coverage report -m
 ```
 
 ## Instalação e Setup

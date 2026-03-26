@@ -130,7 +130,7 @@ class PublicEventViewsTest(TestCase):
         self.assertEqual(response.url, reverse("events:event_detail", kwargs={"slug": event.slug}))
         self.assertEqual(Registration.objects.count(), 0)
 
-    @patch("events.views.transaction.on_commit")
+    @patch("events.services.registrations.transaction.on_commit")
     def test_post_inscricao_valida_cria_registo_e_participantes(self, mock_on_commit):
         """Cria inscrição e participantes com ticket codes consistentes."""
         mock_on_commit.side_effect = lambda callback: None
@@ -154,7 +154,7 @@ class PublicEventViewsTest(TestCase):
         self.assertTrue(participants[0].ticket_code.endswith("-P01"))
         self.assertTrue(participants[1].ticket_code.endswith("-P02"))
 
-    @patch("events.views.transaction.on_commit")
+    @patch("events.services.registrations.transaction.on_commit")
     def test_post_com_numero_errado_de_participantes_nao_persiste_registo(self, mock_on_commit):
         """Se nomes não batem com quantidade, o registo é revertido."""
         mock_on_commit.side_effect = lambda callback: None
@@ -170,7 +170,7 @@ class PublicEventViewsTest(TestCase):
         self.assertEqual(Registration.objects.count(), 0)
         self.assertContains(response, "Precisas preencher exatamente 3 nome(s) de participante")
 
-    @patch("events.views.transaction.on_commit")
+    @patch("events.services.registrations.transaction.on_commit")
     def test_evento_gratuito_marca_inscricao_e_participantes_como_pagos(self, mock_on_commit):
         """No evento gratuito, pagamento fica fechado automaticamente."""
         mock_on_commit.side_effect = lambda callback: None

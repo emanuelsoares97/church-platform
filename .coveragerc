@@ -1,0 +1,16 @@
+[run]
+source =
+    church_platform
+    core
+    events
+    gallery
+    management
+omit =
+    */tests/*
+    */migrations/*
+    manage.py
+
+[report]
+show_missing = True
+skip_covered = False
+precision = 0

@@ -1,24 +1,24 @@
 from io import BytesIO
-import threading
 
 import qrcode
 from django.conf import settings
 from django.contrib import messages
-from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 from .forms import RegistrationForm
 from .models import Event, Registration, Participant
-from events.services.emails import send_registration_tickets_email
+from events.services.registrations import (
+    RegistrationCreationError,
+    create_public_registration,
+    make_ticket_code as _make_ticket_code,
+)
 
 
 def make_ticket_code(registration: Registration, idx: int) -> str:
-    """gera código único para participante baseado na inscrição."""
-    base = str(registration.public_id).replace("-", "")[:8].upper()
-    year = registration.created_at.year
-    return f"EVT-{year}-{base}-P{idx:02d}"
+    """Compat wrapper: mantém import estável para código/testes legados."""
+    return _make_ticket_code(registration, idx)
 
 
 def event_list(request):
@@ -63,16 +63,14 @@ def event_detail(request, slug):
         participant_names = request.POST.getlist("participant_name")
 
         if form.is_valid():
-            registration = form.save(commit=False)
-            registration.event = event
-            registration.save()
-
-            qty = registration.ticket_qty
-            cleaned_names = [n.strip() for n in participant_names if n.strip()]
-
-            if len(cleaned_names) != qty:
-                registration.delete()
-                messages.error(request, f"Precisas preencher exatamente {qty} nome(s) de participante.")
+            try:
+                registration = create_public_registration(
+                    event=event,
+                    form=form,
+                    participant_names=participant_names,
+                )
+            except RegistrationCreationError as error:
+                messages.error(request, str(error))
                 return render(
                     request,
                     "events/event_detail.html",
@@ -83,39 +81,6 @@ def event_detail(request, slug):
                         "registration_open": registration_open,
                     },
                 )
-
-            now = timezone.now()
-            is_free = (event.price == 0)
-
-            participants_to_create = []
-            for idx, name in enumerate(cleaned_names, start=1):
-                participants_to_create.append(
-                    Participant(
-                        registration=registration,
-                        full_name=name,
-                        ticket_code=make_ticket_code(registration, idx),
-                        is_paid=is_free,
-                        paid_at=now if is_free else None,
-                    )
-                )
-
-            Participant.objects.bulk_create(participants_to_create)
-
-            # se for grátis fica tudo pago
-            if is_free:
-                registration.paid_amount = registration.total_price
-                registration.is_paid = True
-                registration.paid_at = now
-                registration.save(update_fields=["paid_amount", "is_paid", "paid_at"])
-
-            # envia os bilhetes por email
-            transaction.on_commit(
-                lambda: threading.Thread(
-                    target=send_registration_tickets_email,
-                    args=(registration.id,),
-                    daemon=True,
-                ).start()
-            )
 
             messages.success(request, "Inscrição registada com sucesso")
             return redirect(
