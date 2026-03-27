@@ -36,24 +36,6 @@ from management.services.registration_ops import (
 logger = logging.getLogger(__name__)
 
 
-@management_required
-def dashboard(request):
-    """home da gestão (hub principal)."""
-    return render(request, "management/dashboard.html")
-
-
-@reception_or_leadership_required
-def events_hub(request):
-    """Página intermédia para ações de gestão de eventos."""
-    return render(request, "management/events_hub.html")
-
-
-@media_or_leadership_required
-def gallery_hub(request):
-    """Página intermédia para ações de gestão da galeria."""
-    return render(request, "management/gallery_hub.html")
-
-
 def build_event_kpis(event):
     """Calcula os KPIs principais de um evento para a área de gestão."""
     regs_base = Registration.objects.filter(event=event)
