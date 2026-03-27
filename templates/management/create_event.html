@@ -116,18 +116,6 @@
       </div>
     </div>
 
-    <div class="mgmtEventField">
-      <label for="{{ form.ticket_qty.id_for_label }}">{{ form.ticket_qty.label }}</label>
-      {{ form.ticket_qty }}
-      {% if form.ticket_qty.help_text %}
-        <div class="small">{{ form.ticket_qty.help_text }}</div>
-      {% endif %}
-      <div class="small">Este campo nao bloqueia vendas sozinho; serve para planeamento interno.</div>
-      {% if form.ticket_qty.errors %}
-        <div class="formError">{{ form.ticket_qty.errors|join:", " }}</div>
-      {% endif %}
-    </div>
-
     {% if is_edit %}
       <div class="mgmtEventField">
         <label for="{{ form.is_active.id_for_label }}">

@@ -46,7 +46,6 @@ def toggle_participant_paid(participant: Participant, *, new_value: bool) -> Reg
 
     with transaction.atomic():
         participant.mark_paid(new_value)
-        participant.save(update_fields=["is_paid", "paid_at"])
 
         if price > 0:
             if new_value:
@@ -74,7 +73,6 @@ def toggle_participant_checkin(participant: Participant, *, new_value: bool) -> 
 
     with transaction.atomic():
         participant.mark_checked_in(new_value)
-        participant.save(update_fields=["checked_in", "checked_in_at"])
 
     return RegistrationOpResult(
         event=event,

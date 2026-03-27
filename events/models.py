@@ -123,10 +123,12 @@ class Participant(models.Model):
             self.checked_in_at = timezone.now()
         else:
             self.checked_in_at = None
+        self.save(update_fields=["checked_in", "checked_in_at"])
 
     def mark_paid(self, value: bool):
         self.is_paid = value
         self.paid_at = timezone.now() if value else None
+        self.save(update_fields=["is_paid", "paid_at"])
 
     def __str__(self):
         return self.full_name or f"Participante #{self.pk or 'novo'}"

@@ -6,7 +6,7 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.utils import timezone
 
-from events.forms import EventAdminForm, EventCreateForm
+from events.forms import EventAdminForm, EventCreateForm, RegistrationForm
 
 
 class EventCreateFormTest(TestCase):
@@ -25,7 +25,6 @@ class EventCreateFormTest(TestCase):
             "price": "12.50",
             "registration_deadline": deadline.strftime("%Y-%m-%dT%H:%M"),
             "is_active": True,
-            "ticket_qty": 10,
         }
 
     def test_form_valido_com_deadline_antes_da_data(self):
@@ -103,3 +102,43 @@ class EventAdminFormTest(TestCase):
         result = form.clean_banner_image()
 
         self.assertIs(result, existing_resource)
+
+
+class RegistrationFormTest(TestCase):
+    """Testa validações essenciais do formulário de inscrição."""
+
+    def get_valid_data(self):
+        return {
+            "buyer_name": "João Silva",
+            "buyer_email": "joao@example.com",
+            "phone": "912 345 678",
+            "ticket_qty": 2,
+            "payment_method": "LOCAL",
+        }
+
+    def test_ticket_qty_invalido_abaixo_do_minimo(self):
+        data = self.get_valid_data()
+        data["ticket_qty"] = 0
+
+        form = RegistrationForm(data=data)
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("ticket_qty", form.errors)
+
+    def test_ticket_qty_invalido_acima_do_maximo(self):
+        data = self.get_valid_data()
+        data["ticket_qty"] = 21
+
+        form = RegistrationForm(data=data)
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("ticket_qty", form.errors)
+
+    def test_phone_invalido_rejeita_valor_curto_sem_digitos_suficientes(self):
+        data = self.get_valid_data()
+        data["phone"] = "12"
+
+        form = RegistrationForm(data=data)
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("phone", form.errors)
