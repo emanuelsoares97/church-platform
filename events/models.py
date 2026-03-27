@@ -90,6 +90,7 @@ class Registration(models.Model):
     def mark_paid(self, value: bool):
         self.is_paid = value
         self.paid_at = timezone.now() if value else None
+        self.save(update_fields=["is_paid", "paid_at"])
 
     @property
     def total_price(self):
