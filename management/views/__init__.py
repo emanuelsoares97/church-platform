@@ -9,3 +9,13 @@ from .gallery import (
 	activate_gallery_album,
 	delete_gallery_album,
 )
+from .events import (
+	events_list,
+	events_admin_list,
+	create_event_view,
+	edit_event_view,
+	deactivate_event,
+	activate_event,
+	archive_event,
+	unarchive_event,
+)
